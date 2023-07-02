@@ -22,3 +22,6 @@ open:
 
 serve:
 	npx webpack serve --config builddev.config.js
+
+archive: buildProd
+	zip -vr build.zip build/ -x "*.DS_Store"

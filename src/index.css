@@ -1,0 +1,13 @@
+:root {
+    touch-action: pan-x pan-y;
+}
+
+* {
+    touch-action: manipulation;
+    box-sizing: border-box; 
+}
+
+body {
+    margin: 0px 0px;
+    font-family: "HelveticaNeue-Light", "Helvetica Neue Light", "Helvetica Neue", Helvetica, Arial, "Lucida Grande", sans-serif;
+}

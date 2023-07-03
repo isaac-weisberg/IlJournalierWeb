@@ -1,11 +1,12 @@
-.flagsCollectionView {
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    padding: 20px 0px;
-    justify-content: space-evenly;
-    row-gap: 16px;
+.flagsCollectionCell {
+    border-radius: 16px;
+    padding: 16px;
+    width: calc(50% - 32px);
+    aspect-ratio: 1;
+    transition: 0.25s;
+    font-size: 32px;
 }
+
 .dipAnimation {
     animation: dipFrames 0.25s ease-in-out 1;
 }

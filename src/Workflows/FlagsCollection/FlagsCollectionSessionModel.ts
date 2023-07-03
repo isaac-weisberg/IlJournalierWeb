@@ -1,10 +1,14 @@
 import { DbSchemaV1, DbSchemaV1Event, DbSchemaV1EventType, DbSchemaV1Type } from "./DbSchemaV1";
-import { FlagModel } from "./FlagsCollectionPresenter";
 import { IFlagsDatabaseStorageService } from "./FlagsDatabaseStorageServiceV1";
+
+export interface FlagModel {
+    id: string
+    isEnabled: boolean
+}
 
 export interface IFlagsCollectionSessionModel {
     flags(): FlagModel[]
-    addFlag(id: string): void
+    addFlag(id: string): FlagModel|undefined
     setFlagEnabled(id: string, isEnabled: boolean): void
 }
 
@@ -15,7 +19,7 @@ const basicFlagNames = [
     'Жарко',
     'На улице хорошо',
     'Холодно',
-    'Много прокрастинировал',
+    'Прокрастинировал',
     'Обожрался'
 ]
 
@@ -96,11 +100,18 @@ export function FlagsCollectionSessionModel(databaseStorage: IFlagsDatabaseStora
 
     // Implemetations
 
-    function addFlag(id: string): void {
+    function addFlag(id: string): FlagModel|undefined {
         if (!state.database.knownFlagIds.includes(id)) {
             state.database.knownFlagIds.push(id)
             databaseStorage.save(state.database)
+
+            const flag = {
+                id: id,
+                isEnabled: false
+            }
+            return flag
         }
+        return undefined
     }
 
     function setFlagEnabled(id: string, isEnabled: boolean): void {

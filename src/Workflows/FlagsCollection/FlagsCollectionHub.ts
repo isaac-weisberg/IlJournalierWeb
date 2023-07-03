@@ -23,8 +23,15 @@ export function FlagsCollectionHub() {
     const stylishTextInput = StylishTextInput()
     root.appendChild(stylishTextInput.root)
     const stylishButton = StylishButton('Add a new tile', () => {
-        const value = stylishTextInput.value
-        
+        const value = stylishTextInput.value()
+        if (value && value.length > 0) {
+            const id = value
+            const addedFlag = flagsCollectionSessionModel.addFlag(id)
+            if (addedFlag) {
+                flagCollectionPresenter.handleFlagAdded(addedFlag)
+                flagCollectionView.handleFlagAdded(addedFlag)
+            }
+        }
     })
     root.appendChild(stylishButton.root)
 

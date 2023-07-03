@@ -1,11 +1,11 @@
 import { IFlagsCollectionPresenter } from "./FlagsCollectionPresenter";
+import { FlagModel } from "./FlagsCollectionSessionModel";
 import './FlagsCollectionView.css'
-
-const disabledBgColor = '#7575ff'
-const enabledBgColor = '#5353dd'
+import { FlagsCollectionViewCell } from "./FlagsCollectionViewCell";
 
 export interface IFlagsCollectionView {
     readonly root: HTMLDivElement
+    handleFlagAdded(flag: FlagModel): void
 }
 
 export function FlagsCollectionView(
@@ -16,46 +16,27 @@ export function FlagsCollectionView(
 
     const flagModels = presenter.flags
 
-    let cells = flagModels.map((flag, index) => {
-        let isEnabled = flag.isEnabled
-        const cellDiv = document.createElement('div')
-        cellDiv.className = 'flagsCollectionCell'
-        root.appendChild(cellDiv)
-
-        function updateStyle() {
-            const newColor = isEnabled 
-                ? enabledBgColor
-                : disabledBgColor
-            cellDiv.style.backgroundColor = newColor
-        }
-        
-        let animationTimer: any
-
-        cellDiv.addEventListener('click', () => {
-            if (animationTimer) {
-                clearTimeout(animationTimer)
-            }
-            animationTimer = setTimeout(() => {
-                cellDiv.classList.remove('dipAnimation')
-                animationTimer = undefined
-            }, 250)
-            cellDiv.classList.add('dipAnimation')
-            const newEnabled = !isEnabled
-            isEnabled = newEnabled
-            presenter.setEnabled(flag.id, newEnabled)
-            updateStyle()
+    let cells = flagModels.map((flag) => {
+        const cell = FlagsCollectionViewCell(flag, (flagId, isEnabled) => {
+            presenter.setEnabled(flagId, isEnabled)
         })
 
-        const labelNode = document.createElement('div')
-        labelNode.className = 'flagsCollectionCellLabel'
-        labelNode.textContent = flag.id
-        cellDiv.appendChild(labelNode)
-        updateStyle()
+        root.appendChild(cell.root)
 
-        return cellDiv
+        return cell
     })
+
+    function handleFlagAdded(flag: FlagModel) {
+        const cell = FlagsCollectionViewCell(flag, (flagId, isEnabled) => {
+            presenter.setEnabled(flagId, isEnabled)
+        })
+        
+        cells.push(cell)
+        root.appendChild(cell.root)
+    }
     
     return {
-        root: root
+        root: root,
+        handleFlagAdded
     }
 }

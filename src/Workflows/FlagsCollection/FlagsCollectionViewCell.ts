@@ -15,7 +15,7 @@ export function FlagsCollectionViewCell(
 ): IFlagsCollectionViewCell {
     let isEnabled = flag.isEnabled
     const cellDiv = document.createElement('div')
-    cellDiv.className = 'flagsCollectionCell'
+    cellDiv.className = 'flagsCollectionCell noselect'
 
     function updateStyle() {
         const newColor = isEnabled 

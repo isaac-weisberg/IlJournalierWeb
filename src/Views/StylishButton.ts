@@ -7,7 +7,7 @@ export interface IStylishButton {
 export function StylishButton(title: string, handler: () => void): IStylishButton {
     const div = document.createElement('div')
     div.textContent = title
-    div.className = 'stylishButton'
+    div.className = 'stylishButton noselect'
     div.onclick = () => {
         handler()
     }

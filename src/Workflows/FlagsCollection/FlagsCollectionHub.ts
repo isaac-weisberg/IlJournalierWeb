@@ -5,6 +5,7 @@ import './FlagsCollectionHub.css'
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 import { FlagsDatabaseStorageServiceV1 } from "./FlagsDatabaseStorageServiceV1"
+import { FlagsCollectionTitleBanner } from "./FlagsCollectionTitleBanner"
 
 export interface IFlagsCollectionHub {
     readonly root: HTMLDivElement
@@ -13,6 +14,9 @@ export interface IFlagsCollectionHub {
 export function FlagsCollectionHub() {
     const root = document.createElement('div')
     root.className = 'flagsCollectionHub'
+
+    const banner = FlagsCollectionTitleBanner()
+    root.appendChild(banner.root)
     
     const flagsDatabaseLoader = FlagsDatabaseStorageServiceV1()
     const flagsCollectionSessionModel = FlagsCollectionSessionModel(flagsDatabaseLoader)
@@ -32,6 +36,7 @@ export function FlagsCollectionHub() {
             const id = value
             const addedFlag = flagsCollectionSessionModel.addFlag(id)
             if (addedFlag) {
+                stylishTextInput.reset()
                 flagCollectionPresenter.handleFlagAdded(addedFlag)
                 flagCollectionView.handleFlagAdded(addedFlag)
             }

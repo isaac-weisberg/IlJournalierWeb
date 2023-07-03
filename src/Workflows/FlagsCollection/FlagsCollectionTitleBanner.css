@@ -1,0 +1,11 @@
+.flagsCollectionTitleBanner {
+    box-sizing: border-box;
+    text-align: center;
+    font-style: italic;
+    font-size: 60px;
+    color: black;
+    background-color: #F7CAC9;
+    cursor: pointer;
+    padding: 16px;
+    word-wrap: break-word;
+}

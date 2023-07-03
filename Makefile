@@ -3,9 +3,9 @@
 
 default: build open
 
-build: buildDev copyIndexHtml
+build: buildDev index
 
-prod: buildProd copyIndexHtml open
+prod: buildProd index open
 
 buildDev:
 	npx webpack --config builddev.config.js
@@ -13,7 +13,7 @@ buildDev:
 buildProd:
 	npx webpack --config buildprod.config.js
 
-copyIndexHtml:
+index:
 	cp ./src/index.html ./build/index.html
 
 open:

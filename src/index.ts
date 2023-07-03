@@ -1,12 +1,8 @@
-import { FlagsCollectionPresenter } from "./Workflows/FlagsCollection/FlagsCollectionPresenter"
-import { FlagsCollectionService } from "./Workflows/FlagsCollection/FlagsCollectionService"
-import { FlagsCollectionView } from "./Workflows/FlagsCollection/FlagsCollectionView"
+import { FlagsCollectionHub } from "./Workflows/FlagsCollection/FlagsCollectionHub"
 import './index.css'
 
 const appElement = document.getElementById('App')!
-const flagsCollectionService = FlagsCollectionService()
-const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionService)
 
-const flagCollectionView = FlagsCollectionView(flagCollectionPresenter)
+const flagsCollectionHub = FlagsCollectionHub()
 
-appElement.appendChild(flagCollectionView.root)
+appElement.appendChild(flagsCollectionHub.root)

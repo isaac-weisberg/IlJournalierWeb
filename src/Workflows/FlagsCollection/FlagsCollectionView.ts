@@ -5,7 +5,7 @@ const disabledBgColor = '#7575ff'
 const enabledBgColor = '#5353dd'
 
 export interface IFlagsCollectionView {
-    root: HTMLDivElement
+    readonly root: HTMLDivElement
 }
 
 export function FlagsCollectionView(
@@ -42,13 +42,13 @@ export function FlagsCollectionView(
             cellDiv.classList.add('dipAnimation')
             const newEnabled = !isEnabled
             isEnabled = newEnabled
-            presenter.setEnabled(index, newEnabled)
+            presenter.setEnabled(flag.id, newEnabled)
             updateStyle()
         })
 
         const labelNode = document.createElement('div')
         labelNode.className = 'flagsCollectionCellLabel'
-        labelNode.textContent = flag.label
+        labelNode.textContent = flag.id
         cellDiv.appendChild(labelNode)
         updateStyle()
 

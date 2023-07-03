@@ -21,7 +21,11 @@ export function FlagsCollectionHub() {
     root.appendChild(flagCollectionView.root)
 
     const stylishTextInput = StylishTextInput()
+    stylishTextInput.root.style.width = 'calc(100% - 32px)'
+    stylishTextInput.root.style.marginLeft = '16px'
+    stylishTextInput.root.style.marginRight = '16px'
     root.appendChild(stylishTextInput.root)
+
     const stylishButton = StylishButton('Add a new tile', () => {
         const value = stylishTextInput.value()
         if (value && value.length > 0) {
@@ -33,6 +37,8 @@ export function FlagsCollectionHub() {
             }
         }
     })
+    stylishButton.root.style.marginLeft = 'auto'
+    stylishButton.root.style.marginRight = '16px'
     root.appendChild(stylishButton.root)
 
     return {

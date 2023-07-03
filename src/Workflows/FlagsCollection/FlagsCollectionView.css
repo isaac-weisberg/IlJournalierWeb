@@ -6,23 +6,3 @@
     justify-content: space-evenly;
     row-gap: 16px;
 }
-.dipAnimation {
-    animation: dipFrames 0.25s ease-in-out 1;
-}
-
-@keyframes dipFrames {
-    0% {
-        transform: scale(1.0);
-    }
-    50% {
-        transform: scale(0.8);
-    }
-    100% {
-        transform: scale(1.0);
-    }
-}
-
-.flagsCollectionCellLabel {
-    color: black;
-    word-wrap: break-word;
-}

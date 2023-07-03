@@ -2,8 +2,8 @@ import { FlagModel } from "./FlagsCollectionSessionModel"
 import './FlagsCollectionViewCell.css'
 
 
-const disabledBgColor = '#D5A6A7'
-const enabledBgColor = '#F7CAC9'
+const enabledBgColor = '#D5A6A7'
+const disabledBgColor = '#F7CAC9'
 
 export interface IFlagsCollectionViewCell {
     readonly root: HTMLDivElement

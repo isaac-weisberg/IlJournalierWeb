@@ -6,6 +6,7 @@ import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 import { FlagsDatabaseStorageServiceV1 } from "./FlagsDatabaseStorageServiceV1"
 import { FlagsCollectionTitleBanner } from "./FlagsCollectionTitleBanner"
+import { MemoryUsageLabel } from "./MemoryUsageLabel"
 
 export interface IFlagsCollectionHub {
     readonly root: HTMLDivElement
@@ -45,6 +46,11 @@ export function FlagsCollectionHub() {
     stylishButton.root.style.marginLeft = 'auto'
     stylishButton.root.style.marginRight = '16px'
     root.appendChild(stylishButton.root)
+
+    const memoryUsageComponent = MemoryUsageLabel(flagsDatabaseLoader)
+    memoryUsageComponent.root.style.marginLeft = 'auto'
+    memoryUsageComponent.root.style.marginRight = '16px'
+    root.appendChild(memoryUsageComponent.root)
 
     return {
         root: root

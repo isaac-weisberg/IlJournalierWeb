@@ -10,6 +10,7 @@ export interface IFlagsCollectionSessionModel {
     flags(): FlagModel[]
     addFlag(id: string): FlagModel|undefined
     setFlagEnabled(id: string, isEnabled: boolean): void
+    addMoreMessage(message: string): void
 }
 
 const basicFlagNames = [
@@ -53,6 +54,7 @@ export function FlagsCollectionSessionModel(databaseStorage: IFlagsDatabaseStora
         database: DbSchemaV1
         currentFlagSessionDate: number
         enabledFlags: Set<string>
+        moreMessages: string[]|undefined
     }
 
     let state: State
@@ -61,26 +63,31 @@ export function FlagsCollectionSessionModel(databaseStorage: IFlagsDatabaseStora
         if (maxDateInDb && Math.abs(now - maxDateInDb) < sessionRetainGapMs) {
             const currentFlagSessionDate = maxDateInDb
             let enabledFlags: Set<string>
+            let moreMessages: string[]|undefined
             try {
                 const existingEventObject: DbSchemaV1Event|undefined = existingDatabase.events[currentFlagSessionDate]
                 const typedEventObject = DbSchemaV1EventType.check(existingEventObject)
                 enabledFlags = new Set(typedEventObject.enabledFlags)
+                moreMessages = typedEventObject.moreMessages
             } catch {
                 enabledFlags = new Set()
+                moreMessages = undefined
                 existingDatabase.events[currentFlagSessionDate] = { enabledFlags: [] }
             }
 
             state = {
                 currentFlagSessionDate: currentFlagSessionDate,
                 enabledFlags: enabledFlags,
-                database: existingDatabase
+                database: existingDatabase,
+                moreMessages: moreMessages
             }
         } else {
             existingDatabase.events[now] = { enabledFlags: [] }
             state = {
                 currentFlagSessionDate: now,
                 enabledFlags: new Set(),
-                database: existingDatabase
+                database: existingDatabase,
+                moreMessages: undefined
             }
         }
     } else {
@@ -94,11 +101,23 @@ export function FlagsCollectionSessionModel(databaseStorage: IFlagsDatabaseStora
                         enabledFlags: []
                     }
                 }
-            }
+            },
+            moreMessages: undefined
         }
     }
 
     // Implemetations
+
+    function addMoreMessage(message: string) {
+        if (state.moreMessages) {
+            state.moreMessages.push(message)
+        } else {
+            state.moreMessages = [message]
+        }
+
+        state.database.events[state.currentFlagSessionDate].moreMessages = state.moreMessages
+        databaseStorage.save(state.database)
+    }
 
     function addFlag(id: string): FlagModel|undefined {
         if (!state.database.knownFlagIds.includes(id)) {
@@ -136,6 +155,7 @@ export function FlagsCollectionSessionModel(databaseStorage: IFlagsDatabaseStora
             })
         },
         addFlag,
-        setFlagEnabled
+        setFlagEnabled,
+        addMoreMessage
     }
 }

@@ -16,8 +16,8 @@ export function FlagsCollectionHub() {
     const root = document.createElement('div')
     root.className = 'flagsCollectionHub'
 
-    const banner = FlagsCollectionTitleBanner()
-    root.appendChild(banner.root)
+    const topBanner = FlagsCollectionTitleBanner(undefined)
+    root.appendChild(topBanner.root)
     
     const flagsDatabaseLoader = FlagsDatabaseStorageServiceV1()
     const flagsCollectionSessionModel = FlagsCollectionSessionModel(flagsDatabaseLoader)
@@ -25,30 +25,55 @@ export function FlagsCollectionHub() {
     const flagCollectionView = FlagsCollectionView(flagCollectionPresenter)
     root.appendChild(flagCollectionView.root)
 
-    const stylishTextInput = StylishTextInput()
-    stylishTextInput.root.style.width = 'calc(100% - 32px)'
-    stylishTextInput.root.style.marginLeft = '16px'
-    stylishTextInput.root.style.marginRight = '16px'
-    root.appendChild(stylishTextInput.root)
+    const newTileTextInput = StylishTextInput()
+    newTileTextInput.root.style.width = 'calc(100% - 32px)'
+    newTileTextInput.root.style.marginLeft = '16px'
+    newTileTextInput.root.style.marginRight = '16px'
+    root.appendChild(newTileTextInput.root)
 
-    const stylishButton = StylishButton('Add a new tile', () => {
-        const value = stylishTextInput.value()
+    const addTileButton = StylishButton('Add a new tile', () => {
+        const value = newTileTextInput.value()
         if (value && value.length > 0) {
             const id = value
             const addedFlag = flagsCollectionSessionModel.addFlag(id)
             if (addedFlag) {
-                stylishTextInput.reset()
+                newTileTextInput.reset()
                 flagCollectionPresenter.handleFlagAdded(addedFlag)
                 flagCollectionView.handleFlagAdded(addedFlag)
             }
         }
     })
-    stylishButton.root.style.marginLeft = 'auto'
-    stylishButton.root.style.marginRight = '16px'
-    root.appendChild(stylishButton.root)
+    addTileButton.root.style.marginLeft = 'auto'
+    addTileButton.root.style.marginRight = '16px'
+    root.appendChild(addTileButton.root)
+
+    const moreDiv = document.createElement('div')
+    moreDiv.style.marginLeft = '16px'
+    moreDiv.style.marginTop = '32px'
+    moreDiv.style.fontSize = '150%'
+    moreDiv.textContent = 'More?'
+    root.appendChild(moreDiv)
+
+    const moreMessageTextField = StylishTextInput()
+    moreMessageTextField.root.style.width = 'calc(100% - 32px)'
+    moreMessageTextField.root.style.marginLeft = '16px'
+    moreMessageTextField.root.style.marginRight = '16px'
+    moreMessageTextField.root.style.marginTop = '16px'
+    root.appendChild(moreMessageTextField.root)
+
+    const moreMessageButton = StylishButton('Log more', () => {
+        const value = moreMessageTextField.value()
+        if (value && value.length > 0) {
+            flagsCollectionSessionModel.addMoreMessage(value)
+            moreMessageTextField.reset()
+        }
+    })
+    moreMessageButton.root.style.marginLeft = 'auto'
+    moreMessageButton.root.style.marginRight = '16px'
+    root.appendChild(moreMessageButton.root)
 
     const memoryUsageComponent = MemoryUsageLabel(flagsDatabaseLoader)
-    memoryUsageComponent.root.style.marginLeft = 'auto'
+    memoryUsageComponent.root.style.marginLeft = '16px'
     memoryUsageComponent.root.style.marginRight = '16px'
     root.appendChild(memoryUsageComponent.root)
 

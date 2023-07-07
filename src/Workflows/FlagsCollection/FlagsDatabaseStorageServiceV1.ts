@@ -14,7 +14,15 @@ export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
 
     return {
         save(db: DbSchemaV1) {
-            localStorage.setItem(dbSchemaV1StorageKey, JSON.stringify(db))
+            const string = JSON.stringify(db)
+            // Notify
+            const storageLength = string.length
+            lastKnownStorageLength = storageLength
+            if (this.onCurrentStorageStringLengthChanged) {
+                this.onCurrentStorageStringLengthChanged(storageLength)
+            }
+            // Use
+            localStorage.setItem(dbSchemaV1StorageKey,string)
         },
         load(): DbSchemaV1|undefined {
             const untypedExistingDb = localStorage.getItem(dbSchemaV1StorageKey)

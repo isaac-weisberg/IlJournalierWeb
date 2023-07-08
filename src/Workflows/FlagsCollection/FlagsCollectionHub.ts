@@ -4,10 +4,11 @@ import { FlagsCollectionView } from "./FlagsCollectionView"
 import './FlagsCollectionHub.css'
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
-import { FlagsDatabaseStorageServiceV1 } from "./FlagsDatabaseStorageServiceV1"
+import { FlagsDatabaseStorageServiceV1 } from "../../Services/FlagsDatabaseStorageServiceV1"
 import { FlagsCollectionTitleBanner } from "./FlagsCollectionTitleBanner"
 import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { ThemeService } from "../../Services/ThemeService"
+import { DevPanel } from "../DevPanel/DevPanel"
 
 export interface IFlagsCollectionHub {
     readonly root: HTMLDivElement
@@ -28,7 +29,7 @@ export function FlagsCollectionHub() {
     const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, themeService)
     root.appendChild(flagCollectionView.root)
 
-    const newTileTextInput = StylishTextInput(themeService)
+    const newTileTextInput = StylishTextInput( { overridePlaceholder: undefined }, themeService)
     newTileTextInput.root.style.width = 'calc(100% - 32px)'
     newTileTextInput.root.style.marginLeft = '16px'
     newTileTextInput.root.style.marginRight = '16px'
@@ -57,7 +58,7 @@ export function FlagsCollectionHub() {
     moreDiv.textContent = 'More?'
     root.appendChild(moreDiv)
 
-    const moreMessageTextField = StylishTextInput(themeService)
+    const moreMessageTextField = StylishTextInput( { overridePlaceholder: 'What else?' }, themeService)
     moreMessageTextField.root.style.width = 'calc(100% - 32px)'
     moreMessageTextField.root.style.marginLeft = '16px'
     moreMessageTextField.root.style.marginRight = '16px'
@@ -79,6 +80,10 @@ export function FlagsCollectionHub() {
     memoryUsageComponent.root.style.marginLeft = '16px'
     memoryUsageComponent.root.style.marginRight = '16px'
     root.appendChild(memoryUsageComponent.root)
+
+    const devPanel = DevPanel(themeService, flagsDatabaseLoader)
+    devPanel.root.style.marginTop = '700px'
+    root.appendChild(devPanel.root)
 
     return {
         root: root

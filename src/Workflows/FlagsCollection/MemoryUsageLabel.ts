@@ -1,5 +1,5 @@
 import { StringLengthFormatter } from "../../Extensions/StringLengthFormatter"
-import { IFlagsDatabaseStorageService } from "./FlagsDatabaseStorageServiceV1"
+import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
 
 export interface IMemoryUsageLabel {
     root: HTMLDivElement

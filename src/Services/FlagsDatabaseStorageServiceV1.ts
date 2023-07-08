@@ -3,6 +3,8 @@ import { DbSchemaV1, DbSchemaV1Type } from "./DbSchemaV1"
 const dbSchemaV1StorageKey = 'flagDbV1'
 
 export interface IFlagsDatabaseStorageService {
+    dumpRawDatabase(): string|null
+    overrideRawDatabase(database: string): void
     save(db: DbSchemaV1): void
     load(): DbSchemaV1|undefined
     currentStorageStringLength(): number|undefined
@@ -13,6 +15,12 @@ export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
     let lastKnownStorageLength: number|undefined
 
     return {
+        dumpRawDatabase(): string|null {
+            return localStorage.getItem(dbSchemaV1StorageKey)
+        },
+        overrideRawDatabase(database: string) {
+            localStorage.setItem(dbSchemaV1StorageKey, database)
+        },
         save(db: DbSchemaV1) {
             const string = JSON.stringify(db)
             // Notify
@@ -22,7 +30,7 @@ export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
                 this.onCurrentStorageStringLengthChanged(storageLength)
             }
             // Use
-            localStorage.setItem(dbSchemaV1StorageKey,string)
+            localStorage.setItem(dbSchemaV1StorageKey, string)
         },
         load(): DbSchemaV1|undefined {
             const untypedExistingDb = localStorage.getItem(dbSchemaV1StorageKey)

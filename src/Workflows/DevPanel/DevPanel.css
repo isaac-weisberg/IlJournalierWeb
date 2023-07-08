@@ -1,0 +1,6 @@
+.devPanelContainer {
+    display: flex;
+    margin: 16px;
+    flex-wrap: wrap;
+    flex-direction: row-reverse;
+}

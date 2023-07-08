@@ -1,5 +1,5 @@
-import { DbSchemaV1, DbSchemaV1Event, DbSchemaV1EventType, DbSchemaV1Type } from "./DbSchemaV1";
-import { IFlagsDatabaseStorageService } from "./FlagsDatabaseStorageServiceV1";
+import { DbSchemaV1, DbSchemaV1Event, DbSchemaV1EventType, DbSchemaV1Type } from "../../Services/DbSchemaV1";
+import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1";
 
 export interface FlagModel {
     id: string

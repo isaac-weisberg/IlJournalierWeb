@@ -11,8 +11,9 @@ export function MemoryUsageLabel(storageService: IFlagsDatabaseStorageService): 
     function setText(storageLength: number|undefined) {
         if (storageLength) {
             const formattedLength = StringLengthFormatter(storageLength)
-
             memoryUsageTextNode.textContent = `Storage used: ${formattedLength} symbols`
+        } else {
+            memoryUsageTextNode.textContent = `Storage used: I guess none`
         }
     }
 

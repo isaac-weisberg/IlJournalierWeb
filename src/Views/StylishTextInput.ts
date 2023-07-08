@@ -1,3 +1,4 @@
+import { IThemeService, Styling } from '../Services/ThemeService'
 import './StylishTextInput.css'
 
 export interface IStylishTextInput {
@@ -6,7 +7,7 @@ export interface IStylishTextInput {
     readonly root: HTMLInputElement
 }
 
-export function StylishTextInput(): IStylishTextInput {
+export function StylishTextInput(themeService: IThemeService): IStylishTextInput {
     const input = document.createElement('input')
     input.className = 'stylishTextInput'
 
@@ -24,6 +25,13 @@ export function StylishTextInput(): IStylishTextInput {
     ]
     const placeholder = possiblePlaceholders[Math.floor(Math.random() * possiblePlaceholders.length)];
     input.placeholder = placeholder
+
+    function updateStyling(styling: Styling) {
+        input.style.borderColor = styling[0]
+    }
+
+    updateStyling(themeService.getCurrentStyling())
+    themeService.addChangeListener(updateStyling)
 
     return {
         value() {

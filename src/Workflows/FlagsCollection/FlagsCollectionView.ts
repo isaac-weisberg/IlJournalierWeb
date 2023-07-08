@@ -1,3 +1,4 @@
+import { IThemeService } from "../../Services/ThemeService";
 import { IFlagsCollectionPresenter } from "./FlagsCollectionPresenter";
 import { FlagModel } from "./FlagsCollectionSessionModel";
 import './FlagsCollectionView.css'
@@ -9,7 +10,8 @@ export interface IFlagsCollectionView {
 }
 
 export function FlagsCollectionView(
-    presenter: IFlagsCollectionPresenter
+    presenter: IFlagsCollectionPresenter,
+    themeService: IThemeService
 ): IFlagsCollectionView {
     const root = document.createElement('div')
     root.className = 'flagsCollectionView'
@@ -17,7 +19,7 @@ export function FlagsCollectionView(
     const flagModels = presenter.flags
 
     let cells = flagModels.map((flag) => {
-        const cell = FlagsCollectionViewCell(flag, (flagId, isEnabled) => {
+        const cell = FlagsCollectionViewCell(flag, themeService, (flagId, isEnabled) => {
             presenter.setEnabled(flagId, isEnabled)
         })
 
@@ -27,7 +29,7 @@ export function FlagsCollectionView(
     })
 
     function handleFlagAdded(flag: FlagModel) {
-        const cell = FlagsCollectionViewCell(flag, (flagId, isEnabled) => {
+        const cell = FlagsCollectionViewCell(flag, themeService, (flagId, isEnabled) => {
             presenter.setEnabled(flagId, isEnabled)
         })
         

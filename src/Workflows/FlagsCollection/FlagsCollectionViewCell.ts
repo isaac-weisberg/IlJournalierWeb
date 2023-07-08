@@ -1,9 +1,6 @@
+import { IThemeService } from "../../Services/ThemeService"
 import { FlagModel } from "./FlagsCollectionSessionModel"
 import './FlagsCollectionViewCell.css'
-
-
-const enabledBgColor = '#D5A6A7'
-const disabledBgColor = '#F7CAC9'
 
 export interface IFlagsCollectionViewCell {
     readonly root: HTMLDivElement
@@ -11,17 +8,21 @@ export interface IFlagsCollectionViewCell {
 
 export function FlagsCollectionViewCell(
     flag: FlagModel,
+    themeService: IThemeService,
     onSetEnabled: (id: string, enabled: boolean) => void
 ): IFlagsCollectionViewCell {
     let isEnabled = flag.isEnabled
     const cellDiv = document.createElement('div')
     cellDiv.className = 'flagsCollectionCell noselect'
 
+    let styling = themeService.getCurrentStyling()
+    
     function updateStyle() {
         const newColor = isEnabled 
-            ? enabledBgColor
-            : disabledBgColor
+            ? styling[2]
+            : styling[0]
         cellDiv.style.backgroundColor = newColor
+        labelNode.style.color = styling[1]
     }
     
     let animationTimer: any
@@ -44,9 +45,14 @@ export function FlagsCollectionViewCell(
     const labelNode = document.createElement('div')
     labelNode.className = 'flagsCollectionCellLabel'
     labelNode.textContent = flag.id
-    labelNode.style.color = 'black'
+    labelNode.style.color = 'grey'
     cellDiv.appendChild(labelNode)
     updateStyle()
+
+    themeService.addChangeListener((newStyling) => {
+        styling = newStyling
+        updateStyle()
+    })
     
     return {
         root: cellDiv

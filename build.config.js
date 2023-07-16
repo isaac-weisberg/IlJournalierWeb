@@ -36,7 +36,7 @@ module.exports = {
       patterns: [
         { from: "./src/index.html" },
         { from: "./pwa-support/manifest.json" },
-        { from: "./pwa-support/iljourn-ico144x144.svg" },
+        { from: "./pwa-support/iljourn-ico144x144.jpg" },
       ],
     })
   ],

@@ -5,8 +5,8 @@
     "start_url": "./",
     "icons": [
         {
-            "src": "./iljourn-ico144x144.svg",
-            "type": "image/svg+xml",
+            "src": "./iljourn-ico144x144.jpg",
+            "type": "image/jpeg",
             "sizes": "144x144",
             "purpose": "any maskable"
         }

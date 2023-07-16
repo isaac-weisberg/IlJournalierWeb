@@ -12,4 +12,4 @@ appElement.appendChild(copyrightWidget.root)
 
 if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register("./service-worker.js");
- }
+}

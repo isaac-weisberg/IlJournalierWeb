@@ -9,6 +9,7 @@ import { FlagsCollectionTitleBanner } from "./FlagsCollectionTitleBanner"
 import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { ThemeService } from "../../Services/ThemeService"
 import { DevPanel } from "../DevPanel/DevPanel"
+import { StoragePersistanceService } from "../../Services/StoragePersistanceService"
 
 export interface IFlagsCollectionHub {
     readonly root: HTMLDivElement
@@ -23,6 +24,7 @@ export function FlagsCollectionHub() {
     const topBanner = FlagsCollectionTitleBanner(undefined, themeService)
     root.appendChild(topBanner.root)
     
+    const storagePersistenceService = StoragePersistanceService()
     const flagsDatabaseLoader = FlagsDatabaseStorageServiceV1()
     const flagsCollectionSessionModel = FlagsCollectionSessionModel(flagsDatabaseLoader)
     const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel)    
@@ -81,7 +83,7 @@ export function FlagsCollectionHub() {
     memoryUsageComponent.root.style.marginRight = '16px'
     root.appendChild(memoryUsageComponent.root)
 
-    const devPanel = DevPanel(themeService, flagsDatabaseLoader)
+    const devPanel = DevPanel(themeService, flagsDatabaseLoader, storagePersistenceService)
     devPanel.root.style.marginTop = '700px'
     root.appendChild(devPanel.root)
 

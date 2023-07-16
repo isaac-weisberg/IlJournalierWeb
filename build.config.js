@@ -37,6 +37,7 @@ module.exports = {
         { from: "./src/index.html" },
         { from: "./pwa-support/manifest.json" },
         { from: "./pwa-support/iljourn-ico144x144.jpg" },
+        { from: "./pwa-support/iljourn-ico144x144.svg" },
       ],
     })
   ],

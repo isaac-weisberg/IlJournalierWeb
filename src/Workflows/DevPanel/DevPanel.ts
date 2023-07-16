@@ -9,8 +9,6 @@ export interface IDevPanel {
     root: HTMLDivElement
 }
 
-
-
 export function DevPanel(
     themeService: IThemeService, 
     flagsDbService: IFlagsDatabaseStorageService, 
@@ -21,21 +19,21 @@ export function DevPanel(
     div.className = 'devPanelContainer'
 
     function addDevWidgets() {
-        // const rawDbTextField = StylishTextInput({ overridePlaceholder: 'Raw Flags DB' }, themeService)
+        const rawDbTextField = StylishTextInput({ overridePlaceholder: 'Raw Flags DB' }, themeService)
     
-        // const loadDbSchemaV1Button  = StylishButton('Load Flags DB', themeService, () => {
-        //     const rawDb = flagsDbService.dumpRawDatabase()
-        //     rawDbTextField.setValue(rawDb || '')
-        // })
+        const loadDbSchemaV1Button  = StylishButton('Load Flags DB', themeService, () => {
+            const rawDb = flagsDbService.dumpRawDatabase()
+            rawDbTextField.setValue(rawDb || '')
+        })
     
-        // const saveDbSchemaV1Button = StylishButton('Save Flags DB', themeService, () => {
-        //     const value = rawDbTextField.value()
-        //     flagsDbService.overrideRawDatabase(value)
-        // })
+        const saveDbSchemaV1Button = StylishButton('Save Flags DB', themeService, () => {
+            const value = rawDbTextField.value()
+            flagsDbService.overrideRawDatabase(value)
+        })
 
-        // div.appendChild(loadDbSchemaV1Button.root)
-        // div.appendChild(saveDbSchemaV1Button.root)
-        // div.appendChild(rawDbTextField.root)
+        div.appendChild(loadDbSchemaV1Button.root)
+        div.appendChild(saveDbSchemaV1Button.root)
+        div.appendChild(rawDbTextField.root)
 
         const loadingText = '... loading ...'
         const currentPersistenceStatusInput = StylishTextInput({ overridePlaceholder: '-' }, themeService)

@@ -22,4 +22,4 @@ archive: buildProd
 	zip -vr archive/build.zip build/ -x "*.DS_Store"
 
 clean:
-	rm -rf ./build/
+	rm -rf ./build/*

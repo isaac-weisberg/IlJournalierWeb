@@ -1,4 +1,5 @@
 const path = require('path');
+const fs = require('fs')
 const CopyPlugin = require("copy-webpack-plugin");
 
 module.exports = {
@@ -35,10 +36,14 @@ module.exports = {
       patterns: [
         { from: "./src/index.html" },
         { from: "./pwa-support/manifest.json" },
+        { from: "./pwa-support/iljourn-ico144x144.svg" },
       ],
     })
   ],
   devServer: {
+    server: {
+      type: 'https'
+    },
     static: {
       directory: path.join(__dirname, 'build'),
     },

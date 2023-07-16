@@ -16,10 +16,10 @@ open:
 	open ./build/index.html
 
 serve:
-	npx webpack serve --https --config builddev.config.js
+	npx webpack serve --config builddev.config.js
 
-archive: buildProd index
-	zip -vr build.zip build/ -x "*.DS_Store"
+archive: buildProd
+	zip -vr archive/build.zip build/ -x "*.DS_Store"
 
 clean:
 	rm -rf ./build/

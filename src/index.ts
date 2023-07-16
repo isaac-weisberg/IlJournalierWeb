@@ -9,3 +9,7 @@ appElement.appendChild(flagsCollectionHub.root)
 
 const copyrightWidget = CopyrightWidget()
 appElement.appendChild(copyrightWidget.root)
+
+if ('serviceWorker' in navigator) {
+    navigator.serviceWorker.register("./service-worker.js");
+ }

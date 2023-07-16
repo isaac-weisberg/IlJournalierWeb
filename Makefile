@@ -1,11 +1,10 @@
 .PHONY: build
 
-
 default: build open
 
-build: buildDev index
+build: buildDev
 
-prod: buildProd index open
+prod: buildProd open
 
 buildDev:
 	npx webpack --config builddev.config.js
@@ -13,15 +12,14 @@ buildDev:
 buildProd:
 	npx webpack --config buildprod.config.js
 
-index:
-	cp ./src/index.html ./build/index.html
-
 open:
 	open ./build/index.html
-	
 
 serve:
-	npx webpack serve --config builddev.config.js
+	npx webpack serve --https --config builddev.config.js
 
 archive: buildProd index
 	zip -vr build.zip build/ -x "*.DS_Store"
+
+clean:
+	rm -rf ./build/

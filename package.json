@@ -7,6 +7,7 @@
   "author": "Isaac Weisberg",
   "license": "ISC",
   "devDependencies": {
+    "copy-webpack-plugin": "^11.0.0",
     "css-loader": "^6.8.1",
     "style-loader": "^3.3.3",
     "ts-loader": "^9.4.4",

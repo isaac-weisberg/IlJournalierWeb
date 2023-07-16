@@ -18,6 +18,8 @@ export function StoragePersistanceService(): IStoragePersistanceService {
         return false
     }
 
+    requestPersistence()
+
     return {
         requestPersistence,
         isPersisted

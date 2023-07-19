@@ -27,7 +27,9 @@ export function FlagsCollectionHub() {
     const storagePersistenceService = StoragePersistanceService()
     const flagsDatabaseLoader = FlagsDatabaseStorageServiceV1()
     const flagsCollectionSessionModel = FlagsCollectionSessionModel(flagsDatabaseLoader)
-    const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel)    
+    const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel)
+
+
     const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, themeService)
     root.appendChild(flagCollectionView.root)
 
@@ -37,16 +39,17 @@ export function FlagsCollectionHub() {
     newTileTextInput.root.style.marginRight = '16px'
     root.appendChild(newTileTextInput.root)
 
+    flagCollectionView.listenToAddTileRequests(() => {
+        const promptResult = window.prompt('Enter the name for the tile!')
+        if (promptResult && promptResult.length > 0) {
+            flagCollectionView.addFlagWithId(promptResult)
+        }
+    })
+
     const addTileButton = StylishButton('Add a new tile', themeService, () => {
         const value = newTileTextInput.value()
         if (value && value.length > 0) {
-            const id = value
-            const addedFlag = flagsCollectionSessionModel.addFlag(id)
-            if (addedFlag) {
-                newTileTextInput.reset()
-                flagCollectionPresenter.handleFlagAdded(addedFlag)
-                flagCollectionView.handleFlagAdded(addedFlag)
-            }
+            flagCollectionView.addFlagWithId(value)
         }
     })
     addTileButton.root.style.marginLeft = 'auto'

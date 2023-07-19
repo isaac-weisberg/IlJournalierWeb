@@ -1,13 +1,17 @@
 import { FlagModel, IFlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 
 export interface IFlagsCollectionPresenter {
-    readonly flags: FlagModel[]
+    flags(): FlagModel[]
     setEnabled(id: string, enabled: boolean): void
-    handleFlagAdded(flag: FlagModel): void
+    addFlag(id: string): FlagModel | undefined
 }
 
 export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsCollectionSessionModel): IFlagsCollectionPresenter {
-    const flags = flagsCollectionSessionModel.flags()
+    let flags = flagsCollectionSessionModel.flags()
+
+    function getFlags(): FlagModel[] {
+        return flags
+    }
 
     function setEnabled(id: string, isEnabled: boolean) {
         const flag = flags.find((flag => { return flag.id == id }))
@@ -17,13 +21,15 @@ export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsColl
         }
     }
 
-    function handleFlagAdded(flag: FlagModel) {
-        flags.push(flag)
-    }
-
     return {
-        flags: flags,
-        handleFlagAdded,
-        setEnabled
+        flags: getFlags,
+        setEnabled,
+        addFlag(id: string): FlagModel | undefined {
+            const addedFlag = flagsCollectionSessionModel.addFlag(id)
+            if (addedFlag) {
+                flags.push(addedFlag)
+            }
+            return addedFlag
+        }
     }
 }

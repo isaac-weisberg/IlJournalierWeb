@@ -7,7 +7,8 @@ import { FlagsCollectionAddTileCell } from './AddTileCell/FlagsCollectionAddTile
 
 export interface IFlagsCollectionView {
     readonly root: HTMLDivElement
-    handleFlagAdded(flag: FlagModel): void
+    addFlagWithId(id: string): FlagModel | undefined
+    listenToAddTileRequests(handler: () => void): void
 }
 
 export function FlagsCollectionView(
@@ -17,9 +18,26 @@ export function FlagsCollectionView(
     const root = document.createElement('div')
     root.className = 'flagsCollectionView'
 
-    const flagModels = presenter.flags
+    const flagModels = presenter.flags()
 
-    const addTileCell = FlagsCollectionAddTileCell()
+    function addFlagWithId(id: string): FlagModel | undefined {
+        const addedFlag = presenter.addFlag(id)
+        if (addedFlag) {
+            const cell = FlagsCollectionViewCell(addedFlag, themeService, (flagId, isEnabled) => {
+                presenter.setEnabled(flagId, isEnabled)
+            })
+            
+            cells.push(cell)
+            root.insertBefore(cell.root, addTileCell.root)
+        }
+        return addedFlag
+    }
+
+    let addTileRequestsHandler: (() => void)|undefined
+
+    const addTileCell = FlagsCollectionAddTileCell(() => {
+        addTileRequestsHandler?.()
+    })
 
     let cells = flagModels.map((flag) => {
         const cell = FlagsCollectionViewCell(flag, themeService, (flagId, isEnabled) => {
@@ -32,18 +50,12 @@ export function FlagsCollectionView(
     })
 
     root.appendChild(addTileCell.root)
-
-    function handleFlagAdded(flag: FlagModel) {
-        const cell = FlagsCollectionViewCell(flag, themeService, (flagId, isEnabled) => {
-            presenter.setEnabled(flagId, isEnabled)
-        })
-        
-        cells.push(cell)
-        root.insertBefore(cell.root, addTileCell.root)
-    }
     
     return {
         root: root,
-        handleFlagAdded
+        addFlagWithId,
+        listenToAddTileRequests(handler) {
+            addTileRequestsHandler = handler
+        }
     }
 }

@@ -5,7 +5,7 @@ export interface IFlagsCollectionAddTileCell {
     root: HTMLDivElement
 }
 
-export function FlagsCollectionAddTileCell(): IFlagsCollectionAddTileCell {
+export function FlagsCollectionAddTileCell(onClick: () => void): IFlagsCollectionAddTileCell {
     const cellDiv = document.createElement('div')
     
     cellDiv.className = 'flagsCollectionAddTileCell'
@@ -23,6 +23,7 @@ export function FlagsCollectionAddTileCell(): IFlagsCollectionAddTileCell {
             animationTimer = undefined
         }, 250)
         cellDiv.classList.add('dipAnimation')
+        onClick()
     })
     
     return {

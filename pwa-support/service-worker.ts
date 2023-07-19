@@ -1,3 +1,4 @@
+const ver = '0.7.1'
 
 const staticResources = [
     './build.js',

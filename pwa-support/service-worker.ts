@@ -1,4 +1,6 @@
-const ver = '0.7.1'
+const a = {
+    v: '0.7.1' as string|undefined
+}
 
 const staticResources = [
     './build.js',
@@ -7,6 +9,7 @@ const staticResources = [
 ]
 
 self.addEventListener('install', function(event: any) {
+    delete a.v
     return event.waitUntil(
         caches.open('offlineAppCache')
             .then((cache) => {

@@ -18,6 +18,9 @@ open:
 serve:
 	npx webpack serve --config builddev.config.js
 
+servehttp:
+	npx webpack serve --config builddev.config.nohttpsdevserver.js
+
 archive: buildProd
 	zip -vr archive/build.zip build/ -x "*.DS_Store"
 

@@ -1,6 +1,7 @@
-import { IThemeService } from "../../Services/ThemeService"
-import { FlagModel } from "./FlagsCollectionSessionModel"
+import { IThemeService } from "../../../../Services/ThemeService"
+import { FlagModel } from "../../FlagsCollectionSessionModel"
 import './FlagsCollectionViewCell.css'
+import '../DipAnimation.css'
 
 export interface IFlagsCollectionViewCell {
     readonly root: HTMLDivElement

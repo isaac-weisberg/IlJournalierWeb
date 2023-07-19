@@ -8,4 +8,5 @@
     cursor: pointer;
     padding: 16px;
     word-wrap: break-word;
+    transition: 0.25s;
 }

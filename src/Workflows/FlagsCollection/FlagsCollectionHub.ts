@@ -1,11 +1,11 @@
 import { StylishButton } from "../../Views/StylishButton"
 import { FlagsCollectionPresenter } from "./FlagsCollectionPresenter"
-import { FlagsCollectionView } from "./FlagsCollectionView"
+import { FlagsCollectionView } from "./CollectionView/FlagsCollectionView"
 import './FlagsCollectionHub.css'
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 import { FlagsDatabaseStorageServiceV1 } from "../../Services/FlagsDatabaseStorageServiceV1"
-import { FlagsCollectionTitleBanner } from "./FlagsCollectionTitleBanner"
+import { FlagsCollectionTitleBanner } from "./TitleBanner/FlagsCollectionTitleBanner"
 import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { ThemeService } from "../../Services/ThemeService"
 import { DevPanel } from "../DevPanel/DevPanel"

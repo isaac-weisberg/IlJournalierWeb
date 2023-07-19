@@ -78,7 +78,7 @@ function saveLocalStorage(themeIndex: number) {
 }
 
 export function ThemeService(): IThemeService {
-    let currentThemeIndex: number = readLocalStorage() || 0
+    let currentThemeIndex: number = readLocalStorage() || 2
     let listeners: ThemeChangeListener[] = []
 
     function getCurrentStyling(): Styling {

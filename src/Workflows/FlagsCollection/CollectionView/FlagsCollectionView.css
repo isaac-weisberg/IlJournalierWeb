@@ -3,6 +3,5 @@
     flex-direction: row;
     flex-wrap: wrap;
     padding: 20px 0px;
-    justify-content: space-evenly;
     row-gap: 16px;
 }

@@ -1,6 +1,7 @@
 .copy {
     position: fixed;
-    bottom: 4px;
+    left: 16px;
+    bottom: 16px;
     font-size: 0.8em;
     padding: 8px;
 }

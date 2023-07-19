@@ -1,4 +1,4 @@
-import { IThemeService, Styling } from '../../Services/ThemeService'
+import { IThemeService, Styling } from '../../../Services/ThemeService'
 import './FlagsCollectionTitleBanner.css'
 
 export interface IFlagsCollectionTitleBanner {

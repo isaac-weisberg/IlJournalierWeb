@@ -33,28 +33,12 @@ export function FlagsCollectionHub() {
     const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, themeService)
     root.appendChild(flagCollectionView.root)
 
-    const newTileTextInput = StylishTextInput( { overridePlaceholder: undefined }, themeService)
-    newTileTextInput.root.style.width = 'calc(100% - 32px)'
-    newTileTextInput.root.style.marginLeft = '16px'
-    newTileTextInput.root.style.marginRight = '16px'
-    root.appendChild(newTileTextInput.root)
-
     flagCollectionView.listenToAddTileRequests(() => {
         const promptResult = window.prompt('Enter the name for the tile!')
         if (promptResult && promptResult.length > 0) {
             flagCollectionView.addFlagWithId(promptResult)
         }
     })
-
-    const addTileButton = StylishButton('Add a new tile', themeService, () => {
-        const value = newTileTextInput.value()
-        if (value && value.length > 0) {
-            flagCollectionView.addFlagWithId(value)
-        }
-    })
-    addTileButton.root.style.marginLeft = 'auto'
-    addTileButton.root.style.marginRight = '16px'
-    root.appendChild(addTileButton.root)
 
     const moreDiv = document.createElement('div')
     moreDiv.style.marginLeft = '16px'

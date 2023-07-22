@@ -20,9 +20,9 @@ export function MemoryUsageLabel(storageService: IFlagsDatabaseStorageService): 
     const storageLength = storageService.currentStorageStringLength()
     setText(storageLength)
 
-    storageService.onCurrentStorageStringLengthChanged = (length) => {
+    storageService.addOnCurrentStorageStringLengthChangedHandler((length) => {
         setText(length)
-    }
+    })
 
     memoryUsageTextNode.style.display = 'inline-block'
 

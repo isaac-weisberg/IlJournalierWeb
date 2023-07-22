@@ -8,27 +8,40 @@ export interface IFlagsDatabaseStorageService {
     save(db: DbSchemaV1): void
     load(): DbSchemaV1|undefined
     currentStorageStringLength(): number|undefined
-    onCurrentStorageStringLengthChanged: ((length: number) => void)|undefined
+    addOnCurrentStorageStringLengthChangedHandler(handler: (length: number) => void): void
 }
 
 export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
     let lastKnownStorageLength: number|undefined
 
+    let onCurrentStorageStringLengthChanged: ((length: number) => void)|undefined
+
+    function updateLastKnownStrorageLength(untypedExistingDbString: string|null|undefined) {
+        if (untypedExistingDbString) {
+            const storageLength = untypedExistingDbString.length
+            lastKnownStorageLength = storageLength
+            if (onCurrentStorageStringLengthChanged) {
+                onCurrentStorageStringLengthChanged(storageLength)
+            }
+        }
+    }
+
     return {
         dumpRawDatabase(): string|null {
-            return localStorage.getItem(dbSchemaV1StorageKey)
+            const untypedExistingDb = localStorage.getItem(dbSchemaV1StorageKey)
+
+            updateLastKnownStrorageLength(untypedExistingDb)
+
+            return untypedExistingDb
         },
         overrideRawDatabase(database: string) {
+            updateLastKnownStrorageLength(database)
             localStorage.setItem(dbSchemaV1StorageKey, database)
         },
         save(db: DbSchemaV1) {
             const string = JSON.stringify(db)
             // Notify
-            const storageLength = string.length
-            lastKnownStorageLength = storageLength
-            if (this.onCurrentStorageStringLengthChanged) {
-                this.onCurrentStorageStringLengthChanged(storageLength)
-            }
+            updateLastKnownStrorageLength(string)
             // Use
             localStorage.setItem(dbSchemaV1StorageKey, string)
         },
@@ -38,11 +51,7 @@ export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
             try {
                 if (untypedExistingDb) {
                     // Notify
-                    const storageLength = untypedExistingDb.length
-                    lastKnownStorageLength = storageLength
-                    if (this.onCurrentStorageStringLengthChanged) {
-                        this.onCurrentStorageStringLengthChanged(storageLength)
-                    }
+                    updateLastKnownStrorageLength(untypedExistingDb)
                     // Use
                     const json = JSON.parse(untypedExistingDb)
                     _existingDatabase = DbSchemaV1Type.check(json)
@@ -57,6 +66,8 @@ export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
         currentStorageStringLength(): number|undefined {
             return lastKnownStorageLength
         },
-        onCurrentStorageStringLengthChanged: undefined
+        addOnCurrentStorageStringLengthChangedHandler(handler) {
+            onCurrentStorageStringLengthChanged = handler
+        },
     }
 }

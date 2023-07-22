@@ -8,7 +8,7 @@ export interface IFlagsCollectionAddTileCell {
 export function FlagsCollectionAddTileCell(onClick: () => void): IFlagsCollectionAddTileCell {
     const cellDiv = document.createElement('div')
     
-    cellDiv.className = 'flagsCollectionAddTileCell'
+    cellDiv.className = 'flagsCollectionAddTileCell noselect'
 
     cellDiv.textContent = 'Add Tile'
 

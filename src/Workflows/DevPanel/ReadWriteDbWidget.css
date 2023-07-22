@@ -1,7 +1,5 @@
-.devPanelContainer {
+.rwdbwidget {
     display: flex;
-    margin: 16px;
-    flex-wrap: wrap;
     flex-direction: column;
     align-items: end;
 }

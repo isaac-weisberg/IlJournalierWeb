@@ -1,9 +1,11 @@
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
+import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
 import { IStoragePersistanceService } from "../../Services/StoragePersistanceService"
 import { IThemeService } from "../../Services/ThemeService"
 import { StylishButton } from "../../Views/StylishButton"
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import './DevPanel.css'
+import { ReadWriteDbWidget } from "./ReadWriteDbWidget"
 
 export interface IDevPanel {
     root: HTMLDivElement
@@ -11,7 +13,8 @@ export interface IDevPanel {
 
 export function DevPanel(
     themeService: IThemeService, 
-    flagsDbService: IFlagsDatabaseStorageService, 
+    flagsDbService: IFlagsDatabaseStorageService,
+    moreMsgsDbService: IMoreMessagesStorageService,
     persistenceService: IStoragePersistanceService
 ): IDevPanel {
     const div = document.createElement('div')
@@ -19,24 +22,23 @@ export function DevPanel(
     div.className = 'devPanelContainer'
 
     function addDevWidgets() {
-        const rawDbTextField = StylishTextInput({ overridePlaceholder: 'Raw Flags DB' }, themeService)
-    
-        const loadDbSchemaV1Button  = StylishButton('Load Flags DB', themeService, () => {
-            const rawDb = flagsDbService.dumpRawDatabase()
-            rawDbTextField.setValue(rawDb || '')
-        })
-    
-        const saveDbSchemaV1Button = StylishButton('Save Flags DB', themeService, () => {
-            const value = rawDbTextField.value()
-            flagsDbService.overrideRawDatabase(value)
-        })
+        const flagsRWWidget = ReadWriteDbWidget('FlagsDB', {
+            readString: flagsDbService.dumpRawDatabase,
+            writeString: flagsDbService.overrideRawDatabase
+        }, themeService)
+        div.appendChild(flagsRWWidget.root)
 
-        div.appendChild(loadDbSchemaV1Button.root)
-        div.appendChild(saveDbSchemaV1Button.root)
-        div.appendChild(rawDbTextField.root)
+        const moreMsgsRWWidget = ReadWriteDbWidget('MoreMsgsDB', {
+            readString: moreMsgsDbService.dumpRawDatabase,
+            writeString: moreMsgsDbService.overrideRawDatabase
+        }, themeService)
+        div.appendChild(moreMsgsRWWidget.root)
 
         const loadingText = '... loading ...'
-        const currentPersistenceStatusInput = StylishTextInput({ overridePlaceholder: '-' }, themeService)
+        const currentPersistenceStatusInput = StylishTextInput({ 
+            overridePlaceholder: '-',
+            fontSize: '120%'
+        }, themeService)
         currentPersistenceStatusInput.setValue(loadingText)
         let persistenceRequestBusy = true
 
@@ -55,15 +57,20 @@ export function DevPanel(
             persistenceRequestBusy = false
         })
 
-        const requestPersistenceButton = StylishButton('Request persistence', themeService, async () => {
-            if (!persistenceRequestBusy) {
-                persistenceRequestBusy = true
-                currentPersistenceStatusInput.setValue(loadingText)
-                
-                const persistent = await persistenceService.requestPersistence()
+        const requestPersistenceButton = StylishButton({ 
+            title: 'Request persistence', 
+            themeService,
+            fontSize: '150%',
+            handler: async () => {
+                if (!persistenceRequestBusy) {
+                    persistenceRequestBusy = true
+                    currentPersistenceStatusInput.setValue(loadingText)
+                    
+                    const persistent = await persistenceService.requestPersistence()
 
-                currentPersistenceStatusInput.setValue(isPersistedToString(persistent))
-                persistenceRequestBusy = false
+                    currentPersistenceStatusInput.setValue(isPersistedToString(persistent))
+                    persistenceRequestBusy = false
+                }
             }
         })
 
@@ -72,11 +79,15 @@ export function DevPanel(
     }
 
     let devButtonTapped = 0
-    const devButton = StylishButton('devmode', themeService, () => {
-        devButtonTapped += 1
+    const devButton = StylishButton({ 
+        title: 'devmode', 
+        themeService, 
+        handler: () => {
+            devButtonTapped += 1
 
-        if (devButtonTapped == 10) {
-            addDevWidgets()
+            if (devButtonTapped == 10) {
+                addDevWidgets()
+            }
         }
     })
 

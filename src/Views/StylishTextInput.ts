@@ -10,11 +10,15 @@ export interface IStylishTextInput {
 
 export interface StylishTextInputConfig {
     overridePlaceholder: string|undefined
+    fontSize?: string
 }
 
 export function StylishTextInput(config: StylishTextInputConfig, themeService: IThemeService): IStylishTextInput {
     const input = document.createElement('input')
     input.className = 'stylishTextInput'
+    if (config.fontSize) {
+        input.style.fontSize = config.fontSize
+    }
 
     if (config.overridePlaceholder != undefined) {
         input.placeholder = config.overridePlaceholder

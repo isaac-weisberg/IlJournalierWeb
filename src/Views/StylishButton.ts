@@ -5,20 +5,31 @@ export interface IStylishButton {
     readonly root: HTMLDivElement
 }
 
-export function StylishButton(title: string, themeService: IThemeService, handler: () => void): IStylishButton {
+export interface StylishButtonConfig {
+    readonly title: string
+    readonly fontSize?: string
+    readonly handler: () => void
+    readonly themeService: IThemeService
+}
+
+export function StylishButton(config: StylishButtonConfig): IStylishButton {
     const div = document.createElement('div')
-    div.textContent = title
+    div.textContent = config.title
     div.className = 'stylishButton noselect'
     div.onclick = () => {
-        handler()
+        config.handler()
+    }
+
+    if (config.fontSize) {
+        div.style.fontSize = config.fontSize
     }
 
     function updateStyling(styling: Styling) {
         div.style.borderColor = styling[0]
     }
 
-    updateStyling(themeService.getCurrentStyling())
-    themeService.addChangeListener(updateStyling)
+    updateStyling(config.themeService.getCurrentStyling())
+    config.themeService.addChangeListener(updateStyling)
 
     return {
         root: div

@@ -55,11 +55,15 @@ export function FlagsCollectionHub() {
     moreMessageTextField.root.style.marginTop = '16px'
     root.appendChild(moreMessageTextField.root)
 
-    const moreMessageButton = StylishButton('Log more', themeService, () => {
-        const value = moreMessageTextField.value()
-        if (value && value.length > 0) {
-            flagsCollectionSessionModel.addMoreMessage(value)
-            moreMessageTextField.reset()
+    const moreMessageButton = StylishButton({
+        title: 'Log more',
+        themeService,
+        handler: () => {
+            const value = moreMessageTextField.value()
+            if (value && value.length > 0) {
+                flagsCollectionSessionModel.addMoreMessage(value)
+                moreMessageTextField.reset()
+            }
         }
     })
     moreMessageButton.root.style.marginLeft = 'auto'
@@ -71,7 +75,7 @@ export function FlagsCollectionHub() {
     memoryUsageComponent.root.style.marginRight = '16px'
     root.appendChild(memoryUsageComponent.root)
 
-    const devPanel = DevPanel(themeService, flagsDatabaseStorage, storagePersistenceService)
+    const devPanel = DevPanel(themeService, flagsDatabaseStorage, moreMessagesDbStorage, storagePersistenceService)
     devPanel.root.style.marginTop = '700px'
     root.appendChild(devPanel.root)
 

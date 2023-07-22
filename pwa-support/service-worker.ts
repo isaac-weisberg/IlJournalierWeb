@@ -1,5 +1,5 @@
 const a = {
-    v: '0.7.1' as string|undefined
+    v: '0.8' as string|undefined
 }
 
 const staticResources = [

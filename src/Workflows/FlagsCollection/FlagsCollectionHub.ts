@@ -66,7 +66,7 @@ export function FlagsCollectionHub() {
     moreMessageButton.root.style.marginRight = '16px'
     root.appendChild(moreMessageButton.root)
 
-    const memoryUsageComponent = MemoryUsageLabel(flagsDatabaseStorage)
+    const memoryUsageComponent = MemoryUsageLabel(flagsDatabaseStorage, moreMessagesDbStorage)
     memoryUsageComponent.root.style.marginLeft = '16px'
     memoryUsageComponent.root.style.marginRight = '16px'
     root.appendChild(memoryUsageComponent.root)

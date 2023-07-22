@@ -1,16 +1,16 @@
-import { flagsDbSchemaV1StorageKey } from "../Util/Const"
-import { FlagsDbSchemaV1, FlagsDbSchemaV1Type } from "./FlagsDbSchemaV1"
+import { moreMessagesDbSchemaV1StorageKey } from '../Util/Const'
+import { MoreMessagesDbSchemaV1Type, MoreMessagesDbSchemaV1 } from './MoreMessagesDbSchemaV1'
 
-export interface IFlagsDatabaseStorageService {
+export interface IMoreMessagesStorageService {
     dumpRawDatabase(): string|null
     overrideRawDatabase(database: string): void
-    save(db: FlagsDbSchemaV1): void
-    load(): FlagsDbSchemaV1|undefined
+    save(db: MoreMessagesDbSchemaV1): void
+    load(): MoreMessagesDbSchemaV1|undefined
     currentStorageStringLength(): number|undefined
     addOnCurrentStorageStringLengthChangedHandler(handler: (length: number) => void): void
 }
 
-export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
+export function MoreMessagesStorageService(): IMoreMessagesStorageService {
     let lastKnownStorageLength: number|undefined
     let onCurrentStorageStringLengthChanged: ((length: number) => void)|undefined
 
@@ -26,7 +26,7 @@ export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
 
     return {
         dumpRawDatabase(): string|null {
-            const untypedExistingDb = localStorage.getItem(flagsDbSchemaV1StorageKey)
+            const untypedExistingDb = localStorage.getItem(moreMessagesDbSchemaV1StorageKey)
 
             updateLastKnownStrorageLength(untypedExistingDb)
 
@@ -34,25 +34,25 @@ export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
         },
         overrideRawDatabase(database: string) {
             updateLastKnownStrorageLength(database)
-            localStorage.setItem(flagsDbSchemaV1StorageKey, database)
+            localStorage.setItem(moreMessagesDbSchemaV1StorageKey, database)
         },
-        save(db: FlagsDbSchemaV1) {
+        save(db: MoreMessagesDbSchemaV1) {
             const string = JSON.stringify(db)
             // Notify
             updateLastKnownStrorageLength(string)
             // Use
-            localStorage.setItem(flagsDbSchemaV1StorageKey, string)
+            localStorage.setItem(moreMessagesDbSchemaV1StorageKey, string)
         },
-        load(): FlagsDbSchemaV1|undefined {
-            const untypedExistingDb = localStorage.getItem(flagsDbSchemaV1StorageKey)
-            let _existingDatabase: FlagsDbSchemaV1|undefined
+        load(): MoreMessagesDbSchemaV1|undefined {
+            const untypedExistingDb = localStorage.getItem(moreMessagesDbSchemaV1StorageKey)
+            let _existingDatabase: MoreMessagesDbSchemaV1|undefined
             try {
                 if (untypedExistingDb) {
                     // Notify
                     updateLastKnownStrorageLength(untypedExistingDb)
                     // Use
                     const json = JSON.parse(untypedExistingDb)
-                    _existingDatabase = FlagsDbSchemaV1Type.check(json)
+                    _existingDatabase = MoreMessagesDbSchemaV1Type.check(json)
                 } else {
                     _existingDatabase = undefined
                 }

@@ -10,6 +10,7 @@ import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { ThemeService } from "../../Services/ThemeService"
 import { DevPanel } from "../DevPanel/DevPanel"
 import { StoragePersistanceService } from "../../Services/StoragePersistanceService"
+import { MoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
 
 export interface IFlagsCollectionHub {
     readonly root: HTMLDivElement
@@ -25,10 +26,10 @@ export function FlagsCollectionHub() {
     root.appendChild(topBanner.root)
     
     const storagePersistenceService = StoragePersistanceService()
-    const flagsDatabaseLoader = FlagsDatabaseStorageServiceV1()
-    const flagsCollectionSessionModel = FlagsCollectionSessionModel(flagsDatabaseLoader)
+    const flagsDatabaseStorage = FlagsDatabaseStorageServiceV1()
+    const moreMessagesDbStorage = MoreMessagesStorageService()
+    const flagsCollectionSessionModel = FlagsCollectionSessionModel(flagsDatabaseStorage, moreMessagesDbStorage)
     const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel)
-
 
     const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, themeService)
     root.appendChild(flagCollectionView.root)
@@ -65,12 +66,12 @@ export function FlagsCollectionHub() {
     moreMessageButton.root.style.marginRight = '16px'
     root.appendChild(moreMessageButton.root)
 
-    const memoryUsageComponent = MemoryUsageLabel(flagsDatabaseLoader)
+    const memoryUsageComponent = MemoryUsageLabel(flagsDatabaseStorage)
     memoryUsageComponent.root.style.marginLeft = '16px'
     memoryUsageComponent.root.style.marginRight = '16px'
     root.appendChild(memoryUsageComponent.root)
 
-    const devPanel = DevPanel(themeService, flagsDatabaseLoader, storagePersistenceService)
+    const devPanel = DevPanel(themeService, flagsDatabaseStorage, storagePersistenceService)
     devPanel.root.style.marginTop = '700px'
     root.appendChild(devPanel.root)
 

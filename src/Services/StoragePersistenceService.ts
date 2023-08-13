@@ -1,9 +1,9 @@
-export interface IStoragePersistanceService {
+export interface IStoragePersistenceService {
     isPersisted(): Promise<boolean>
     requestPersistence(): Promise<boolean>
 }
 
-export function StoragePersistanceService(): IStoragePersistanceService {
+export function StoragePersistenceService(): IStoragePersistenceService {
     async function isPersisted(): Promise<boolean> {
         if (navigator.storage && navigator.storage.persisted) {
             return await navigator.storage.persisted()

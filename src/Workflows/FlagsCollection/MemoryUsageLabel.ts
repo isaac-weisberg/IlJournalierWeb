@@ -1,4 +1,5 @@
 import { StringLengthFormatter } from "../../Extensions/StringLengthFormatter"
+import { IDIContext } from "../../Services/DI"
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
 
@@ -7,8 +8,7 @@ export interface IMemoryUsageLabel {
 }
 
 export function MemoryUsageLabel(
-    flagsStorageService: IFlagsDatabaseStorageService, 
-    moreMessagesStorageService: IMoreMessagesStorageService
+    diContext: IDIContext
 ): IMemoryUsageLabel{
     const memoryUsageTextNode = document.createElement('div')
 
@@ -21,15 +21,15 @@ export function MemoryUsageLabel(
         }
     }
 
-    let flagsKnownLength = flagsStorageService.currentStorageStringLength()
-    let moreMessagesKnownLength = moreMessagesStorageService.currentStorageStringLength() 
+    let flagsKnownLength = diContext.flagsDatabaseStorage.currentStorageStringLength()
+    let moreMessagesKnownLength = diContext.moreMessagesDbStorage.currentStorageStringLength() 
 
-    flagsStorageService.addOnCurrentStorageStringLengthChangedHandler((length) => {
+    diContext.flagsDatabaseStorage.addOnCurrentStorageStringLengthChangedHandler((length) => {
         flagsKnownLength = length
         calcAndUpdateText()
     })
 
-    moreMessagesStorageService.addOnCurrentStorageStringLengthChangedHandler((length) => {
+    diContext.moreMessagesDbStorage.addOnCurrentStorageStringLengthChangedHandler((length) => {
         moreMessagesKnownLength = length
         calcAndUpdateText()
     })

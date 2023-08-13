@@ -1,6 +1,7 @@
+import { IDIContext } from "../../Services/DI"
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
-import { IStoragePersistanceService } from "../../Services/StoragePersistanceService"
+import { IStoragePersistenceService } from "../../Services/StoragePersistenceService"
 import { IThemeService } from "../../Services/ThemeService"
 import { StylishButton } from "../../Views/StylishButton"
 import { StylishTextInput } from "../../Views/StylishTextInput"
@@ -12,10 +13,7 @@ export interface IDevPanel {
 }
 
 export function DevPanel(
-    themeService: IThemeService, 
-    flagsDbService: IFlagsDatabaseStorageService,
-    moreMsgsDbService: IMoreMessagesStorageService,
-    persistenceService: IStoragePersistanceService
+    diContext: IDIContext
 ): IDevPanel {
     const div = document.createElement('div')
 
@@ -23,22 +21,22 @@ export function DevPanel(
 
     function addDevWidgets() {
         const flagsRWWidget = ReadWriteDbWidget('FlagsDB', {
-            readString: flagsDbService.dumpRawDatabase,
-            writeString: flagsDbService.overrideRawDatabase
-        }, themeService)
+            readString: diContext.flagsDatabaseStorage.dumpRawDatabase,
+            writeString: diContext.flagsDatabaseStorage.overrideRawDatabase
+        }, diContext.themeService)
         div.appendChild(flagsRWWidget.root)
 
         const moreMsgsRWWidget = ReadWriteDbWidget('MoreMsgsDB', {
-            readString: moreMsgsDbService.dumpRawDatabase,
-            writeString: moreMsgsDbService.overrideRawDatabase
-        }, themeService)
+            readString: diContext.moreMessagesDbStorage.dumpRawDatabase,
+            writeString: diContext.moreMessagesDbStorage.overrideRawDatabase
+        }, diContext.themeService)
         div.appendChild(moreMsgsRWWidget.root)
 
         const loadingText = '... loading ...'
         const currentPersistenceStatusInput = StylishTextInput({ 
             overridePlaceholder: '-',
             fontSize: '120%'
-        }, themeService)
+        }, diContext.themeService)
         currentPersistenceStatusInput.setValue(loadingText)
         let persistenceRequestBusy = true
 
@@ -52,21 +50,21 @@ export function DevPanel(
             return newValue
         }
 
-        persistenceService.isPersisted().then((persistent) => {
+        diContext.persistenceApiService.isPersisted().then((persistent) => {
             currentPersistenceStatusInput.setValue(isPersistedToString(persistent))
             persistenceRequestBusy = false
         })
 
         const requestPersistenceButton = StylishButton({ 
             title: 'Request persistence', 
-            themeService,
+            themeService: diContext.themeService,
             fontSize: '150%',
             handler: async () => {
                 if (!persistenceRequestBusy) {
                     persistenceRequestBusy = true
                     currentPersistenceStatusInput.setValue(loadingText)
                     
-                    const persistent = await persistenceService.requestPersistence()
+                    const persistent = await diContext.persistenceApiService.requestPersistence()
 
                     currentPersistenceStatusInput.setValue(isPersistedToString(persistent))
                     persistenceRequestBusy = false
@@ -81,7 +79,7 @@ export function DevPanel(
     let devButtonTapped = 0
     const devButton = StylishButton({ 
         title: 'devmode', 
-        themeService, 
+        themeService: diContext.themeService, 
         handler: () => {
             devButtonTapped += 1
 

@@ -2,6 +2,8 @@ import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType, FlagsD
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1";
 import { MoreMessagesDbSchemaV1 } from "../../Services/MoreMessagesDbSchemaV1";
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService";
+import { IVisibilityChangeService } from "../../Services/VisibilityChangeService";
+import { IDIContext } from "../../Services/DI";
 
 export interface FlagModel {
     id: string
@@ -126,45 +128,29 @@ function createInitialFlagState(flagsDatabaseStorage: IFlagsDatabaseStorageServi
 }
 
 export function FlagsCollectionSessionModel(
-    flagsDatabaseStorage: IFlagsDatabaseStorageService,
-    moreMessagesDbStorage: IMoreMessagesStorageService
+    diContext: IDIContext
 ): IFlagsCollectionSessionModel {
-    let flagsState = createInitialFlagState(flagsDatabaseStorage)
-    let moreMessagesState = createInitialMoreMessagesState(moreMessagesDbStorage)
+    let moreMessagesState = createInitialMoreMessagesState(diContext.moreMessagesDbStorage)
+    let flagsState: FlagsState
 
-    // Implemetations
-
-    function addMoreMessage(message: string) {
-        const now = new Date().getTime()
-        moreMessagesState.database.messages[now] = message
-
-        moreMessagesDbStorage.save(moreMessagesState.database)
+    function reloadFlagsState() {
+        flagsState = createInitialFlagState(diContext.flagsDatabaseStorage)
     }
+    
+    reloadFlagsState()
 
-    function addFlag(id: string): FlagModel|undefined {
-        if (!flagsState.database.knownFlagIds.includes(id)) {
-            flagsState.database.knownFlagIds.push(id)
-            flagsDatabaseStorage.save(flagsState.database)
-
-            const flag = {
-                id: id,
-                isEnabled: false
+    let firstVisibilityFired = false
+    diContext.visibilityChangeService.addHandler(visibilityState => {
+        switch (visibilityState) {
+        case "visible":
+            if (firstVisibilityFired) {
+                reloadFlagsState()
             }
-            return flag
+            firstVisibilityFired = true
+        case "hidden": 
+            
         }
-        return undefined
-    }
-
-    function setFlagEnabled(id: string, isEnabled: boolean): void {
-        if (isEnabled) {
-            flagsState.enabledFlags.add(id)
-        } else {
-            flagsState.enabledFlags.delete(id)
-        }
-
-        flagsState.database.events[flagsState.currentFlagSessionDate].enabledFlags = Array.from(flagsState.enabledFlags)
-        flagsDatabaseStorage.save(flagsState.database)
-    }
+    })
 
     return {
         flags(): FlagModel[] {
@@ -176,8 +162,34 @@ export function FlagsCollectionSessionModel(
                 }
             })
         },
-        addFlag,
-        setFlagEnabled,
-        addMoreMessage
+        addFlag(id: string): FlagModel|undefined {
+            if (!flagsState.database.knownFlagIds.includes(id)) {
+                flagsState.database.knownFlagIds.push(id)
+                diContext.flagsDatabaseStorage.save(flagsState.database)
+    
+                const flag = {
+                    id: id,
+                    isEnabled: false
+                }
+                return flag
+            }
+            return undefined
+        },
+        setFlagEnabled(id: string, isEnabled: boolean): void {
+            if (isEnabled) {
+                flagsState.enabledFlags.add(id)
+            } else {
+                flagsState.enabledFlags.delete(id)
+            }
+    
+            flagsState.database.events[flagsState.currentFlagSessionDate].enabledFlags = Array.from(flagsState.enabledFlags)
+            diContext.flagsDatabaseStorage.save(flagsState.database)
+        },
+        addMoreMessage(message: string) {
+            const now = new Date().getTime()
+            moreMessagesState.database.messages[now] = message
+    
+            diContext.moreMessagesDbStorage.save(moreMessagesState.database)
+        }
     }
 }

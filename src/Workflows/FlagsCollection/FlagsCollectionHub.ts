@@ -4,34 +4,26 @@ import { FlagsCollectionView } from "./CollectionView/FlagsCollectionView"
 import './FlagsCollectionHub.css'
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
-import { FlagsDatabaseStorageServiceV1 } from "../../Services/FlagsDatabaseStorageServiceV1"
 import { FlagsCollectionTitleBanner } from "./TitleBanner/FlagsCollectionTitleBanner"
 import { MemoryUsageLabel } from "./MemoryUsageLabel"
-import { ThemeService } from "../../Services/ThemeService"
 import { DevPanel } from "../DevPanel/DevPanel"
-import { StoragePersistanceService } from "../../Services/StoragePersistanceService"
-import { MoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
+import { IDIContext } from "../../Services/DI"
 
 export interface IFlagsCollectionHub {
     readonly root: HTMLDivElement
 }
 
-export function FlagsCollectionHub() {
-    const themeService = ThemeService()
-
+export function FlagsCollectionHub(diContext: IDIContext) {
     const root = document.createElement('div')
     root.className = 'flagsCollectionHub'
 
-    const topBanner = FlagsCollectionTitleBanner(undefined, themeService)
+    const topBanner = FlagsCollectionTitleBanner(undefined, diContext.themeService)
     root.appendChild(topBanner.root)
     
-    const storagePersistenceService = StoragePersistanceService()
-    const flagsDatabaseStorage = FlagsDatabaseStorageServiceV1()
-    const moreMessagesDbStorage = MoreMessagesStorageService()
-    const flagsCollectionSessionModel = FlagsCollectionSessionModel(flagsDatabaseStorage, moreMessagesDbStorage)
+    const flagsCollectionSessionModel = FlagsCollectionSessionModel(diContext)
     const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel)
 
-    const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, themeService)
+    const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, diContext.themeService)
     root.appendChild(flagCollectionView.root)
 
     flagCollectionView.listenToAddTileRequests(() => {
@@ -48,7 +40,10 @@ export function FlagsCollectionHub() {
     moreDiv.textContent = 'More?'
     root.appendChild(moreDiv)
 
-    const moreMessageTextField = StylishTextInput( { overridePlaceholder: 'What else?' }, themeService)
+    const moreMessageTextField = StylishTextInput(
+        { overridePlaceholder: 'What else?' }, 
+        diContext.themeService
+    )
     moreMessageTextField.root.style.width = 'calc(100% - 32px)'
     moreMessageTextField.root.style.marginLeft = '16px'
     moreMessageTextField.root.style.marginRight = '16px'
@@ -57,7 +52,7 @@ export function FlagsCollectionHub() {
 
     const moreMessageButton = StylishButton({
         title: 'Log more',
-        themeService,
+        themeService: diContext.themeService,
         handler: () => {
             const value = moreMessageTextField.value()
             if (value && value.length > 0) {
@@ -70,12 +65,12 @@ export function FlagsCollectionHub() {
     moreMessageButton.root.style.marginRight = '16px'
     root.appendChild(moreMessageButton.root)
 
-    const memoryUsageComponent = MemoryUsageLabel(flagsDatabaseStorage, moreMessagesDbStorage)
+    const memoryUsageComponent = MemoryUsageLabel(diContext)
     memoryUsageComponent.root.style.marginLeft = '16px'
     memoryUsageComponent.root.style.marginRight = '16px'
     root.appendChild(memoryUsageComponent.root)
 
-    const devPanel = DevPanel(themeService, flagsDatabaseStorage, moreMessagesDbStorage, storagePersistenceService)
+    const devPanel = DevPanel(diContext)
     devPanel.root.style.marginTop = '700px'
     root.appendChild(devPanel.root)
 

@@ -1,7 +1,8 @@
 {
   "compilerOptions": {
     "lib": [
-      "ES2022.Error"
+      "ES2022.Error",
+      "DOM"
     ],
     "outDir": "./build/",
     "noImplicitAny": true,

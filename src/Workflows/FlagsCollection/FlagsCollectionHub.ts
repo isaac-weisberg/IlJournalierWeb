@@ -26,7 +26,7 @@ export function FlagsCollectionHub(diContext: IDIContext) {
     const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, diContext.themeService)
     root.appendChild(flagCollectionView.root)
 
-    flagCollectionView.listenToAddTileRequests(() => {
+    flagCollectionView.addTileEventBus.addHandler(() => {
         const promptResult = window.prompt('Enter the name for the tile!')
         if (promptResult && promptResult.length > 0) {
             flagCollectionView.addFlagWithId(promptResult)

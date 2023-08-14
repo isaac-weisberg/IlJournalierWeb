@@ -2,8 +2,8 @@ import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType, FlagsD
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1";
 import { MoreMessagesDbSchemaV1 } from "../../Services/MoreMessagesDbSchemaV1";
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService";
-import { IVisibilityChangeService } from "../../Services/VisibilityChangeService";
 import { IDIContext } from "../../Services/DI";
+import { Bus, IBus } from "../../Util/Bus";
 
 export interface FlagModel {
     id: string
@@ -15,6 +15,7 @@ export interface IFlagsCollectionSessionModel {
     addFlag(id: string): FlagModel|undefined
     setFlagEnabled(id: string, isEnabled: boolean): void
     addMoreMessage(message: string): void
+    onFlagsUpdatedBus: IBus<void>
 }
 
 const basicFlagNames = [
@@ -130,25 +131,24 @@ function createInitialFlagState(flagsDatabaseStorage: IFlagsDatabaseStorageServi
 export function FlagsCollectionSessionModel(
     diContext: IDIContext
 ): IFlagsCollectionSessionModel {
+    const onFlagsUpdatedBus = Bus<void>()
+
     let moreMessagesState = createInitialMoreMessagesState(diContext.moreMessagesDbStorage)
-    let flagsState: FlagsState
+    let flagsState = createInitialFlagState(diContext.flagsDatabaseStorage)
 
     function reloadFlagsState() {
-        flagsState = createInitialFlagState(diContext.flagsDatabaseStorage)
+        const now = new Date().getTime()
+        if (Math.abs(now - flagsState.currentFlagSessionDate) > sessionRetainGapMs) { // i.e., an hour passed
+            flagsState = createInitialFlagState(diContext.flagsDatabaseStorage)
+            onFlagsUpdatedBus.post()
+        }
     }
-    
-    reloadFlagsState()
 
-    let firstVisibilityFired = false
-    diContext.visibilityChangeService.addHandler(visibilityState => {
+    diContext.visibilityChangeService.bus.addHandler(visibilityState => {
         switch (visibilityState) {
         case "visible":
-            if (firstVisibilityFired) {
-                reloadFlagsState()
-            }
-            firstVisibilityFired = true
-        case "hidden": 
-            
+            reloadFlagsState()
+        case "hidden":
         }
     })
 
@@ -190,6 +190,7 @@ export function FlagsCollectionSessionModel(
             moreMessagesState.database.messages[now] = message
     
             diContext.moreMessagesDbStorage.save(moreMessagesState.database)
-        }
+        },
+        onFlagsUpdatedBus
     }
 }

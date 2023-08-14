@@ -1,22 +1,18 @@
+import { Bus, IBus } from "../Util/Bus"
+
 export interface IVisibilityChangeService {
-    addHandler(handler: (state: DocumentVisibilityState) => void): void
+    bus: IBus<DocumentVisibilityState>
 }
 
 export function VisibilityChangeService(): IVisibilityChangeService {
-    let handlers: ((visibilityState: DocumentVisibilityState) => void)[] = []
+    const bus = Bus<DocumentVisibilityState>()
 
     document.addEventListener('visibilitychange', function() {
-        let state = document.visibilityState
-        for (const handler of handlers) {
-            handler(state)
-        }
+        const state = document.visibilityState
+        bus.post(state)
     })
 
-    function addHandler(handler: (state: DocumentVisibilityState) => void): void {
-        handlers.push(handler)
-    }
-
     return {
-        addHandler
+        bus
     }
 }

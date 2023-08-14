@@ -1,9 +1,11 @@
+import { Bus, IBus } from "../../Util/Bus"
 import { FlagModel, IFlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 
 export interface IFlagsCollectionPresenter {
     flags(): FlagModel[]
     setEnabled(id: string, enabled: boolean): void
     addFlag(id: string): FlagModel | undefined
+    onFlagsUpdated: IBus<void>
 }
 
 export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsCollectionSessionModel): IFlagsCollectionPresenter {
@@ -21,6 +23,13 @@ export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsColl
         }
     }
 
+    const onFlagsUpdatedBus = Bus<void>()
+
+    flagsCollectionSessionModel.onFlagsUpdatedBus.addHandler(() => {
+        flags = flagsCollectionSessionModel.flags()
+        onFlagsUpdatedBus.post()
+    })
+
     return {
         flags: getFlags,
         setEnabled,
@@ -30,6 +39,7 @@ export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsColl
                 flags.push(addedFlag)
             }
             return addedFlag
-        }
+        },
+        onFlagsUpdated: onFlagsUpdatedBus
     }
 }

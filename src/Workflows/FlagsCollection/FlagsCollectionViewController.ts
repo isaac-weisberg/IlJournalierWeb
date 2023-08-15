@@ -1,7 +1,7 @@
 import { StylishButton } from "../../Views/StylishButton"
 import { FlagsCollectionPresenter } from "./FlagsCollectionPresenter"
 import { FlagsCollectionView } from "./CollectionView/FlagsCollectionView"
-import './FlagsCollectionHub.css'
+import './FlagsCollectionViewController.css'
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 import { FlagsCollectionTitleBanner } from "./TitleBanner/FlagsCollectionTitleBanner"
@@ -9,22 +9,26 @@ import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { DevPanel } from "../DevPanel/DevPanel"
 import { IDIContext } from "../../Services/DI"
 
-export interface IFlagsCollectionHub {
+export interface IFlagsCollectionViewController {
     readonly root: HTMLDivElement
 }
 
-export function FlagsCollectionHub(diContext: IDIContext) {
+export function FlagsCollectionViewController(diContext: IDIContext) {
     const root = document.createElement('div')
-    root.className = 'flagsCollectionHub'
+    root.className = "flagsCollectionRoot"
+
+    const scrollContent = document.createElement('div')
+    scrollContent.className = 'flagsCollectionScrollContent'
+    root.appendChild(scrollContent)
 
     const topBanner = FlagsCollectionTitleBanner(undefined, diContext.themeService)
-    root.appendChild(topBanner.root)
+    scrollContent.appendChild(topBanner.root)
     
     const flagsCollectionSessionModel = FlagsCollectionSessionModel(diContext)
     const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel)
 
     const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, diContext.themeService)
-    root.appendChild(flagCollectionView.root)
+    scrollContent.appendChild(flagCollectionView.root)
 
     flagCollectionView.addTileEventBus.addHandler(() => {
         const promptResult = window.prompt('Enter the name for the tile!')
@@ -38,7 +42,7 @@ export function FlagsCollectionHub(diContext: IDIContext) {
     moreDiv.style.marginTop = '32px'
     moreDiv.style.fontSize = '150%'
     moreDiv.textContent = 'More?'
-    root.appendChild(moreDiv)
+    scrollContent.appendChild(moreDiv)
 
     const moreMessageTextField = StylishTextInput(
         { overridePlaceholder: 'What else?' }, 
@@ -48,7 +52,7 @@ export function FlagsCollectionHub(diContext: IDIContext) {
     moreMessageTextField.root.style.marginLeft = '16px'
     moreMessageTextField.root.style.marginRight = '16px'
     moreMessageTextField.root.style.marginTop = '16px'
-    root.appendChild(moreMessageTextField.root)
+    scrollContent.appendChild(moreMessageTextField.root)
 
     const moreMessageButton = StylishButton({
         title: 'Log more',
@@ -63,16 +67,16 @@ export function FlagsCollectionHub(diContext: IDIContext) {
     })
     moreMessageButton.root.style.marginLeft = 'auto'
     moreMessageButton.root.style.marginRight = '16px'
-    root.appendChild(moreMessageButton.root)
+    scrollContent.appendChild(moreMessageButton.root)
 
     const memoryUsageComponent = MemoryUsageLabel(diContext)
     memoryUsageComponent.root.style.marginLeft = '16px'
     memoryUsageComponent.root.style.marginRight = '16px'
-    root.appendChild(memoryUsageComponent.root)
+    scrollContent.appendChild(memoryUsageComponent.root)
 
     const devPanel = DevPanel(diContext)
     devPanel.root.style.marginTop = '700px'
-    root.appendChild(devPanel.root)
+    scrollContent.appendChild(devPanel.root)
 
     return {
         root: root

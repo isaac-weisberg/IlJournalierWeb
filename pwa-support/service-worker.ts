@@ -1,5 +1,5 @@
 const a = {
-    v: '0.8' as string|undefined
+    v: '0.9' as string|undefined
 }
 
 const staticResources = [
@@ -8,10 +8,15 @@ const staticResources = [
     '.'
 ]
 
+const oldAppCaches = [
+    'offlineAppCache'
+]
+const newAppCache = 'offlineAppCache2'
+
 self.addEventListener('install', function(event: any) {
     delete a.v
-    return event.waitUntil(
-        caches.open('offlineAppCache')
+    event.waitUntil(
+        caches.open(newAppCache)
             .then((cache) => {
                 return cache.addAll(staticResources)
             })
@@ -20,11 +25,15 @@ self.addEventListener('install', function(event: any) {
 
 self.addEventListener('fetch', function(event: any) {
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-            return fetch(event.request);
-        })
+        caches.open(newAppCache)
+            .then((cache) => {
+                return cache.match(event.request)
+                    .then((cachedResponse) => {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        return fetch(event.request);
+                    })
+            })
     )
 })

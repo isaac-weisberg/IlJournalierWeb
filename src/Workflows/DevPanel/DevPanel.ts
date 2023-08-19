@@ -1,3 +1,4 @@
+import { AppVersion } from "../../Services/AppVersion"
 import { IDIContext } from "../../Services/DI"
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
@@ -90,6 +91,10 @@ export function DevPanel(
     })
 
     div.appendChild(devButton.root)
+
+    const appVersionWidget = document.createElement('div')
+    appVersionWidget.textContent = `ver ${AppVersion}`
+    div.appendChild(appVersionWidget)
 
     return {
         root: div

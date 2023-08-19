@@ -1,3 +1,5 @@
+APP_VERSION=0.9.1
+
 .PHONY: build
 
 default: build open
@@ -7,22 +9,22 @@ build: buildDev
 prod: buildProd open
 
 buildDev:
-	npx webpack --config builddev.config.js
+	APP_VERSION=$(APP_VERSION) npx webpack --config builddev.config.js
 
 buildProd:
-	npx webpack --config buildprod.config.js
+	APP_VERSION=$(APP_VERSION) npx webpack --config buildprod.config.js
 
 open:
 	open ./build/index.html
 
 serve:
-	npx webpack serve --config builddev.config.js
+	APP_VERSION=$(APP_VERSION) npx webpack serve --config builddev.config.js
 
 servehttp:
-	npx webpack serve --config builddev.config.nohttpsdevserver.js
+	APP_VERSION=$(APP_VERSION) npx webpack serve --config builddev.config.nohttpsdevserver.js
 
 archive: buildProd
-	zip -vr archive/build.zip build/ -x "*.DS_Store"
+	zip -vr archive/iljournalierweb-$(APP_VERSION).zip build/ -x "*.DS_Store"
 
 clean:
 	rm -rf ./build/*

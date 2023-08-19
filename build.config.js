@@ -1,6 +1,7 @@
 const path = require('path');
 const fs = require('fs')
 const CopyPlugin = require("copy-webpack-plugin");
+const webpack = require('webpack')
 
 module.exports = {
   entry: {
@@ -39,7 +40,8 @@ module.exports = {
         { from: "./pwa-support/iljourn-ico144x144.jpg" },
         { from: "./pwa-support/iljourn-ico144x144.svg" },
       ],
-    })
+    }),
+    new webpack.EnvironmentPlugin(['APP_VERSION'])
   ],
   devServer: {
     server: {

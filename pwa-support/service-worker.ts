@@ -1,5 +1,7 @@
+import { AppVersion } from "../src/Services/AppVersion"
+
 const a = {
-    v: '0.9' as string|undefined
+    v: AppVersion
 }
 
 const staticResources = [
@@ -14,7 +16,7 @@ const oldAppCaches = [
 const newAppCache = 'offlineAppCache2'
 
 self.addEventListener('install', function(event: any) {
-    delete a.v
+    console.log(a.v)
     event.waitUntil(
         caches.open(newAppCache)
             .then((cache) => {

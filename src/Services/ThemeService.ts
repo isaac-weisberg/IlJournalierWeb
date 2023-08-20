@@ -16,39 +16,49 @@ export type Styling = [BackgroundColor, ForegroundColor, SelectedTileColor]
 // Thanks to https://www.w3schools.com/colors/ for the colors
 const themes: Styling[] = [
     [
-        "#F5DF4D",
+        "#FFD662",
         "#000000",
         '#D3BD2B'
     ],
     [
-        "#363945",
+        "#00539C",
         "#FFFFFF",
         '#141723'
     ],
     [
-        "#9BB7D4",
+        "#F7CAC9",
         "#000000",
         '#7995B2'
     ],
     [
-        "#FDAC53",
-        "#FFFFFF",
-        '#DB8A31'
-    ],
-    [
-        "#0072B5",
+        "#00758F",
         "#FFFFFF",
         '#005093'
     ],
     [
-        "#A0DAA9",
+        "#56C6A9",
         "#000000",
         '#80B887'
     ],
     [
-        "#939597",
+        "#FFA500",
         "#FFFFFF",
         '#717375'
+    ],
+    [
+        "#CD212A",
+        "#000000",
+        '#80B887'
+    ],
+    [
+        "#E8B5CE",
+        "#000000",
+        '#80B887'
+    ],
+    [
+        "#F0EAD6",
+        "#000000",
+        '#80B887'
     ]
 ]
 

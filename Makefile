@@ -1,4 +1,4 @@
-APP_VERSION=0.9.1
+APP_VERSION=0.10.0
 
 .PHONY: build
 

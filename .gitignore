@@ -4,3 +4,5 @@ node_modules
 build.zip
 iljournalier-ssl-dev.pem
 archive
+localhost-key.pem
+localhost.pem

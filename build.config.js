@@ -45,7 +45,11 @@ module.exports = {
   ],
   devServer: {
     server: {
-      type: 'https'
+      type: 'https',
+      options: {
+        key: './localhost-key.pem',
+        cert: './localhost.pem'
+      }
     },
     static: {
       directory: path.join(__dirname, 'build'),

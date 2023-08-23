@@ -16,52 +16,55 @@ export type Styling = [BackgroundColor, ForegroundColor, SelectedTileColor]
 // Thanks to https://www.w3schools.com/colors/ for the colors
 const themes: Styling[] = [
     [
-        "#FFD662",
-        "#000000",
-        '#DDB440'
+        "FFD662",
+        "000000",
+        'DDB440'
     ],
     [
-        "#00539C",
-        "#FFFFFF",
-        '#00317A'
+        "00539C",
+        "FFFFFF",
+        '00317A'
     ],
     [
-        "#F7CAC9",
-        "#000000",
-        '#D5A8A7'
+        "F7CAC9",
+        "000000",
+        'D5A8A7'
     ],
     [
-        "#00758F",
-        "#FFFFFF",
-        '#00536D'
+        "00758F",
+        "FFFFFF",
+        '00536D'
     ],
     [
-        "#56C6A9",
-        "#000000",
-        '#34A487'
+        "56C6A9",
+        "000000",
+        '34A487'
     ],
     [
-        "#FFA500",
-        "#FFFFFF",
-        '#DD8300'
+        "FFA500",
+        "FFFFFF",
+        'DD8300'
     ],
     [
-        "#CD212A",
-        "#000000",
-        '#AB0008'
+        "CD212A",
+        "000000",
+        'AB0008'
     ],
     [
-        "#E8B5CE",
-        "#000000",
-        '#C693AC'
+        "E8B5CE",
+        "000000",
+        'C693AC'
     ],
     [
-        "#F0EAD6",
-        "#000000",
-        '#D0C8B4'
+        "F0EAD6",
+        "000000",
+        'D0C8B4'
     ]
 ]
 
+function addingPound(str: string): string {
+    return `#${str}`
+}
 
 function nextThemeIndexAfter(index: number): number {
     if (index == themes.length - 1) {
@@ -92,7 +95,15 @@ export function ThemeService(): IThemeService {
     let listeners: ThemeChangeListener[] = []
 
     function getCurrentStyling(): Styling {
-        return themes[currentThemeIndex]
+        const theme = themes[currentThemeIndex]
+
+        const stylingWithPoundAdded: Styling = [
+            addingPound(theme[0]),
+            addingPound(theme[1]),
+            addingPound(theme[2]),
+        ]
+
+        return stylingWithPoundAdded
     }
 
     function updateTheme() {

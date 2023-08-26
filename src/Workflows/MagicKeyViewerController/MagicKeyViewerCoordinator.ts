@@ -1,4 +1,5 @@
 import { Deferred } from "../../Util/Deferred";
+import { sleep } from "../../Util/Sleep";
 import { INavigationController } from "../NavigationController/NavigationController";
 
 export async function MagicKeyViewerCoordinator(
@@ -10,6 +11,11 @@ export async function MagicKeyViewerCoordinator(
     div.textContent = magicKey
 
     nc.pushController({root: div})
+
+
+    await sleep(2000)
+
+    return 
 
     const deferred = Deferred<void>()
 

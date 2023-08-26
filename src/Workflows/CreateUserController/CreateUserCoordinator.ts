@@ -10,7 +10,7 @@ export async function CreateUserCoordinator(
     nc: INavigationController, 
     di: IDIContext
 ): Promise<SessionCreds> {
-    const presenter = CreateUserPresenter()
+    const presenter = CreateUserPresenter(di.authService)
 
     const createUserController = CreateUserController(presenter, di)
     nc.setRootController(createUserController)

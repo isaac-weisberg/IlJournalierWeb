@@ -2,6 +2,7 @@ import { IAuthStorageService } from "./AuthStorageService"
 
 export interface IAuthService {
     userAuthIsKnown(): boolean
+    logIntoANewUser(u: {accessToken: string}): void
 }
 
 export function AuthService(authStorage: IAuthStorageService): IAuthService {
@@ -9,5 +10,8 @@ export function AuthService(authStorage: IAuthStorageService): IAuthService {
         userAuthIsKnown() {
             return !!authStorage.getAccessToken()
         },
+        logIntoANewUser(u) {
+            authStorage.setAccessToken(u.accessToken)
+        }
     }
 }

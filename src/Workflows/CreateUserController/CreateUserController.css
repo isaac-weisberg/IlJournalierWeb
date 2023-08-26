@@ -1,3 +1,16 @@
 .createUserController {
     max-width: 600px;
 }
+
+.appear {
+    animation: appearFrames 0.3s ease-out;
+}
+
+@keyframes appearFrames {
+    0% {
+        opacity: 0;
+    }
+    100% {
+        opacity: 1;
+    }
+}

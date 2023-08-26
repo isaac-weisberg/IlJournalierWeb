@@ -1,0 +1,10 @@
+.createUserTitleBannerContainer {
+    background-color: gainsboro;
+}
+
+.createUserTitleBannerLabel {
+    font-size: 60px;
+    margin: auto 0px;
+    text-align: center;
+    cursor: pointer;
+}

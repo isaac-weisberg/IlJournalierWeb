@@ -21,7 +21,7 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
     scrollContent.appendChild(banner.root)
 
     const firstLabel = document.createElement('div')
-    firstLabel.style.whiteSpace = 'pre'
+    firstLabel.style.whiteSpace = 'pre-line'
     firstLabel.textContent = 'Welcome to your new **real** journal!\r\n\r\nLogin or create a new user'
     firstLabel.style.margin = '20px auto'
     firstLabel.style.maxWidth = '80%'
@@ -35,7 +35,7 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
 
     const loginInfoField = StylishTextInput({
         readOnly: false,
-        placeholder: 'Login Info',
+        placeholder: 'Login Keys',
         fontSize: '18px',
         themeService: di.themeService
     })
@@ -52,7 +52,6 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
     })
     loginButton.root.style.flexGrow = '4'
     loginContainer.appendChild(loginButton.root)
-
 
     const secondLabel = document.createElement('div')
     secondLabel.style.whiteSpace = 'pre'

@@ -11,6 +11,7 @@ export function CreateUserTitleBannerView(themeService: IThemeService): ICreateU
     div.className = 'createUserTitleBannerContainer noselect'
 
     const label = document.createElement('div')
+    label.style.overflowWrap = 'break-word'
     label.className = 'createUserTitleBannerLabel'
     label.textContent = 'IlJournalier'
     div.appendChild(label)

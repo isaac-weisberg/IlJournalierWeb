@@ -28,16 +28,30 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
     firstLabel.style.textAlign = 'center'
     scrollContent.appendChild(firstLabel)
 
+    const loginContainer = document.createElement('div')
+    loginContainer.style.margin = '0px 20px'
+    loginContainer.style.display = 'flex'
+    scrollContent.appendChild(loginContainer)
+
     const loginInfoField = StylishTextInput({
         readOnly: false,
         placeholder: 'Login Info',
         fontSize: '18px',
         themeService: di.themeService
     })
-    loginInfoField.root.style.marginLeft = '20px'
-    loginInfoField.root.style.marginRight = '20px'
+    loginInfoField.root.style.marginRight = '8px'
     loginInfoField.root.style.width = 'calc(100% - 40px)'
-    scrollContent.appendChild(loginInfoField.root)
+    loginContainer.appendChild(loginInfoField.root)
+
+    const loginButton = StylishButton({
+        title: 'Login',
+        handler: () => {
+
+        },
+        themeService: di.themeService
+    })
+    loginButton.root.style.flexGrow = '4'
+    loginContainer.appendChild(loginButton.root)
 
 
     const secondLabel = document.createElement('div')

@@ -36,8 +36,10 @@ export function DevPanel(
         const loadingText = '... loading ...'
         const currentPersistenceStatusInput = StylishTextInput({ 
             overridePlaceholder: '-',
-            fontSize: '120%'
-        }, diContext.themeService)
+            fontSize: '120%',
+            readOnly: true,
+            themeService: diContext.themeService
+        })
         currentPersistenceStatusInput.setValue(loadingText)
         let persistenceRequestBusy = true
 

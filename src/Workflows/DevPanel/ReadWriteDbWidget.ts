@@ -22,8 +22,10 @@ export function ReadWriteDbWidget(
 
     const rawDbTextField = StylishTextInput({ 
         overridePlaceholder: `Value of ${dbName}`,
-        fontSize: '120%'
-    }, themeService)
+        fontSize: '120%',
+        readOnly: false,
+        themeService
+    })
     
     const loadValueButton  = StylishButton({ 
         title: `Load ${dbName}`, 

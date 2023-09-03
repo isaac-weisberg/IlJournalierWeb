@@ -18,7 +18,7 @@ export async function CreateUserCoordinator(
     const finish = Deferred<SessionCreds>()
 
     presenter.onUserCreated = async (u) => {
-        await MagicKeyViewerCoordinator(u.magicKey, nc)
+        await MagicKeyViewerCoordinator(u, nc, di)
 
         finish.resolve({accessToken: u.accessToken})
     }

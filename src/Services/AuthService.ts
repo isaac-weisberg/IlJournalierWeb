@@ -8,7 +8,8 @@ export interface IAuthService {
 export function AuthService(authStorage: IAuthStorageService): IAuthService {
     return {
         userAuthIsKnown() {
-            return !!authStorage.getAccessToken()
+            return false
+            // return !!authStorage.getAccessToken()
         },
         logIntoANewUser(u) {
             authStorage.setAccessToken(u.accessToken)

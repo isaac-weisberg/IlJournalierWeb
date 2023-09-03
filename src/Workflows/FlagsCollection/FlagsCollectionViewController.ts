@@ -8,6 +8,7 @@ import { FlagsCollectionTitleBanner } from "./TitleBanner/FlagsCollectionTitleBa
 import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { DevPanel } from "../DevPanel/DevPanel"
 import { IDIContext } from "../../Services/DI"
+import { ThemeService } from "../../Services/ThemeService"
 
 export interface IFlagsCollectionViewController {
     readonly root: HTMLDivElement
@@ -44,10 +45,11 @@ export function FlagsCollectionViewController(diContext: IDIContext) {
     moreDiv.textContent = 'More?'
     scrollContent.appendChild(moreDiv)
 
-    const moreMessageTextField = StylishTextInput(
-        { overridePlaceholder: 'What else?' }, 
-        diContext.themeService
-    )
+    const moreMessageTextField = StylishTextInput({ 
+        overridePlaceholder: 'What else?',
+        readOnly: false,
+        themeService: diContext.themeService
+    })
     moreMessageTextField.root.style.width = 'calc(100% - 32px)'
     moreMessageTextField.root.style.marginLeft = '16px'
     moreMessageTextField.root.style.marginRight = '16px'

@@ -2,6 +2,7 @@ import { IThemeService, Styling } from '../Services/ThemeService'
 import './StylishButton.css'
 
 export interface IStylishButton {
+    setTitle(title: string): void
     readonly root: HTMLDivElement
 }
 
@@ -32,6 +33,9 @@ export function StylishButton(config: StylishButtonConfig): IStylishButton {
     config.themeService.addChangeListener(updateStyling)
 
     return {
+        setTitle(title) {
+            div.textContent = title
+        },
         root: div
     }
 }

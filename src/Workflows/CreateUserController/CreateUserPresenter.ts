@@ -3,7 +3,7 @@ import { Opt } from "../../Util/Opt"
 import { sleep } from "../../Util/Sleep"
 
 export interface ICreateUserPresenter {
-    onUserCreated: Opt<(p: {magicKey: string, accessToken: string}) => void>
+    onUserCreated: Opt<(p: {magicKey: string, accessToken: string, saultGoodman: string}) => void>
     createNewUser(): void
 }
 
@@ -16,7 +16,8 @@ export function CreateUserPresenter(authService: IAuthService): ICreateUserPrese
 
             const userData = {
                 magicKey: 'magic_key_fuck', 
-                accessToken: 'as[dofnvmq[eonrv[oqiwemc[pkadnfmv[oiqned'
+                accessToken: 'as[dofnvmq[eonrv[oqiwemc[pkadnfmv[oiqned',
+                saultGoodman: 'asofknvq[eirnv[iebnr[ovnae[ojvnqer'
             }
 
             authService.logIntoANewUser({accessToken: userData.accessToken})

@@ -1,23 +1,33 @@
+import { IDIContext } from "../../Services/DI";
 import { Deferred } from "../../Util/Deferred";
 import { sleep } from "../../Util/Sleep";
+import { StylishButton } from "../../Views/StylishButton";
+import { StylishTextInput } from "../../Views/StylishTextInput";
 import { INavigationController } from "../NavigationController/NavigationController";
+import { MagicKeyViewerController } from "./MagicKeyViewerController";
+import { MagicKeyViewerPresenter } from "./MagicKeyViewerPresenter";
 
 export async function MagicKeyViewerCoordinator(
-    magicKey: string,
-    nc: INavigationController
+    data: {
+        magicKey: string,
+        saultGoodman: string
+    },
+    nc: INavigationController,
+    di: IDIContext
 ): Promise<void> {
-    const div = document.createElement('div')
 
-    div.textContent = magicKey
+    const presenter = MagicKeyViewerPresenter(data)
+    const magicKeyViewerController = MagicKeyViewerController(presenter, di)
 
-    nc.pushController({root: div})
+    nc.pushController(magicKeyViewerController)
 
+    const finish = Deferred<void>()
 
-    await sleep(2000)
+    presenter.navigation = {
+        onUserWantsToGoOn: () => {
+            finish.resolve()
+        }
+    }
 
-    return 
-
-    const deferred = Deferred<void>()
-
-    return deferred.promise
+    return finish.promise
 }

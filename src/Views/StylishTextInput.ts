@@ -11,14 +11,18 @@ export interface IStylishTextInput {
 export interface StylishTextInputConfig {
     overridePlaceholder: string|undefined
     fontSize?: string
+    readOnly: boolean,
+    themeService: IThemeService
 }
 
-export function StylishTextInput(config: StylishTextInputConfig, themeService: IThemeService): IStylishTextInput {
+export function StylishTextInput(config: StylishTextInputConfig): IStylishTextInput {
     const input = document.createElement('input')
     input.className = 'stylishTextInput'
     if (config.fontSize) {
         input.style.fontSize = config.fontSize
     }
+
+    input.readOnly = config.readOnly
 
     if (config.overridePlaceholder != undefined) {
         input.placeholder = config.overridePlaceholder
@@ -42,6 +46,8 @@ export function StylishTextInput(config: StylishTextInputConfig, themeService: I
     function updateStyling(styling: Styling) {
         input.style.borderColor = styling[0]
     }
+
+    const themeService = config.themeService
 
     updateStyling(themeService.getCurrentStyling())
     themeService.addChangeListener(updateStyling)

@@ -1,8 +1,5 @@
 import { IDIContext } from "../../Services/DI";
 import { Deferred } from "../../Util/Deferred";
-import { sleep } from "../../Util/Sleep";
-import { StylishButton } from "../../Views/StylishButton";
-import { StylishTextInput } from "../../Views/StylishTextInput";
 import { INavigationController } from "../NavigationController/NavigationController";
 import { MagicKeyViewerController } from "./MagicKeyViewerController";
 import { MagicKeyViewerPresenter } from "./MagicKeyViewerPresenter";

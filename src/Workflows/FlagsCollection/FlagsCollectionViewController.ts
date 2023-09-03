@@ -46,7 +46,7 @@ export function FlagsCollectionViewController(diContext: IDIContext) {
     scrollContent.appendChild(moreDiv)
 
     const moreMessageTextField = StylishTextInput({ 
-        overridePlaceholder: 'What else?',
+        placeholder: 'What else?',
         readOnly: false,
         themeService: diContext.themeService
     })

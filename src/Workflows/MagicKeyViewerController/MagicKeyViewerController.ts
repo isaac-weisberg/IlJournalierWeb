@@ -1,5 +1,4 @@
 import { IDIContext } from "../../Services/DI"
-import { Opt } from "../../Util/Opt"
 import { StylishButton } from "../../Views/StylishButton"
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import { IMagicKeyViewerPresenter } from "./MagicKeyViewerPresenter"
@@ -15,7 +14,7 @@ export function MagicKeyViewerController(
     const div = document.createElement('div')
 
     const loginInfoField = StylishTextInput({
-        overridePlaceholder: '',
+        placeholder: '',
         readOnly: true,
         themeService: di.themeService
     })

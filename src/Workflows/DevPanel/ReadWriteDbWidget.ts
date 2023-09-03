@@ -21,7 +21,7 @@ export function ReadWriteDbWidget(
     div.className = 'rwdbwidget'
 
     const rawDbTextField = StylishTextInput({ 
-        overridePlaceholder: `Value of ${dbName}`,
+        placeholder: `Value of ${dbName}`,
         fontSize: '120%',
         readOnly: false,
         themeService

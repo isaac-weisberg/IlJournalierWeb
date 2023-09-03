@@ -9,7 +9,7 @@ export interface IStylishTextInput {
 }
 
 export interface StylishTextInputConfig {
-    overridePlaceholder: string|undefined
+    placeholder: string
     fontSize?: string
     readOnly: boolean,
     themeService: IThemeService
@@ -24,27 +24,10 @@ export function StylishTextInput(config: StylishTextInputConfig): IStylishTextIn
 
     input.readOnly = config.readOnly
 
-    if (config.overridePlaceholder != undefined) {
-        input.placeholder = config.overridePlaceholder
-    } else {
-        const possiblePlaceholders = [ 
-            'Suicidal', 
-            'Ate chocolate', 
-            'Played Dark Souls', 
-            'Drank',
-            'Ел fromage',
-            'Занимался дрифтингом',
-            'Занимался фистингом',
-            'Omelette du fromage',
-            'Beatles - You never give me your money',
-            'Ju bli\'e mo cha\'e'
-        ]
-        const placeholder = possiblePlaceholders[Math.floor(Math.random() * possiblePlaceholders.length)];
-        input.placeholder = placeholder
-    }
+    input.placeholder = config.placeholder
 
     function updateStyling(styling: Styling) {
-        input.style.borderColor = styling[0]
+        input.style.borderBottomColor = styling[0]
     }
 
     const themeService = config.themeService

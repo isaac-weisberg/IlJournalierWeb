@@ -4,11 +4,11 @@ export enum Method {
 }
 
 export interface INetworkingService {
-    request(url: URL, method: Method, body: any|undefined): Promise<Response>
+    request(url: URL, method: Method, body: any): Promise<Response>
 }
 
 export function NetworkingService(): INetworkingService {
-    async function request(url: URL, method: Method, body: any|undefined): Promise<Response> {
+    async function request(url: URL, method: Method, body: any): Promise<Response> {
         let bodyString: string|undefined
         if (body) {
             bodyString = JSON.stringify(body)

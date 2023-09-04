@@ -7,9 +7,11 @@ export async function RootCoordinatior(
     nc: INavigationController, 
     di: IDIContext
 ): Promise<never> {
-    if (!di.authService.userAuthIsKnown()) {
-        await CreateUserCoordinator(nc, di)
+    let existingCreds = di.authStorageService.getExistingSessionCreds()
+
+    if (!existingCreds) {
+        existingCreds = await CreateUserCoordinator(nc, di)
     }
 
-    return await FlagsCollectionCoordinator(di, nc)
+    return await FlagsCollectionCoordinator(existingCreds, di, nc)
 }

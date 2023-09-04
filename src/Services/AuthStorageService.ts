@@ -1,29 +1,38 @@
+import { SessionCreds } from "../Models/SessionCreds"
+
 export interface IAuthStorageService {
-    getAccessToken(): string|undefined
-    setAccessToken(token: string|undefined): void
+    getExistingSessionCreds(): SessionCreds|undefined
+    updateCreds(c: SessionCreds|undefined): void
 }
 
 const accessTokenStorageKey = 'auth_accessToken'
+const saultGoodmanStorageKey = 'auth_saultGoodman'
 
 export function AuthStorageService(): IAuthStorageService {
-    function getAccessToken() {
+    function getExistingSessionCreds(): SessionCreds|undefined {
         const accessToken = window.localStorage.getItem(accessTokenStorageKey)
-        if (accessToken) {
-            return accessToken
+        const saultGoodman = window.localStorage.getItem(saultGoodmanStorageKey)
+        if (accessToken && saultGoodman) {
+            return {
+                accessToken,
+                saultGoodman
+            }
         }
         return undefined
     }
 
-    function setAccessToken(token: string|undefined) {
-        if (token) {
-            window.localStorage.setItem(accessTokenStorageKey, token)
+    function updateCreds(c: SessionCreds) {
+        if (c) {
+            window.localStorage.setItem(accessTokenStorageKey, c.accessToken)
+            window.localStorage.setItem(saultGoodmanStorageKey, c.saultGoodman)
         } else {
             window.localStorage.removeItem(accessTokenStorageKey)
+            window.localStorage.removeItem(saultGoodmanStorageKey)
         }
     }
 
     return {
-        getAccessToken,
-        setAccessToken
+        getExistingSessionCreds,
+        updateCreds
     }
 }

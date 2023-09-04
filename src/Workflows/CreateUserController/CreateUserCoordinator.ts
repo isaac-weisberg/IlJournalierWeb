@@ -10,18 +10,25 @@ export async function CreateUserCoordinator(
     nc: INavigationController, 
     di: IDIContext
 ): Promise<SessionCreds> {
-    const presenter = CreateUserPresenter(di.authService)
+    const presenter = CreateUserPresenter(di.authStorageService)
 
     const createUserController = CreateUserController(presenter, di)
     nc.setRootController(createUserController)
 
     const finish = Deferred<SessionCreds>()
 
-    presenter.onUserCreated = async (u) => {
-        await MagicKeyViewerCoordinator(u, nc, di)
+    presenter.navigation = {
+        async onUserCreated(u) {
+            await MagicKeyViewerCoordinator({
+                magicKey: u.magicKey,
+                saultGoodman: u.creds.saultGoodman
+            }, nc, di)
 
-        finish.resolve({accessToken: u.accessToken})
+            finish.resolve(u.creds)
+        },
+        async onUserLoggedIn(creds) {
+            finish.resolve(creds)
+        },
     }
-
     return finish.promise
 }

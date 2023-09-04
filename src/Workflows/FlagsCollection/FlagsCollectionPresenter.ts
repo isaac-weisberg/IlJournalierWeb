@@ -5,6 +5,7 @@ export interface IFlagsCollectionPresenter {
     flags(): FlagModel[]
     setEnabled(id: string, enabled: boolean): void
     addFlag(id: string): FlagModel | undefined
+    addMoreMessage: (value: string) => void
     onFlagsUpdated: IBus<void>
 }
 
@@ -39,6 +40,9 @@ export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsColl
                 flags.push(addedFlag)
             }
             return addedFlag
+        },
+        addMoreMessage(value) {
+            flagsCollectionSessionModel.addMoreMessage(value)
         },
         onFlagsUpdated: onFlagsUpdatedBus
     }

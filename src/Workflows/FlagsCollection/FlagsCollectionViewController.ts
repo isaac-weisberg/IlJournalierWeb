@@ -1,20 +1,18 @@
 import { StylishButton } from "../../Views/StylishButton"
-import { FlagsCollectionPresenter } from "./FlagsCollectionPresenter"
 import { FlagsCollectionView } from "./CollectionView/FlagsCollectionView"
 import './FlagsCollectionViewController.css'
 import { StylishTextInput } from "../../Views/StylishTextInput"
-import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 import { FlagsCollectionTitleBanner } from "./TitleBanner/FlagsCollectionTitleBanner"
 import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { DevPanel } from "../DevPanel/DevPanel"
 import { IDIContext } from "../../Services/DI"
-import { ThemeService } from "../../Services/ThemeService"
+import { IFlagsCollectionPresenter } from "./FlagsCollectionPresenter"
 
 export interface IFlagsCollectionViewController {
     readonly root: HTMLDivElement
 }
 
-export function FlagsCollectionViewController(diContext: IDIContext) {
+export function FlagsCollectionViewController(presenter: IFlagsCollectionPresenter, diContext: IDIContext) {
     const root = document.createElement('div')
     root.className = "flagsCollectionRoot"
 
@@ -24,11 +22,8 @@ export function FlagsCollectionViewController(diContext: IDIContext) {
 
     const topBanner = FlagsCollectionTitleBanner(undefined, diContext.themeService)
     scrollContent.appendChild(topBanner.root)
-    
-    const flagsCollectionSessionModel = FlagsCollectionSessionModel(diContext)
-    const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel)
 
-    const flagCollectionView = FlagsCollectionView(flagCollectionPresenter, diContext.themeService)
+    const flagCollectionView = FlagsCollectionView(presenter, diContext.themeService)
     scrollContent.appendChild(flagCollectionView.root)
 
     flagCollectionView.addTileEventBus.addHandler(() => {
@@ -62,7 +57,7 @@ export function FlagsCollectionViewController(diContext: IDIContext) {
         handler: () => {
             const value = moreMessageTextField.value()
             if (value && value.length > 0) {
-                flagsCollectionSessionModel.addMoreMessage(value)
+                presenter.addMoreMessage(value)
                 moreMessageTextField.reset()
             }
         }

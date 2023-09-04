@@ -46,7 +46,10 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
     const loginButton = StylishButton({
         title: 'Login',
         handler: () => {
-
+            const value = loginInfoField.value()
+            if (value.length > 0) {
+                presenter.login(value)
+            }
         },
         themeService: di.themeService
     })

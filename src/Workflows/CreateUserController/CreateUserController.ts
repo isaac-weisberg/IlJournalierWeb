@@ -75,6 +75,15 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
 
     scrollContent.appendChild(createUserButton.root)
 
+    presenter.view = {
+        onCreateUserFailed(e) {
+
+        },
+        onLoginFailed(e) {
+            
+        },
+    }
+
     return {
         root: div
     }

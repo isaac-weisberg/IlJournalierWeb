@@ -5,15 +5,11 @@ import { MagicKeyViewerController } from "./MagicKeyViewerController";
 import { MagicKeyViewerPresenter } from "./MagicKeyViewerPresenter";
 
 export async function MagicKeyViewerCoordinator(
-    data: {
-        magicKey: string,
-        saultGoodman: string
-    },
+    loginInfo: string,
     nc: INavigationController,
     di: IDIContext
 ): Promise<void> {
-
-    const presenter = MagicKeyViewerPresenter(data)
+    const presenter = MagicKeyViewerPresenter(loginInfo)
     const magicKeyViewerController = MagicKeyViewerController(presenter, di)
 
     nc.pushController(magicKeyViewerController)

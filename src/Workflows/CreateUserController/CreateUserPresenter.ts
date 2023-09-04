@@ -1,39 +1,57 @@
 import { SessionCreds } from "../../Models/SessionCreds"
+import { IAuthService } from "../../Services/AuthService"
 import { IAuthStorageService } from "../../Services/AuthStorageService"
-import { sleep } from "../../Util/Sleep"
+import { wA } from "../../Util/ErrorExtensions"
 
 export interface ICreateUserPresenter {
     navigation?: {
-        onUserCreated: (u: { creds: SessionCreds, magicKey: string }) => void,
+        onUserCreated: (u: { creds: SessionCreds, loginInfo: string }) => void,
         onUserLoggedIn: (u: SessionCreds) => void
+    }
+
+    view?: {
+        onLoginFailed: (e: unknown) => void
+        onCreateUserFailed: (e: unknown) => void
     }
     
     createNewUser(): void
     login(loginInfo: string): void
 }
 
-export function CreateUserPresenter(authService: IAuthStorageService): ICreateUserPresenter {
+export function CreateUserPresenter(authService: IAuthService, authStorage: IAuthStorageService): ICreateUserPresenter {
     return {
         async login(loginInfo) {
-            
+            let creds: SessionCreds
+            try {
+                creds = await wA('login failed', async () => {
+                    return await authService.login(loginInfo)
+                })
+            } catch(e) {
+                this.view?.onLoginFailed(e)
+
+                return
+            }
+
+            authStorage.updateCreds(creds)
+
+            this.navigation?.onUserLoggedIn(creds)
         },
 
         async createNewUser() {
-            await sleep(2000)
+            let u: {creds: SessionCreds, loginInfo: string}
+            try {
+                u = await wA('creating new user failed', async () => {
+                    return await authService.createUser()
+                })
+            } catch(e) {
+                this.view?.onCreateUserFailed(e)
 
-            const newUuid = self.crypto.randomUUID()
-
-            const userData = {
-                creds: {
-                    accessToken: 'as[dofnvmq[eonrv[oqiwemc[pkadnfmv[oiqned',
-                    saultGoodman: 'newUuid'
-                },
-                magicKey: 'magic_key_fuck',
+                return
             }
+
+            authStorage.updateCreds(u.creds)
             
-
-            this.navigation?.onUserCreated(userData)
-
+            this.navigation?.onUserCreated(u)
         }
     }
 }

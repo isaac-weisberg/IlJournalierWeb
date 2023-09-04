@@ -1,16 +1,39 @@
 import { SessionCreds } from "../Models/SessionCreds"
 import { e, wA } from "../Util/ErrorExtensions"
+import { IAuthStorageService } from "./AuthStorageService"
 import { IBackendService } from "./BackendService"
 
 export interface IAuthService {
     login(loginInfo: string): Promise<SessionCreds>
+    createUser(): Promise<{ creds: SessionCreds, loginInfo: string }>
 }
-
 
 const malformedLoginInfoError = e('malformed login info')
 
-export function AuthService(backendService: IBackendService): IAuthService {
+export function AuthService(
+    backendService: IBackendService
+): IAuthService {
     return {
+        async createUser() {
+            const u = await wA('create user failed', async () => {
+                return await backendService.createUser()
+            })
+
+            const itsAllGoodMan = self.crypto.randomUUID()
+
+            const loginInfo = `${u.magicKey}@${itsAllGoodMan}`
+
+
+            const creds: SessionCreds = {
+                accessToken: u.accessToken,
+                saultGoodman: itsAllGoodMan
+            }
+
+            return {
+                creds,
+                loginInfo
+            }
+        },
         async login(loginInfo: string) {
             const splittedStrings = loginInfo.split('@')
 

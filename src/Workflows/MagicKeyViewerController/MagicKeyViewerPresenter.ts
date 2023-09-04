@@ -13,13 +13,8 @@ export interface IMagicKeyViewerPresenter {
 }
 
 export function MagicKeyViewerPresenter(
-    data: {
-        magicKey: string,
-        saultGoodman: string
-    }
+    loginInfo: string
 ): IMagicKeyViewerPresenter {
-    const loginInfo = `${data.magicKey}@${data.saultGoodman}`
-
     return {
         getLoginInfoForDisplay() {
             return loginInfo

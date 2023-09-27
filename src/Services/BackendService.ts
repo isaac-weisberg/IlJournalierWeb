@@ -30,11 +30,18 @@ export interface BackendResponse<Body> {
     body: Promise<Body>
 }
 
+function preJournaliered(s: string): string {
+    return `/iljournalierserver/${s}`
+}
+
+const userCreateRoute = preJournaliered("user/create")
+const userLoginRoute = preJournaliered("user/login")
+
 export function BackendService(networkingService: INetworkingService): IBackendService {
-    const baseUrl = new URL("http://localhost:24610/iljournalierserver")
+    const baseUrl = new URL("http://localhost:24610")
 
     async function createUser(): Promise<CreateUserResponseBody> {
-        const resp = await genericallyRequest("/user/create", undefined, CreateUserResponseBodyType)
+        const resp = await genericallyRequest(userCreateRoute, undefined, CreateUserResponseBodyType)
 
         if (resp.response.status != 200) {
             throw e('unexpected response from server')
@@ -44,7 +51,7 @@ export function BackendService(networkingService: INetworkingService): IBackendS
     }
 
     async function login(magicKey: string) {
-        const resp = await genericallyRequest('/user/login', {
+        const resp = await genericallyRequest(userLoginRoute, {
             magicKey
         }, LoginResponseBodyType)
 

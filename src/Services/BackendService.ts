@@ -6,7 +6,7 @@ import { RuntypeBase } from "runtypes/lib/runtype"
 
 const CreateUserResponseBodyType = Record({
     accessToken: String,
-    magicKey: String
+    loginKey: String
 })
 
 type CreateUserResponseBody = Static<typeof CreateUserResponseBodyType>
@@ -19,6 +19,9 @@ type LoginResponseBody = Static<typeof LoginResponseBodyType>
 
 const networkingFailedError = 'networking failed'
 const parsingResponseBodyFailed = "parsing response body failed"
+const serverReturnedError = "server returned error"
+const serverReturnedUnauthorized = 'server returned unathorized'
+const serverReturnedUnexpectedStatus = 'server returned unexpected status'
 
 export interface IBackendService {
     createUser(): Promise<CreateUserResponseBody>
@@ -74,7 +77,19 @@ export function BackendService(networkingService: INetworkingService): IBackendS
         const response = await wA(networkingFailedError, async () => {
             return await networkingService.request(url, Method.POST, body)
         })
-        
+
+        if (response.status >= 500) {
+            throw serverReturnedError
+        }
+
+        if (response.status == 401) {
+            throw serverReturnedUnauthorized
+        }
+
+        if (response.status != 200) {
+            throw serverReturnedUnexpectedStatus
+        }
+
         const responseBodyPromise = wA(parsingResponseBodyFailed, async () => {
             return await parseJson(response, responseType)
         })

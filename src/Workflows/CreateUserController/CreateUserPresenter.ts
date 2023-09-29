@@ -1,7 +1,7 @@
 import { SessionCreds } from "../../Models/SessionCreds"
 import { IAuthService } from "../../Services/AuthService"
 import { IAuthStorageService } from "../../Services/AuthStorageService"
-import { wA } from "../../Util/ErrorExtensions"
+import { debugLogE, wA } from "../../Util/ErrorExtensions"
 
 export interface ICreateUserPresenter {
     navigation?: {
@@ -44,6 +44,7 @@ export function CreateUserPresenter(authService: IAuthService, authStorage: IAut
                     return await authService.createUser()
                 })
             } catch(e) {
+                debugLogE(e)
                 this.view?.onCreateUserFailed(e)
 
                 return

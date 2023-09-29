@@ -21,7 +21,7 @@ export function AuthService(
 
             const itsAllGoodMan = self.crypto.randomUUID()
 
-            const loginInfo = `${u.magicKey}@${itsAllGoodMan}`
+            const loginInfo = `${u.loginKey}@${itsAllGoodMan}`
 
 
             const creds: SessionCreds = {

@@ -1,5 +1,5 @@
 import { IDIContext } from "../Services/DI";
-import { CreateUserCoordinator } from "./CreateUserController/CreateUserCoordinator";
+import { CreateUserCoordinator } from "./Auth/CreateUserController/CreateUserCoordinator";
 import { FlagsCollectionCoordinator } from "./FlagsCollection/FlagsCollectionCoordinator";
 import { INavigationController } from "./NavigationController/NavigationController";
 

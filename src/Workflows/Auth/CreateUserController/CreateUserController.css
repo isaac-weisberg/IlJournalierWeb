@@ -3,14 +3,14 @@
 }
 
 .appear {
-    animation: appearFrames 0.3s ease-out;
+    animation: appearFrames 1s ease-in forwards;
 }
 
 @keyframes appearFrames {
-    0% {
+    from {
         opacity: 0;
     }
-    100% {
+    to {
         opacity: 1;
     }
 }

@@ -1,24 +1,18 @@
-import { IDIContext } from "../../Services/DI"
-import { StylishButton } from "../../Views/StylishButton"
-import { StylishTextInput } from "../../Views/StylishTextInput"
-import './CreateUserController.css'
-import { ICreateUserPresenter } from "./CreateUserPresenter"
-import { CreateUserTitleBannerView } from "./Views/CreateUserTitleBannerView"
+import { IDIContext } from "../../../../Services/DI"
+import { StylishButton } from "../../../../Views/StylishButton"
+import { StylishTextInput } from "../../../../Views/StylishTextInput"
 
-export interface ICreateUserController {
+export interface ICreateUserSheet {
     root: HTMLDivElement
 }
 
-export function CreateUserController(presenter: ICreateUserPresenter, di: IDIContext): ICreateUserController {
-    const div = document.createElement('div')
-    div.className = 'createUserController appear'
+interface CreateUserSheetHandlers {
+    login(loginKeys: string): void
+    createNewUser(): void
+}
 
-    const scrollContent = document.createElement('div')
-    scrollContent.style.paddingBottom = '100px'
-    div.appendChild(scrollContent)
-
-    const banner = CreateUserTitleBannerView(di.themeService)
-    scrollContent.appendChild(banner.root)
+export function CreateUserSheet(di: IDIContext, handlers: CreateUserSheetHandlers): ICreateUserSheet {
+    const root = document.createElement('div')
 
     const firstLabel = document.createElement('div')
     firstLabel.style.whiteSpace = 'pre-line'
@@ -26,12 +20,12 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
     firstLabel.style.margin = '20px auto'
     firstLabel.style.maxWidth = '80%'
     firstLabel.style.textAlign = 'center'
-    scrollContent.appendChild(firstLabel)
+    root.appendChild(firstLabel)
 
     const loginContainer = document.createElement('div')
     loginContainer.style.margin = '0px 20px'
     loginContainer.style.display = 'flex'
-    scrollContent.appendChild(loginContainer)
+    root.appendChild(loginContainer)
 
     const loginInfoField = StylishTextInput({
         readOnly: false,
@@ -48,7 +42,7 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
         handler: () => {
             const value = loginInfoField.value()
             if (value.length > 0) {
-                presenter.login(value)
+                handlers.login(value)
             }
         },
         themeService: di.themeService
@@ -62,29 +56,20 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: IDICon
     secondLabel.style.margin = '20px auto'
     secondLabel.style.maxWidth = '80%'
     secondLabel.style.textAlign = 'center'
-    scrollContent.appendChild(secondLabel)
+    root.appendChild(secondLabel)
 
     const createUserButton = StylishButton({
         title: 'Create User',
         handler: () => {
-            presenter.createNewUser()
+            handlers.createNewUser()
         },
         themeService: di.themeService
     })
     createUserButton.root.style.margin = '16px auto 0px auto'
 
-    scrollContent.appendChild(createUserButton.root)
-
-    presenter.view = {
-        onCreateUserFailed(e) {
-
-        },
-        onLoginFailed(e) {
-            
-        },
-    }
+    root.appendChild(createUserButton.root)
 
     return {
-        root: div
+        root
     }
 }

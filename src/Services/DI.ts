@@ -1,3 +1,4 @@
+import { SessionCreds } from "../Models/SessionCreds"
 import { AuthService, IAuthService } from "./AuthService"
 import { AuthStorageService, IAuthStorageService } from "./AuthStorageService"
 import { BackendService } from "./BackendService"
@@ -6,9 +7,10 @@ import { IMoreMessagesStorageService, MoreMessagesStorageService } from "./MoreM
 import { NetworkingService } from "./NetworkingService"
 import { IStoragePersistenceService, StoragePersistenceService } from "./StoragePersistenceService"
 import { IThemeService, ThemeService } from "./ThemeService"
+import { TypedLocalStorageService } from "./TypedLocalStorageService"
 import { IVisibilityChangeService, VisibilityChangeService } from "./VisibilityChangeService"
 
-export interface IDIContext {
+export interface ICommonDIContext {
     persistenceApiService: IStoragePersistenceService
     themeService: IThemeService
     flagsDatabaseStorage: IFlagsDatabaseStorageService
@@ -18,18 +20,31 @@ export interface IDIContext {
     authService: IAuthService
 }
 
-export function DIContext(): IDIContext {
+export function CommonDIContext(): ICommonDIContext {
+    const typedLocalStorageService = TypedLocalStorageService()
     const authStorageService = AuthStorageService()
     const networkingService = NetworkingService()
     const backendService = BackendService(networkingService)
     const authService: IAuthService = AuthService(backendService)
     return {
-        flagsDatabaseStorage: FlagsDatabaseStorageServiceV1(),
-        moreMessagesDbStorage: MoreMessagesStorageService(),
+        flagsDatabaseStorage: FlagsDatabaseStorageServiceV1(typedLocalStorageService),
+        moreMessagesDbStorage: MoreMessagesStorageService(typedLocalStorageService),
         persistenceApiService: StoragePersistenceService(),
         themeService: ThemeService(),
         visibilityChangeService: VisibilityChangeService(),
         authStorageService,
         authService
+    }
+}
+
+export interface IAuthDIContext {
+
+}
+
+export function AuthDIContext(di: ICommonDIContext, sessionCreds: SessionCreds): IAuthDIContext {
+
+
+    return {
+
     }
 }

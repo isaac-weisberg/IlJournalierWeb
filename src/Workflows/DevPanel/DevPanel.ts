@@ -1,5 +1,5 @@
 import { AppVersion } from "../../Services/AppVersion"
-import { IDIContext } from "../../Services/DI"
+import { ICommonDIContext } from "../../Services/DI"
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
 import { IStoragePersistenceService } from "../../Services/StoragePersistenceService"
@@ -14,7 +14,7 @@ export interface IDevPanel {
 }
 
 export function DevPanel(
-    diContext: IDIContext
+    diContext: ICommonDIContext
 ): IDevPanel {
     const div = document.createElement('div')
 

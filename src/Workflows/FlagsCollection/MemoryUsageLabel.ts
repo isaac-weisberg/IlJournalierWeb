@@ -1,5 +1,5 @@
 import { StringLengthFormatter } from "../../Extensions/StringLengthFormatter"
-import { IDIContext } from "../../Services/DI"
+import { ICommonDIContext } from "../../Services/DI"
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
 
@@ -8,7 +8,7 @@ export interface IMemoryUsageLabel {
 }
 
 export function MemoryUsageLabel(
-    diContext: IDIContext
+    diContext: ICommonDIContext
 ): IMemoryUsageLabel{
     const memoryUsageTextNode = document.createElement('div')
 

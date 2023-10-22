@@ -1,8 +1,9 @@
 import { moreMessagesDbSchemaV1StorageKey } from '../Util/Const'
 import { MoreMessagesDbSchemaV1Type, MoreMessagesDbSchemaV1 } from './MoreMessagesDbSchemaV1'
+import { ITypedLocalStorageService, ITypedLocalStorageHandle } from './TypedLocalStorageService'
 
 export interface IMoreMessagesStorageService {
-    dumpRawDatabase(): string|null
+    dumpRawDatabase(): string|undefined
     overrideRawDatabase(database: string): void
     save(db: MoreMessagesDbSchemaV1): void
     load(): MoreMessagesDbSchemaV1|undefined
@@ -10,56 +11,49 @@ export interface IMoreMessagesStorageService {
     addOnCurrentStorageStringLengthChangedHandler(handler: (length: number) => void): void
 }
 
-export function MoreMessagesStorageService(): IMoreMessagesStorageService {
+const moreMessagesDbHandle: ITypedLocalStorageHandle<typeof MoreMessagesDbSchemaV1Type> = {
+    key: moreMessagesDbSchemaV1StorageKey,
+    recordType: MoreMessagesDbSchemaV1Type
+}
+
+export function MoreMessagesStorageService(typedLocalStorage: ITypedLocalStorageService): IMoreMessagesStorageService {
     let lastKnownStorageLength: number|undefined
     let onCurrentStorageStringLengthChanged: ((length: number) => void)|undefined
 
-    function updateLastKnownStrorageLength(untypedExistingDbString: string|null|undefined) {
-        if (untypedExistingDbString) {
-            const storageLength = untypedExistingDbString.length
-            lastKnownStorageLength = storageLength
-            if (onCurrentStorageStringLengthChanged) {
-                onCurrentStorageStringLengthChanged(storageLength)
-            }
+    function updateLastKnownStrorageLength(untypedExistingDbStringLength: number) {
+        const storageLength = untypedExistingDbStringLength
+        lastKnownStorageLength = storageLength
+        if (onCurrentStorageStringLengthChanged) {
+            onCurrentStorageStringLengthChanged(storageLength)
         }
     }
 
     return {
-        dumpRawDatabase(): string|null {
-            const untypedExistingDb = localStorage.getItem(moreMessagesDbSchemaV1StorageKey)
+        dumpRawDatabase(): string|undefined {
+            const untypedExistingDb = typedLocalStorage.readRaw(moreMessagesDbHandle)
 
-            updateLastKnownStrorageLength(untypedExistingDb)
+            if (untypedExistingDb) {
+                updateLastKnownStrorageLength(untypedExistingDb.value.length)
+            }
 
-            return untypedExistingDb
+            return untypedExistingDb?.value
         },
         overrideRawDatabase(database: string) {
-            updateLastKnownStrorageLength(database)
-            localStorage.setItem(moreMessagesDbSchemaV1StorageKey, database)
+            updateLastKnownStrorageLength(database.length)
+            typedLocalStorage.writeRaw(database, moreMessagesDbHandle)
         },
         save(db: MoreMessagesDbSchemaV1) {
-            const string = JSON.stringify(db)
-            // Notify
-            updateLastKnownStrorageLength(string)
-            // Use
-            localStorage.setItem(moreMessagesDbSchemaV1StorageKey, string)
+            const res = typedLocalStorage.write(db, moreMessagesDbHandle)
+            updateLastKnownStrorageLength(res.rawLength)
         },
         load(): MoreMessagesDbSchemaV1|undefined {
-            const untypedExistingDb = localStorage.getItem(moreMessagesDbSchemaV1StorageKey)
-            let _existingDatabase: MoreMessagesDbSchemaV1|undefined
-            try {
-                if (untypedExistingDb) {
-                    // Notify
-                    updateLastKnownStrorageLength(untypedExistingDb)
-                    // Use
-                    const json = JSON.parse(untypedExistingDb)
-                    _existingDatabase = MoreMessagesDbSchemaV1Type.check(json)
-                } else {
-                    _existingDatabase = undefined
-                }
-            } catch {
-                _existingDatabase = undefined
+            const result = typedLocalStorage.read(moreMessagesDbHandle)
+            if (result) {
+                updateLastKnownStrorageLength(result.rawLength)
+                return result.record
             }
-            return _existingDatabase
+
+            return undefined
         },
         currentStorageStringLength(): number|undefined {
             return lastKnownStorageLength

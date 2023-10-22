@@ -2,7 +2,7 @@ import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType, FlagsD
 import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1";
 import { MoreMessagesDbSchemaV1 } from "../../Services/MoreMessagesDbSchemaV1";
 import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService";
-import { IDIContext } from "../../Services/DI";
+import { ICommonDIContext } from "../../Services/DI";
 import { Bus, IBus } from "../../Util/Bus";
 
 export interface FlagModel {
@@ -129,7 +129,7 @@ function createInitialFlagState(flagsDatabaseStorage: IFlagsDatabaseStorageServi
 }
 
 export function FlagsCollectionSessionModel(
-    diContext: IDIContext
+    diContext: ICommonDIContext
 ): IFlagsCollectionSessionModel {
     const onFlagsUpdatedBus = Bus<void>()
 

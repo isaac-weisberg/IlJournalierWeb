@@ -6,13 +6,15 @@ import { RuntypeBase } from "runtypes/lib/runtype"
 
 const CreateUserResponseBodyType = Record({
     accessToken: String,
-    loginKey: String
+    loginKey: String,
+    publicId: String
 })
 
 type CreateUserResponseBody = Static<typeof CreateUserResponseBodyType>
 
 const LoginResponseBodyType = Record({
-    accessToken: String
+    accessToken: String,
+    publicId: String
 })
 
 type LoginResponseBody = Static<typeof LoginResponseBodyType>
@@ -26,6 +28,7 @@ const serverReturnedUnexpectedStatus = 'server returned unexpected status'
 export interface IBackendService {
     createUser(): Promise<CreateUserResponseBody>
     login(magicKey: string): Promise<LoginResponseBody>
+    genericallyRequest<RecordType extends RuntypeBase>(path: string, body: any|undefined, responseType: RecordType): Promise<BackendResponse<Static<RecordType>>>
 }
 
 export interface BackendResponse<Body> {
@@ -102,6 +105,7 @@ export function BackendService(networkingService: INetworkingService): IBackendS
 
     return {
         createUser,
-        login
+        login,
+        genericallyRequest
     }
 }

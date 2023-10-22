@@ -1,35 +1,32 @@
+import { Record, String} from "runtypes"
 import { SessionCreds } from "../Models/SessionCreds"
+import { ITypedLocalStorageHandle, ITypedLocalStorageService, TypedLocalStorageHandle } from "./TypedLocalStorageService"
 
 export interface IAuthStorageService {
     getExistingSessionCreds(): SessionCreds|undefined
     updateCreds(c: SessionCreds|undefined): void
 }
 
-const accessTokenStorageKey = 'auth_accessToken'
-const saultGoodmanStorageKey = 'auth_saultGoodman'
+const accessTokenStorageKey = 'auth_totalData'
 
-export function AuthStorageService(): IAuthStorageService {
+const authDatabaseType = Record({
+    userId: String,
+    accessToken: String,
+    saultGoodman: String
+})
+
+const authDataDatabaseHandle = TypedLocalStorageHandle(accessTokenStorageKey, authDatabaseType)
+
+export function AuthStorageService(typedLocalStorage: ITypedLocalStorageService): IAuthStorageService {
     function getExistingSessionCreds(): SessionCreds|undefined {
-        return undefined
-
-        // const accessToken = window.localStorage.getItem(accessTokenStorageKey)
-        // const saultGoodman = window.localStorage.getItem(saultGoodmanStorageKey)
-        // if (accessToken && saultGoodman) {
-        //     return {
-        //         accessToken,
-        //         saultGoodman
-        //     }
-        // }
-        // return undefined
+        return typedLocalStorage.read(authDataDatabaseHandle)?.record
     }
 
     function updateCreds(c: SessionCreds) {
         if (c) {
-            window.localStorage.setItem(accessTokenStorageKey, c.accessToken)
-            window.localStorage.setItem(saultGoodmanStorageKey, c.saultGoodman)
+            typedLocalStorage.write(c, authDataDatabaseHandle)
         } else {
-            window.localStorage.removeItem(accessTokenStorageKey)
-            window.localStorage.removeItem(saultGoodmanStorageKey)
+            typedLocalStorage.remove(authDataDatabaseHandle)
         }
     }
 

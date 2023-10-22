@@ -1,8 +1,9 @@
 import { flagsDbSchemaV1StorageKey } from "../Util/Const"
 import { FlagsDbSchemaV1, FlagsDbSchemaV1Type } from "./FlagsDbSchemaV1"
+import { ITypedLocalStorageService, ITypedLocalStorageHandle } from "./TypedLocalStorageService"
 
 export interface IFlagsDatabaseStorageService {
-    dumpRawDatabase(): string|null
+    dumpRawDatabase(): string|undefined
     overrideRawDatabase(database: string): void
     save(db: FlagsDbSchemaV1): void
     load(): FlagsDbSchemaV1|undefined
@@ -10,56 +11,50 @@ export interface IFlagsDatabaseStorageService {
     addOnCurrentStorageStringLengthChangedHandler(handler: (length: number) => void): void
 }
 
-export function FlagsDatabaseStorageServiceV1(): IFlagsDatabaseStorageService {
+const typedLocalStorageSchemaHandle: ITypedLocalStorageHandle<typeof FlagsDbSchemaV1Type> = {
+    key: flagsDbSchemaV1StorageKey,
+    recordType: FlagsDbSchemaV1Type
+}
+
+export function FlagsDatabaseStorageServiceV1(
+    typedLocalStorage: ITypedLocalStorageService
+): IFlagsDatabaseStorageService {
     let lastKnownStorageLength: number|undefined
     let onCurrentStorageStringLengthChanged: ((length: number) => void)|undefined
 
-    function updateLastKnownStrorageLength(untypedExistingDbString: string|null|undefined) {
-        if (untypedExistingDbString) {
-            const storageLength = untypedExistingDbString.length
-            lastKnownStorageLength = storageLength
-            if (onCurrentStorageStringLengthChanged) {
-                onCurrentStorageStringLengthChanged(storageLength)
-            }
+    function updateLastKnownStrorageLength(untypedExistingDbStringLength: number) {
+        const storageLength = untypedExistingDbStringLength
+        lastKnownStorageLength = storageLength
+        if (onCurrentStorageStringLengthChanged) {
+            onCurrentStorageStringLengthChanged(storageLength)
         }
     }
 
     return {
-        dumpRawDatabase(): string|null {
-            const untypedExistingDb = localStorage.getItem(flagsDbSchemaV1StorageKey)
-
-            updateLastKnownStrorageLength(untypedExistingDb)
-
-            return untypedExistingDb
+        dumpRawDatabase(): string|undefined {
+            const dump = typedLocalStorage.readRaw(typedLocalStorageSchemaHandle)
+            if (dump) {
+                updateLastKnownStrorageLength(dump.value.length)
+                return dump.value
+            }
+            return undefined
         },
         overrideRawDatabase(database: string) {
-            updateLastKnownStrorageLength(database)
-            localStorage.setItem(flagsDbSchemaV1StorageKey, database)
+            updateLastKnownStrorageLength(database.length)
+            typedLocalStorage.writeRaw(database, typedLocalStorageSchemaHandle)
         },
         save(db: FlagsDbSchemaV1) {
-            const string = JSON.stringify(db)
-            // Notify
-            updateLastKnownStrorageLength(string)
-            // Use
-            localStorage.setItem(flagsDbSchemaV1StorageKey, string)
+            const res = typedLocalStorage.write(db, typedLocalStorageSchemaHandle)
+            updateLastKnownStrorageLength(res.rawLength)
         },
         load(): FlagsDbSchemaV1|undefined {
-            const untypedExistingDb = localStorage.getItem(flagsDbSchemaV1StorageKey)
-            let _existingDatabase: FlagsDbSchemaV1|undefined
-            try {
-                if (untypedExistingDb) {
-                    // Notify
-                    updateLastKnownStrorageLength(untypedExistingDb)
-                    // Use
-                    const json = JSON.parse(untypedExistingDb)
-                    _existingDatabase = FlagsDbSchemaV1Type.check(json)
-                } else {
-                    _existingDatabase = undefined
-                }
-            } catch {
-                _existingDatabase = undefined
+            const result = typedLocalStorage.read(typedLocalStorageSchemaHandle)
+            if (result) {
+                updateLastKnownStrorageLength(result.rawLength)
+                return result.record
             }
-            return _existingDatabase
+
+            return undefined
         },
         currentStorageStringLength(): number|undefined {
             return lastKnownStorageLength

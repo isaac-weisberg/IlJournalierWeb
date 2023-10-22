@@ -23,10 +23,10 @@ export function AuthService(
 
             const loginInfo = `${u.loginKey}@${itsAllGoodMan}`
 
-
             const creds: SessionCreds = {
                 accessToken: u.accessToken,
-                saultGoodman: itsAllGoodMan
+                saultGoodman: itsAllGoodMan,
+                userId: u.publicId
             }
 
             return {
@@ -54,7 +54,8 @@ export function AuthService(
 
             return {
                 accessToken: resp.accessToken,
-                saultGoodman: part2
+                saultGoodman: part2,
+                userId: resp.publicId
             }
         }
     }

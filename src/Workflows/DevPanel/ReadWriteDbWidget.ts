@@ -8,7 +8,7 @@ export interface IReadWriteDbWidget {
 }
 
 export interface ReaderWriter {
-    readString(): string|null
+    readString(): string|undefined
     writeString(value: string): void
 }
 

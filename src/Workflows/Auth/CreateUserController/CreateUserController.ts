@@ -1,4 +1,4 @@
-import { IDIContext } from "../../../Services/DI"
+import { ICommonDIContext } from "../../../Services/DI"
 import './CreateUserController.css'
 import { ICreateUserPresenter } from "./CreateUserPresenter"
 import { CreateUserTitleBannerView } from "../CreateUserTitleBannerView/CreateUserTitleBannerView"
@@ -10,7 +10,7 @@ export interface ICreateUserController {
     root: HTMLDivElement
 }
 
-export function CreateUserController(presenter: ICreateUserPresenter, di: IDIContext): ICreateUserController {
+export function CreateUserController(presenter: ICreateUserPresenter, di: ICommonDIContext): ICreateUserController {
     const div = document.createElement('div')
     div.className = 'createUserController'
     div.style.opacity = '0'

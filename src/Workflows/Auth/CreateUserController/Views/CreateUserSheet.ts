@@ -1,4 +1,4 @@
-import { IDIContext } from "../../../../Services/DI"
+import { ICommonDIContext } from "../../../../Services/DI"
 import { StylishButton } from "../../../../Views/StylishButton"
 import { StylishTextInput } from "../../../../Views/StylishTextInput"
 
@@ -11,7 +11,7 @@ interface CreateUserSheetHandlers {
     createNewUser(): void
 }
 
-export function CreateUserSheet(di: IDIContext, handlers: CreateUserSheetHandlers): ICreateUserSheet {
+export function CreateUserSheet(di: ICommonDIContext, handlers: CreateUserSheetHandlers): ICreateUserSheet {
     const root = document.createElement('div')
 
     const firstLabel = document.createElement('div')

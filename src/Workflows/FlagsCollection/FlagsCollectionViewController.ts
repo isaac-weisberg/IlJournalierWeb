@@ -5,14 +5,14 @@ import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionTitleBanner } from "./TitleBanner/FlagsCollectionTitleBanner"
 import { MemoryUsageLabel } from "./MemoryUsageLabel"
 import { DevPanel } from "../DevPanel/DevPanel"
-import { IDIContext } from "../../Services/DI"
+import { ICommonDIContext } from "../../Services/DI"
 import { IFlagsCollectionPresenter } from "./FlagsCollectionPresenter"
 
 export interface IFlagsCollectionViewController {
     readonly root: HTMLDivElement
 }
 
-export function FlagsCollectionViewController(presenter: IFlagsCollectionPresenter, diContext: IDIContext) {
+export function FlagsCollectionViewController(presenter: IFlagsCollectionPresenter, diContext: ICommonDIContext) {
     const root = document.createElement('div')
     root.className = "flagsCollectionRoot"
 

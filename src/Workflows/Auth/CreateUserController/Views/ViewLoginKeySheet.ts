@@ -1,4 +1,4 @@
-import { IDIContext } from "../../../../Services/DI"
+import { ICommonDIContext } from "../../../../Services/DI"
 import { StylishButton } from "../../../../Views/StylishButton"
 import { StylishTextInput } from "../../../../Views/StylishTextInput"
 
@@ -11,7 +11,7 @@ interface ViewLoginKeyHandlers {
     proceed(): void
 }
 
-export function ViewLoginKey(loginKeyToDisplay: string, di: IDIContext, handlers: ViewLoginKeyHandlers): IViewLoginKey {
+export function ViewLoginKey(loginKeyToDisplay: string, di: ICommonDIContext, handlers: ViewLoginKeyHandlers): IViewLoginKey {
     const div = document.createElement('div')
     div.style.textAlign = 'center'
 

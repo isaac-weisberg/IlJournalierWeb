@@ -13,6 +13,11 @@ interface ViewLoginKeyHandlers {
 
 export function ViewLoginKey(loginKeyToDisplay: string, di: IDIContext, handlers: ViewLoginKeyHandlers): IViewLoginKey {
     const div = document.createElement('div')
+    div.style.textAlign = 'center'
+
+    const titleLabel = document.createElement('div')
+    titleLabel.textContent = 'This is your login information. Save it somewhere! Like, in Telegram "Saved Messages"'
+    div.appendChild(titleLabel)
 
     const loginInfoField = StylishTextInput({
         placeholder: '',
@@ -20,12 +25,21 @@ export function ViewLoginKey(loginKeyToDisplay: string, di: IDIContext, handlers
         themeService: di.themeService
     })
 
+    loginInfoField.root.style.margin = '0px auto'
+    loginInfoField.root.style.width = 'calc(100vw - 32px)'
+
     loginInfoField.setValue(loginKeyToDisplay)
 
     div.appendChild(loginInfoField.root)
 
-    let clipboardPromise: any
+    const buttonsContainer = document.createElement('div')
+    buttonsContainer.style.display = 'flex'
+    buttonsContainer.style.margin = '0px auto'
+    buttonsContainer.style.justifyContent = 'flex-end'
+    buttonsContainer.style.padding = '16px'
+    div.appendChild(buttonsContainer)
 
+    let clipboardPromise: any
     const saveToClipboardButton = StylishButton({
         title: "Copy to clipboard",
         handler: () => {
@@ -47,7 +61,7 @@ export function ViewLoginKey(loginKeyToDisplay: string, di: IDIContext, handlers
         },
         themeService: di.themeService
     })
-    div.appendChild(saveToClipboardButton.root)
+    buttonsContainer.appendChild(saveToClipboardButton.root)
 
     const proceedButton = StylishButton({
         title: 'Proceed...',
@@ -56,7 +70,7 @@ export function ViewLoginKey(loginKeyToDisplay: string, di: IDIContext, handlers
         },
         themeService: di.themeService
     })
-    div.appendChild(proceedButton.root)
+    buttonsContainer.appendChild(proceedButton.root)
 
 
     return {

@@ -35,6 +35,8 @@ export function CreateUserPresenter(authService: IAuthService, authStorage: IAut
             this.navigation?.onUserLoggedIn(u.creds)
         },
         async login(loginInfo) {
+            this.view?.setLoading(true)
+            
             let creds: SessionCreds
             try {
                 creds = await wA('login failed', async () => {
@@ -44,6 +46,8 @@ export function CreateUserPresenter(authService: IAuthService, authStorage: IAut
                 this.view?.onLoginFailed(e)
 
                 return
+            } finally {
+                this.view?.setLoading(false)
             }
 
             authStorage.updateCreds(creds)

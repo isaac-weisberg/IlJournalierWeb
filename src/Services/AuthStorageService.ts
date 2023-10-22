@@ -10,15 +10,17 @@ const saultGoodmanStorageKey = 'auth_saultGoodman'
 
 export function AuthStorageService(): IAuthStorageService {
     function getExistingSessionCreds(): SessionCreds|undefined {
-        const accessToken = window.localStorage.getItem(accessTokenStorageKey)
-        const saultGoodman = window.localStorage.getItem(saultGoodmanStorageKey)
-        if (accessToken && saultGoodman) {
-            return {
-                accessToken,
-                saultGoodman
-            }
-        }
         return undefined
+
+        // const accessToken = window.localStorage.getItem(accessTokenStorageKey)
+        // const saultGoodman = window.localStorage.getItem(saultGoodmanStorageKey)
+        // if (accessToken && saultGoodman) {
+        //     return {
+        //         accessToken,
+        //         saultGoodman
+        //     }
+        // }
+        // return undefined
     }
 
     function updateCreds(c: SessionCreds) {

@@ -1,5 +1,8 @@
 .createUserController {
-    max-width: 600px;
+    position: absolute;
+    left: 50%;
+    transform: translate(-50%, 0);
+    width: min(600px, 100vw);
 }
 
 .appear {

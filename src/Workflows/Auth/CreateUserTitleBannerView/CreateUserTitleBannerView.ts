@@ -17,7 +17,6 @@ export function CreateUserTitleBannerView(themeService: IThemeService): ICreateU
     div.appendChild(label)
 
     div.addEventListener('click', () => {
-        console.log('update theme')
         themeService.updateTheme()
     })
 

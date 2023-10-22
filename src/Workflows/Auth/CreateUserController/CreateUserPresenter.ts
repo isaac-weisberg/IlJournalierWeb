@@ -14,9 +14,10 @@ export interface ICreateUserPresenter {
     }
 
     view?: {
-        onUserCreated: (u: UserCredsAndLoginInfo) => void,
-        onLoginFailed: (e: unknown) => void
-        onCreateUserFailed: (e: unknown) => void
+        setLoading(l: boolean): void
+        onUserCreated(u: UserCredsAndLoginInfo): void,
+        onLoginFailed(e: unknown): void
+        onCreateUserFailed(e: unknown): void
     }
     
     createNewUser(): void
@@ -51,6 +52,8 @@ export function CreateUserPresenter(authService: IAuthService, authStorage: IAut
         },
 
         async createNewUser() {
+            this.view?.setLoading(true)
+
             let u: {creds: SessionCreds, loginInfo: string}
             try {
                 u = await wA('creating new user failed', async () => {
@@ -61,6 +64,8 @@ export function CreateUserPresenter(authService: IAuthService, authStorage: IAut
                 this.view?.onCreateUserFailed(e)
 
                 return
+            } finally {
+                this.view?.setLoading(false)
             }
 
             authStorage.updateCreds(u.creds)

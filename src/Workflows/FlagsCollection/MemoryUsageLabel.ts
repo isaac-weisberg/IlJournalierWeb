@@ -20,7 +20,8 @@ export function MemoryUsageLabel(
     }
 
     let flagsKnownLength = diContext.flagsDatabaseStorage.getCurrentStorageLength()
-    let moreMessagesKnownLength = diContext.moreMessagesDbStorage.getCurrentStorageLength() 
+    let moreMessagesKnownLength = diContext.moreMessagesDbStorage.getCurrentStorageLength()
+    let authStorageKnownLength = diContext.authLocalStorage.getCurrentStorageLength()
 
     diContext.flagsDatabaseStorage.setCurrentStorageChangedHandler((length) => {
         flagsKnownLength = length
@@ -32,9 +33,14 @@ export function MemoryUsageLabel(
         calcAndUpdateText()
     })
 
+    diContext.authLocalStorage.setCurrentStorageChangedHandler(length => {
+        authStorageKnownLength = length
+        calcAndUpdateText()
+    })
+
     function totalKnownLength() {
         let total: number|undefined
-        for (const value of [flagsKnownLength, moreMessagesKnownLength]) {
+        for (const value of [flagsKnownLength, moreMessagesKnownLength, authStorageKnownLength]) {
             if (value) {
                 if (total) {
                     total += value

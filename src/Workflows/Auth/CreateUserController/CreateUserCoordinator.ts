@@ -9,7 +9,7 @@ export async function CreateUserCoordinator(
     nc: INavigationController, 
     di: ICommonDIContext
 ): Promise<SessionCreds> {
-    const presenter = CreateUserPresenter(di.authService, di.authStorageService)
+    const presenter = CreateUserPresenter(di.authService, di.authLocalStorage)
 
     const createUserController = CreateUserController(presenter, di)
     nc.setRootController(createUserController)

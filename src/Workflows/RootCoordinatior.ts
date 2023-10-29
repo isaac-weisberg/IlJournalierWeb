@@ -7,7 +7,7 @@ export async function RootCoordinatior(
     nc: INavigationController, 
     di: ICommonDIContext
 ): Promise<never> {
-    let existingCreds = di.authStorageService.getExistingSessionCreds()
+    let existingCreds = di.authLocalStorage.read()
 
     if (!existingCreds) {
         existingCreds = await CreateUserCoordinator(nc, di)

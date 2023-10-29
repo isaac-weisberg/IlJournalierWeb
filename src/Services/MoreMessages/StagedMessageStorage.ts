@@ -1,8 +1,8 @@
-import { Array, Record, String, Number, Static } from "runtypes"
-import { ITypedLocalStorageService, TypedLocalStorageHandle } from "../TypedLocalStorageService"
+import { INeverSentMessagesStorageService } from "./MoreMessagesStorageService"
 
 export interface IStagedMessageStorage {
     storeANeverSentMessage(message: NeverSentMessage): void
+    getNeverSentMessages(): NeverSentMessage[]
 }
 
 export interface NeverSentMessage {
@@ -11,30 +11,36 @@ export interface NeverSentMessage {
     msg: string
 }
 
-const neverSentMessagesDbName = 'neverSentMessagesDbName'
-
-const NeverSentMessageRecordType = Record({
-    userId: String,
-    unixSeconds: Number,
-    msg: String
-})
-
-type NeverSentMessageRecord = Static<typeof NeverSentMessageRecordType>
-
-const NeverSentMessagesDatabaseType = Record({
-    entries: Array(NeverSentMessageRecordType)
-})
-
-type NeverSentMessagesDatabase = Static<typeof NeverSentMessagesDatabaseType>
-
-const neverSentMessagesDatabaseHandle = TypedLocalStorageHandle(neverSentMessagesDbName, NeverSentMessagesDatabaseType)
-
-export function StagedMessageStorage(typedLocalStorage: ITypedLocalStorageService): IStagedMessageStorage {
+export function StagedMessageStorage(neverSentMessagesStorageService: INeverSentMessagesStorageService): IStagedMessageStorage {
     function storeANeverSentMessage(message: NeverSentMessage) {
-        typedLocalStorage.read(neverSentMessagesDatabaseHandle)
+        const entry = {
+            userId: message.userId,
+            msg: message.msg,
+            unixSeconds: message.unixSeconds
+        }
+
+        const neverSentMessages = neverSentMessagesStorageService.read()
+        let newNeverSentMessages: typeof neverSentMessages
+        if (neverSentMessages) {
+            neverSentMessages.entries.push(entry)
+            newNeverSentMessages = neverSentMessages
+        } else {
+            newNeverSentMessages = {
+                entries: [ entry ]
+            }
+        }
+
+        neverSentMessagesStorageService.write(newNeverSentMessages)
+    }
+
+    function getNeverSentMessages(): NeverSentMessage[] {
+        let neverSentMessages = neverSentMessagesStorageService.read()
+
+        return neverSentMessages?.entries || []        
     }
 
     return {
-        storeANeverSentMessage
+        storeANeverSentMessage,
+        getNeverSentMessages
     }
 }

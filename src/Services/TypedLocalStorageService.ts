@@ -1,32 +1,37 @@
 import { RuntypeBase, Static } from "runtypes/lib/runtype";
 
-export interface ITypedLocalStorageHandle<RecordType extends RuntypeBase> {
-    key: string,
-    recordType: RecordType
+export interface ITypedLocalStorageService<RecordType extends RuntypeBase> {
+    read(): Static<RecordType>|undefined
+    readRaw(): string|undefined
+    write(value: Static<RecordType>): void
+    writeRaw(value: string): void
+    remove(): void
+
+    getCurrentStorageLength(): number|undefined
+    setCurrentStorageChangedHandler(handler: (length?: number|undefined) => void): void
 }
 
-export function TypedLocalStorageHandle<RecordType extends RuntypeBase>(key: string, recordType: RecordType): ITypedLocalStorageHandle<RecordType> {
-    return {
-        key, recordType
+export function TypedLocalStorageService<RecordType extends RuntypeBase>(storageKey: string, recordType: RecordType): ITypedLocalStorageService<RecordType> {
+    let lastKnownStorageLength: number|undefined
+    let onCurrentStorageStringLengthChanged: ((length: number|undefined) => void)|undefined
+
+    function updateLastKnownStrorageLength(untypedExistingDbStringLength: number|undefined) {
+        const storageLength = untypedExistingDbStringLength
+        lastKnownStorageLength = storageLength
+        if (onCurrentStorageStringLengthChanged) {
+            onCurrentStorageStringLengthChanged(storageLength)
+        }
     }
-}
 
-export interface ITypedLocalStorageService {
-    read<RecordType extends RuntypeBase>(handle: ITypedLocalStorageHandle<RecordType>): { record: Static<RecordType>, rawLength: number }|undefined
-    readRaw<RecordType extends RuntypeBase>(handle: ITypedLocalStorageHandle<RecordType>): { value: string }|undefined
-    write<RecordType extends RuntypeBase>(value: Static<RecordType>, handle: ITypedLocalStorageHandle<RecordType>): {rawLength: number}
-    writeRaw<RecordType extends RuntypeBase>(value: string, handle: ITypedLocalStorageHandle<RecordType>): void
-    remove<RecordType extends RuntypeBase>(handle: ITypedLocalStorageHandle<RecordType>): void
-}
 
-export function TypedLocalStorageService(): ITypedLocalStorageService {
-    function read<RecordType extends RuntypeBase>(handle: ITypedLocalStorageHandle<RecordType>): { record: Static<RecordType>, rawLength: number }|undefined {
-        const untypedExistingDb = localStorage.getItem(handle.key)
+    function read(): { record: Static<RecordType>, rawLength: number }|undefined {
+        const untypedExistingDb = localStorage.getItem(storageKey)
+        updateLastKnownStrorageLength(untypedExistingDb?.length)
         let _existingDatabase: { record: Static<RecordType>, rawLength: number }|undefined
         try {
             if (untypedExistingDb) {
                 const json = JSON.parse(untypedExistingDb)
-                const record: Static<RecordType> = handle.recordType.check(json)
+                const record: Static<RecordType> = recordType.check(json)
                 _existingDatabase = {
                     record: record,
                     rawLength: untypedExistingDb.length
@@ -40,34 +45,39 @@ export function TypedLocalStorageService(): ITypedLocalStorageService {
         return _existingDatabase
     }
 
-    function write<RecordType extends RuntypeBase>(value: Static<RecordType>, handle: ITypedLocalStorageHandle<RecordType>): {rawLength: number} {
+    function write(value: Static<RecordType>): {rawLength: number} {
         const string = JSON.stringify(value)
-        localStorage.setItem(handle.key, string)
+        updateLastKnownStrorageLength(string.length)
+        localStorage.setItem(storageKey, string)
 
         return {
             rawLength: string.length
         }
     }
 
-    function writeRaw<RecordType extends RuntypeBase>(value: string, handle: ITypedLocalStorageHandle<RecordType>) {
-        localStorage.setItem(handle.key, value)
+    function writeRaw(value: string) {
+        updateLastKnownStrorageLength(value.length)
+        localStorage.setItem(storageKey, value)
     }
     
-    function readRaw<RecordType extends RuntypeBase>(handle: ITypedLocalStorageHandle<RecordType>): { value: string }|undefined {
-        const untypedExistingDb = localStorage.getItem(handle.key)
-        if (untypedExistingDb) {
-            return {
-                value: untypedExistingDb
-            }
-        }
-        return undefined
+    function readRaw(): string|undefined {
+        const untypedExistingDb = localStorage.getItem(storageKey)
+        updateLastKnownStrorageLength(untypedExistingDb?.length)
+        return untypedExistingDb || undefined
     }
 
-    function remove<RecordType extends RuntypeBase>(handle: ITypedLocalStorageHandle<RecordType>): void {
-        localStorage.removeItem(handle.key)
+    function remove(): void {
+        updateLastKnownStrorageLength(undefined)
+        localStorage.removeItem(storageKey)
     }
 
     return {
-        read, write, writeRaw, readRaw, remove
+        read, write, writeRaw, readRaw, remove,
+        getCurrentStorageLength(): number|undefined {
+            return lastKnownStorageLength
+        },
+        setCurrentStorageChangedHandler(handler: (length: number|undefined) => void) {
+            onCurrentStorageStringLengthChanged = handler
+        },
     }
 }

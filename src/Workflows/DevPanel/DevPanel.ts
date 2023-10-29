@@ -1,9 +1,5 @@
 import { AppVersion } from "../../Services/AppVersion"
 import { ICommonDIContext } from "../../Services/DI"
-import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
-import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
-import { IStoragePersistenceService } from "../../Services/StoragePersistenceService"
-import { IThemeService } from "../../Services/ThemeService"
 import { StylishButton } from "../../Views/StylishButton"
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import './DevPanel.css'
@@ -22,14 +18,14 @@ export function DevPanel(
 
     function addDevWidgets() {
         const flagsRWWidget = ReadWriteDbWidget('FlagsDB', {
-            readString: diContext.flagsDatabaseStorage.dumpRawDatabase,
-            writeString: diContext.flagsDatabaseStorage.overrideRawDatabase
+            readString: diContext.flagsDatabaseStorage.readRaw,
+            writeString: diContext.flagsDatabaseStorage.writeRaw
         }, diContext.themeService)
         div.appendChild(flagsRWWidget.root)
 
         const moreMsgsRWWidget = ReadWriteDbWidget('MoreMsgsDB', {
-            readString: diContext.moreMessagesDbStorage.dumpRawDatabase,
-            writeString: diContext.moreMessagesDbStorage.overrideRawDatabase
+            readString: diContext.moreMessagesDbStorage.readRaw,
+            writeString: diContext.moreMessagesDbStorage.writeRaw
         }, diContext.themeService)
         div.appendChild(moreMsgsRWWidget.root)
 

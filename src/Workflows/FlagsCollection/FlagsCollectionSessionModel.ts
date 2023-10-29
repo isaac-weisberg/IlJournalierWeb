@@ -1,9 +1,9 @@
-import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType, FlagsDbSchemaV1Type } from "../../Services/FlagsDbSchemaV1";
-import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1";
-import { MoreMessagesDbSchemaV1 } from "../../Services/MoreMessagesDbSchemaV1";
-import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService";
+import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType, FlagsDbSchemaV1Type } from "../../Services/FlagsDatabase/FlagsDbSchemaV1";
+import { MoreMessagesOldDbSchemaV1 } from "../../Services/MoreMessagesOld/MoreMessagesDbSchemaV1";
 import { ICommonDIContext } from "../../Services/DI";
 import { Bus, IBus } from "../../Util/Bus";
+import { IFlagsDatabaseLocalStorage } from "../../Services/FlagsDatabase/FlagsDatabaseLocalStorage";
+import { IMoreMessagesOldDatabaseLocalStorage } from "../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage";
 
 export interface FlagModel {
     id: string
@@ -52,11 +52,11 @@ function findMaxNumber(iterable: string[]): number | undefined {
 }
 
 interface MoreMessagesState {
-    database: MoreMessagesDbSchemaV1
+    database: MoreMessagesOldDbSchemaV1
 }
 
-function createInitialMoreMessagesState(moreMessagesDbStorage: IMoreMessagesStorageService): MoreMessagesState {
-    const existingMoreMessagesDb = moreMessagesDbStorage.load()
+function createInitialMoreMessagesState(moreMessagesDbStorage: IMoreMessagesOldDatabaseLocalStorage): MoreMessagesState {
+    const existingMoreMessagesDb = moreMessagesDbStorage.read()
     if (existingMoreMessagesDb) {
         return {
             database: existingMoreMessagesDb
@@ -78,9 +78,9 @@ interface FlagsState {
     enabledFlags: Set<string>
 }
 
-function createInitialFlagState(flagsDatabaseStorage: IFlagsDatabaseStorageService) {
+function createInitialFlagState(flagsDatabaseStorage: IFlagsDatabaseLocalStorage) {
     const now = new Date().getTime()
-    const existingFlagsDatabase = flagsDatabaseStorage.load()
+    const existingFlagsDatabase = flagsDatabaseStorage.read()
 
     let state: FlagsState
     if (existingFlagsDatabase) {
@@ -165,7 +165,7 @@ export function FlagsCollectionSessionModel(
         addFlag(id: string): FlagModel|undefined {
             if (!flagsState.database.knownFlagIds.includes(id)) {
                 flagsState.database.knownFlagIds.push(id)
-                diContext.flagsDatabaseStorage.save(flagsState.database)
+                diContext.flagsDatabaseStorage.write(flagsState.database)
     
                 const flag = {
                     id: id,
@@ -183,13 +183,13 @@ export function FlagsCollectionSessionModel(
             }
     
             flagsState.database.events[flagsState.currentFlagSessionDate].enabledFlags = Array.from(flagsState.enabledFlags)
-            diContext.flagsDatabaseStorage.save(flagsState.database)
+            diContext.flagsDatabaseStorage.write(flagsState.database)
         },
         addMoreMessage(message: string) {
             const now = new Date().getTime()
             moreMessagesState.database.messages[now] = message
     
-            diContext.moreMessagesDbStorage.save(moreMessagesState.database)
+            diContext.moreMessagesDbStorage.write(moreMessagesState.database)
         },
         onFlagsUpdatedBus
     }

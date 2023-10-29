@@ -1,6 +1,5 @@
 import { SessionCreds } from "../Models/SessionCreds"
 import { e, wA } from "../Util/ErrorExtensions"
-import { IAuthStorageService } from "./AuthStorageService"
 import { IBackendService } from "./BackendService"
 
 export interface IAuthService {

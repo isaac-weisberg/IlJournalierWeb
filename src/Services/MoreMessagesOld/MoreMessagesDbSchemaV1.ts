@@ -1,10 +1,10 @@
 import { Dictionary, Record, String, Number, Static } from 'runtypes'
 
-export const MoreMessagesDbSchemaV1Type = Record({
+export const MoreMessagesOldDbSchemaV1Type = Record({
     messages: Dictionary(
         String,        
         Number
     )
 })
 
-export type MoreMessagesDbSchemaV1 = Static<typeof MoreMessagesDbSchemaV1Type>
+export type MoreMessagesOldDbSchemaV1 = Static<typeof MoreMessagesOldDbSchemaV1Type>

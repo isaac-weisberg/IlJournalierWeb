@@ -1,8 +1,9 @@
 import { SessionCreds } from "../../Models/SessionCreds"
+import { IMoreMessagesRequestService } from "./MoreMessagesRequestService"
 import { IStagedMessageStorage } from "./StagedMessageStorage"
 
 export interface IMoreMessagesStagingService {
-
+    stageMessage(message: StagedMessage): void
 }
 
 export interface StagedMessage {
@@ -12,7 +13,8 @@ export interface StagedMessage {
 
 export function MoreMessagesStagingService(
     sessionCreds: SessionCreds,
-    stagedMessageStorage: IStagedMessageStorage
+    stagedMessageStorage: IStagedMessageStorage,
+    moreMessageRequestService: IMoreMessagesRequestService
 ): IMoreMessagesStagingService {
     let currentDownloadPromise: any
 
@@ -25,11 +27,20 @@ export function MoreMessagesStagingService(
             })
         } else {
 
+            currentDownloadPromise = moreMessageRequestService.sendMessages(
+                sessionCreds.accessToken,
+                [
+                    {
+                        unixSeconds: message.unixSeconds,
+                        msg: message.msg
+                    }
+                ]
+            )
         }
     }
 
 
     return {
-
+        stageMessage
     }
 }

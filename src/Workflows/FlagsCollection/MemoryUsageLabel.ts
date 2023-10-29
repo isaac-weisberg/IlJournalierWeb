@@ -1,7 +1,5 @@
 import { StringLengthFormatter } from "../../Extensions/StringLengthFormatter"
 import { ICommonDIContext } from "../../Services/DI"
-import { IFlagsDatabaseStorageService } from "../../Services/FlagsDatabaseStorageServiceV1"
-import { IMoreMessagesStorageService } from "../../Services/MoreMessagesStorageService"
 
 export interface IMemoryUsageLabel {
     root: HTMLDivElement
@@ -21,15 +19,15 @@ export function MemoryUsageLabel(
         }
     }
 
-    let flagsKnownLength = diContext.flagsDatabaseStorage.currentStorageStringLength()
-    let moreMessagesKnownLength = diContext.moreMessagesDbStorage.currentStorageStringLength() 
+    let flagsKnownLength = diContext.flagsDatabaseStorage.getCurrentStorageLength()
+    let moreMessagesKnownLength = diContext.moreMessagesDbStorage.getCurrentStorageLength() 
 
-    diContext.flagsDatabaseStorage.addOnCurrentStorageStringLengthChangedHandler((length) => {
+    diContext.flagsDatabaseStorage.setCurrentStorageChangedHandler((length) => {
         flagsKnownLength = length
         calcAndUpdateText()
     })
 
-    diContext.moreMessagesDbStorage.addOnCurrentStorageStringLengthChangedHandler((length) => {
+    diContext.moreMessagesDbStorage.setCurrentStorageChangedHandler((length) => {
         moreMessagesKnownLength = length
         calcAndUpdateText()
     })

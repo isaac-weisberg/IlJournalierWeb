@@ -1,6 +1,6 @@
 import { SessionCreds } from "../../../Models/SessionCreds"
+import { IAuthLocalStorage } from "../../../Services/Auth/AuthLocalStorage"
 import { IAuthService } from "../../../Services/AuthService"
-import { IAuthStorageService } from "../../../Services/AuthStorageService"
 import { debugLogE, wA } from "../../../Util/ErrorExtensions"
 
 interface UserCredsAndLoginInfo { 
@@ -26,7 +26,7 @@ export interface ICreateUserPresenter {
     saveToClipboard(loginKey: string): Promise<void>
 }
 
-export function CreateUserPresenter(authService: IAuthService, authStorage: IAuthStorageService): ICreateUserPresenter {
+export function CreateUserPresenter(authService: IAuthService, authStorage: IAuthLocalStorage): ICreateUserPresenter {
     return {
         async saveToClipboard(loginKey) {
             await navigator.clipboard.writeText(loginKey)
@@ -50,7 +50,7 @@ export function CreateUserPresenter(authService: IAuthService, authStorage: IAut
                 this.view?.setLoading(false)
             }
 
-            authStorage.updateCreds(creds)
+            authStorage.write(creds)
 
             this.navigation?.onUserLoggedIn(creds)
         },
@@ -72,7 +72,7 @@ export function CreateUserPresenter(authService: IAuthService, authStorage: IAut
                 this.view?.setLoading(false)
             }
 
-            authStorage.updateCreds(u.creds)
+            authStorage.write(u.creds)
             
             this.view?.onUserCreated(u)
         }

@@ -5,6 +5,7 @@ const neverSentMessagesDbName = 'neverSentMessagesDbName'
 
 const NeverSentMessagesDatabaseType = Record({
     entries: Array(Record({
+        id: String,
         userId: String,
         unixSeconds: Number,
         msg: String

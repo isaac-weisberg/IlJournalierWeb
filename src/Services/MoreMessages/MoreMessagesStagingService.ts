@@ -16,7 +16,41 @@ export function MoreMessagesStagingService(
     stagedMessageStorage: IStagedMessageStorage,
     moreMessageRequestService: IMoreMessagesRequestService
 ): IMoreMessagesStagingService {
-    let currentDownloadPromise: any
+    let currentDownloadPromise: Promise<void>|undefined
+
+    function sendNeverSentMessagesIfNeeded() {
+        const allNeverSentMessages = stagedMessageStorage.getNeverSentMessages(sessionCreds.userId)
+        if (allNeverSentMessages.length == 0) {
+            return
+        }
+
+        if (currentDownloadPromise) {
+            console.error("WHAT THE FUCK?!")
+            return
+        }
+
+        const messagesToSend = allNeverSentMessages.map(message => {
+            return {
+                msg: message.msg,
+                unixSeconds: message.unixSeconds
+            }
+        })
+
+        currentDownloadPromise = moreMessageRequestService.sendMessages(
+            sessionCreds.accessToken,
+            messagesToSend
+        )
+        .then(() => {
+            stagedMessageStorage.removeNeverSentMessages(allNeverSentMessages.map(msg => msg.id))
+        })
+        .catch(() => {
+            
+        })
+        .finally(() => {
+            currentDownloadPromise = undefined
+            sendNeverSentMessagesIfNeeded()
+        })
+    }
 
     function stageMessage(message: StagedMessage) {
         if (currentDownloadPromise) {
@@ -26,16 +60,38 @@ export function MoreMessagesStagingService(
                 msg: message.msg
             })
         } else {
+            const allNeverSentMessages = stagedMessageStorage.getNeverSentMessages(sessionCreds.userId)
 
-            currentDownloadPromise = moreMessageRequestService.sendMessages(
+            const messagesToSend = allNeverSentMessages.map(message => {
+                return {
+                    msg: message.msg,
+                    unixSeconds: message.unixSeconds
+                }
+            }).concat([
+                {
+                    unixSeconds: message.unixSeconds,
+                    msg: message.msg
+                }
+            ])
+
+            moreMessageRequestService.sendMessages(
                 sessionCreds.accessToken,
-                [
-                    {
-                        unixSeconds: message.unixSeconds,
-                        msg: message.msg
-                    }
-                ]
+                messagesToSend
             )
+            .then(() => {
+                stagedMessageStorage.removeNeverSentMessages(allNeverSentMessages.map(msg => msg.id))
+            })
+            .catch(() => {
+                stagedMessageStorage.storeANeverSentMessage({
+                    userId: sessionCreds.userId,
+                    unixSeconds: message.unixSeconds,
+                    msg: message.msg
+                })
+            })
+            .finally(() => {
+                currentDownloadPromise = undefined
+                sendNeverSentMessagesIfNeeded()
+            })
         }
     }
 

@@ -1,3 +1,5 @@
+import { IMoreMessageStagingService } from "../../Services/MoreMessages/MoreMessageStagingService"
+import { IStagedMessageStorage } from "../../Services/MoreMessages/StagedMessageStorage"
 import { Bus, IBus } from "../../Util/Bus"
 import { FlagModel, IFlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 
@@ -9,7 +11,10 @@ export interface IFlagsCollectionPresenter {
     onFlagsUpdated: IBus<void>
 }
 
-export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsCollectionSessionModel): IFlagsCollectionPresenter {
+export function FlagsCollectionPresenter(
+    flagsCollectionSessionModel: IFlagsCollectionSessionModel,
+    moreMessageStagingService: IMoreMessageStagingService
+): IFlagsCollectionPresenter {
     let flags = flagsCollectionSessionModel.flags()
 
     function getFlags(): FlagModel[] {
@@ -42,6 +47,11 @@ export function FlagsCollectionPresenter(flagsCollectionSessionModel: IFlagsColl
             return addedFlag
         },
         addMoreMessage(value) {
+            const unixSeconds = Math.round(new Date().getTime() / 1000)
+            moreMessageStagingService.stageMessage({
+                unixSeconds: unixSeconds,
+                msg: value
+            })
             flagsCollectionSessionModel.addMoreMessage(value)
         },
         onFlagsUpdated: onFlagsUpdatedBus

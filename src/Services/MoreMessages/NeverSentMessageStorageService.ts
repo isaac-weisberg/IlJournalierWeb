@@ -12,8 +12,10 @@ const NeverSentMessagesDatabaseType = Record({
     }))
 })
 
-export type INeverSentMessagesStorageService = ITypedLocalStorageService<typeof NeverSentMessagesDatabaseType>
+export interface INeverSentMessageStorageService extends ITypedLocalStorageService<typeof NeverSentMessagesDatabaseType> {
 
-export function NeverSentMessagesStorageService(): INeverSentMessagesStorageService {
+}
+
+export function NeverSentMessageStorageService(): INeverSentMessageStorageService {
     return TypedLocalStorageService(neverSentMessagesDbName, NeverSentMessagesDatabaseType)
 }

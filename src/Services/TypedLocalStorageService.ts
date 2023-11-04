@@ -23,8 +23,7 @@ export function TypedLocalStorageService<RecordType extends RuntypeBase>(storage
         }
     }
 
-
-    function read(): { record: Static<RecordType>, rawLength: number }|undefined {
+    function read(): Static<RecordType>|undefined {
         const untypedExistingDb = localStorage.getItem(storageKey)
         updateLastKnownStrorageLength(untypedExistingDb?.length)
         let _existingDatabase: { record: Static<RecordType>, rawLength: number }|undefined
@@ -45,14 +44,10 @@ export function TypedLocalStorageService<RecordType extends RuntypeBase>(storage
         return _existingDatabase
     }
 
-    function write(value: Static<RecordType>): {rawLength: number} {
+    function write(value: Static<RecordType>) {
         const string = JSON.stringify(value)
         updateLastKnownStrorageLength(string.length)
         localStorage.setItem(storageKey, string)
-
-        return {
-            rawLength: string.length
-        }
     }
 
     function writeRaw(value: string) {

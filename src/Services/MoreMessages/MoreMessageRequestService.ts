@@ -3,7 +3,7 @@ import { IBackendService } from "../BackendService";
 import { IAccessTokenHavingRequest } from "../../Models/IAccessTokenHavingRequest";
 import { wA } from "../../Util/ErrorExtensions";
 
-export interface IMoreMessagesRequestService {
+export interface IMoreMessageRequestService {
     sendMessages(accessToken: string, models: AddMoreMessageRequestMessageModel[]): Promise<void>
 }
 
@@ -16,7 +16,7 @@ interface AddMoreMessageRequest extends IAccessTokenHavingRequest {
     requests: AddMoreMessageRequestMessageModel[]
 }
 
-export function MoreMessagesRequestService(backendService: IBackendService): IMoreMessagesRequestService {
+export function MoreMessageRequestService(backendService: IBackendService): IMoreMessageRequestService {
     async function sendMessages(accessToken: string, models: AddMoreMessageRequestMessageModel[]) {
         const body: AddMoreMessageRequest = {
             accessToken: accessToken,

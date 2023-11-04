@@ -1,4 +1,4 @@
-import { INeverSentMessagesStorageService } from "./MoreMessagesStorageService"
+import { INeverSentMessageStorageService } from "./NeverSentMessageStorageService"
 
 export interface IStagedMessageStorage {
     storeANeverSentMessage(message: NeverSentMessageWithNoId): void
@@ -19,7 +19,28 @@ export interface NeverSentMessageWithNoId {
     msg: string
 }
 
-export function StagedMessageStorage(neverSentMessagesStorageService: INeverSentMessagesStorageService): IStagedMessageStorage {
+export function StagedMessageStorage(neverSentMessagesStorageService: INeverSentMessageStorageService): IStagedMessageStorage {
+    let neverSentMessages: {
+        entries: NeverSentMessage[]
+    }
+
+    neverSentMessages = neverSentMessagesStorageService.read() || {
+        entries: []
+    }
+
+    let syncScheduled = false
+    function syncToStorage() {
+        if (syncScheduled) {
+            return
+        }
+        
+        syncScheduled = true
+        setTimeout(() => {
+            neverSentMessagesStorageService.write(neverSentMessages)
+            syncScheduled = false
+        }, 0)
+    }
+
     function storeANeverSentMessage(message: NeverSentMessageWithNoId) {
         const id = self.crypto.randomUUID()
         const entry = {
@@ -29,49 +50,29 @@ export function StagedMessageStorage(neverSentMessagesStorageService: INeverSent
             unixSeconds: message.unixSeconds
         }
 
-        const neverSentMessages = neverSentMessagesStorageService.read()
-        let newNeverSentMessages: typeof neverSentMessages
-        if (neverSentMessages) {
-            neverSentMessages.entries.push(entry)
-            newNeverSentMessages = neverSentMessages
-        } else {
-            newNeverSentMessages = {
-                entries: [ entry ]
-            }
-        }
+        neverSentMessages.entries.push(entry)
 
-        neverSentMessagesStorageService.write(newNeverSentMessages)
+        syncToStorage()
     }
 
     function getNeverSentMessages(userId: string): NeverSentMessage[] {
-        let neverSentMessages = neverSentMessagesStorageService.read()
-
-        if (neverSentMessages) {
-            return compactMap(neverSentMessages.entries, (el) => {
-                if (el.userId == userId) {
-                    return el
-                }
-                return undefined
-            })
-        }
-
-        return []
+        return compactMap(neverSentMessages.entries, (el) => {
+            if (el.userId == userId) {
+                return el
+            }
+            return undefined
+        })
     }
 
     return {
         storeANeverSentMessage,
         getNeverSentMessages,
         removeNeverSentMessages(ids) {
-            const neverSentMessages = neverSentMessagesStorageService.read()
-            if (neverSentMessages) {
-                const newEntries = neverSentMessages.entries.filter((el) => {
-                    return !ids.includes(el.id)
-                })
+            neverSentMessages.entries = neverSentMessages.entries.filter((el) => {
+                return !ids.includes(el.id)
+            })
 
-                neverSentMessagesStorageService.write({
-                    entries: newEntries
-                })
-            }
+            syncToStorage()
         },
     }
 }

@@ -1,4 +1,4 @@
-import { ICommonDIContext } from "../Services/DI";
+import { AuthDIContext, ICommonDIContext } from "../Services/DI";
 import { CreateUserCoordinator } from "./Auth/CreateUserController/CreateUserCoordinator";
 import { FlagsCollectionCoordinator } from "./FlagsCollection/FlagsCollectionCoordinator";
 import { INavigationController } from "./NavigationController/NavigationController";
@@ -13,5 +13,7 @@ export async function RootCoordinatior(
         existingCreds = await CreateUserCoordinator(nc, di)
     }
 
-    return await FlagsCollectionCoordinator(existingCreds, di, nc)
+    const authDi = AuthDIContext(di, existingCreds)
+
+    return await FlagsCollectionCoordinator(di, authDi, nc)
 }

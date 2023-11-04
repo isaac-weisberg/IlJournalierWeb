@@ -78,7 +78,7 @@ export function StagedMessageStorage(neverSentMessagesStorageService: INeverSent
 }
 
 function compactMap<El, Target>(arr: El[], predicate: (el: El) => Target|undefined): Target[] {
-    let newArr = Array<Target>(arr.length)
+    let newArr: Target[] = []
     for (const el of arr) {
         const target = predicate(el)
         if (target) {

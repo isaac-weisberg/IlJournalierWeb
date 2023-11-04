@@ -26,7 +26,7 @@ export function ViewLoginKey(loginKeyToDisplay: string, di: ICommonDIContext, ha
     })
 
     loginInfoField.root.style.margin = '0px auto'
-    loginInfoField.root.style.width = 'calc(100vw - 32px)'
+    loginInfoField.root.style.width = 'calc(100% - 32px)'
 
     loginInfoField.setValue(loginKeyToDisplay)
 

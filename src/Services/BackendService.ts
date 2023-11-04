@@ -33,10 +33,10 @@ export interface IBackendService {
 
 export interface BackendResponse<Body> {
     response: Response
-    body: Promise<Body>
+    body: Body
 }
 
-function preJournaliered(s: string): string {
+export function preJournaliered(s: string): string {
     return `/iljournalierserver/${s}`
 }
 
@@ -93,13 +93,13 @@ export function BackendService(networkingService: INetworkingService): IBackendS
             throw serverReturnedUnexpectedStatus
         }
 
-        const responseBodyPromise = wA(parsingResponseBodyFailed, async () => {
+        const responseBody = await wA(parsingResponseBodyFailed, async () => {
             return await parseJson(response, responseType)
         })
 
         return {
             response,
-            body: responseBodyPromise
+            body: responseBody
         }
     }
 

@@ -17,9 +17,9 @@ export function MoreMessageStagingService(
     moreMessageRequestService: IMoreMessageRequestService
 ): IMoreMessageStagingService {
     
-    let currentDownloadPromise: Promise<void>|undefined
-    function sendNeverSentMessagesIfNeeded() {
-        if (currentDownloadPromise) {
+    let loading = false
+    async function sendNeverSentMessagesIfNeeded() {
+        if (loading) {
             return
         }
 
@@ -35,20 +35,22 @@ export function MoreMessageStagingService(
             }
         })
 
-        currentDownloadPromise = moreMessageRequestService.sendMessages(
-            sessionCreds.accessToken,
-            messagesToSend
-        )
-        .then(() => {
-            stagedMessageStorage.removeNeverSentMessages(allNeverSentMessages.map(msg => msg.id))
-        })
-        .catch(() => {
-            
-        })
-        .finally(() => {
-            currentDownloadPromise = undefined
-            sendNeverSentMessagesIfNeeded()
-        })
+        loading = true
+        
+        try {
+            await moreMessageRequestService.sendMessages(
+                sessionCreds.accessToken,
+                messagesToSend
+            )
+        } catch {
+            loading = false
+            // shame
+            return
+        }
+
+        stagedMessageStorage.removeNeverSentMessages(allNeverSentMessages.map(msg => msg.id))
+        loading = false
+        sendNeverSentMessagesIfNeeded()
     }
 
     function stageMessage(message: StagedMessage) {

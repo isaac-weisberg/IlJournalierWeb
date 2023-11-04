@@ -23,27 +23,6 @@ export function TypedLocalStorageService<RecordType extends RuntypeBase>(storage
         }
     }
 
-    function read(): Static<RecordType>|undefined {
-        const untypedExistingDb = localStorage.getItem(storageKey)
-        updateLastKnownStrorageLength(untypedExistingDb?.length)
-        let _existingDatabase: { record: Static<RecordType>, rawLength: number }|undefined
-        try {
-            if (untypedExistingDb) {
-                const json = JSON.parse(untypedExistingDb)
-                const record: Static<RecordType> = recordType.check(json)
-                _existingDatabase = {
-                    record: record,
-                    rawLength: untypedExistingDb.length
-                }
-            } else {
-                _existingDatabase = undefined
-            }
-        } catch {
-            _existingDatabase = undefined
-        }
-        return _existingDatabase
-    }
-
     function write(value: Static<RecordType>) {
         const string = JSON.stringify(value)
         updateLastKnownStrorageLength(string.length)
@@ -67,7 +46,24 @@ export function TypedLocalStorageService<RecordType extends RuntypeBase>(storage
     }
 
     return {
-        read, write, writeRaw, readRaw, remove,
+        read(): Static<RecordType>|undefined {
+            const untypedExistingDb = localStorage.getItem(storageKey)
+            updateLastKnownStrorageLength(untypedExistingDb?.length)
+            let _existingDatabase: Static<RecordType>|undefined
+            try {
+                if (untypedExistingDb) {
+                    const json = JSON.parse(untypedExistingDb)
+                    const record: Static<RecordType> = recordType.check(json)
+                    _existingDatabase = record
+                } else {
+                    _existingDatabase = undefined
+                }
+            } catch {
+                _existingDatabase = undefined
+            }
+            return _existingDatabase
+        },
+        write, writeRaw, readRaw, remove,
         getCurrentStorageLength(): number|undefined {
             return lastKnownStorageLength
         },

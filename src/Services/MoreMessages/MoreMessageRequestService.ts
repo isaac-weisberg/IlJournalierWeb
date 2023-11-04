@@ -1,5 +1,5 @@
 import { Unknown } from "runtypes";
-import { IBackendService } from "../BackendService";
+import { IBackendService, preJournaliered } from "../BackendService";
 import { IAccessTokenHavingRequest } from "../../Models/IAccessTokenHavingRequest";
 import { wA } from "../../Util/ErrorExtensions";
 
@@ -25,8 +25,12 @@ export function MoreMessageRequestService(backendService: IBackendService): IMor
 
         const jsonString = JSON.stringify(body)
         
-        wA('calling messages/add failed', async () => {
-            return await backendService.genericallyRequest('messages/add', jsonString, Unknown)
+        await wA('calling messages/add failed', async () => {
+            try {
+                return await backendService.genericallyRequest(preJournaliered('messages/add'), jsonString, Unknown)
+            } catch(e) {
+                throw e
+            }
         })
     }
 

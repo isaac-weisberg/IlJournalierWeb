@@ -1,4 +1,5 @@
 import { SessionCreds } from "../../Models/SessionCreds"
+import { convertMaybeIntoCauseChain } from "../../Util/ErrorExtensions"
 import { IMoreMessageRequestService } from "./MoreMessageRequestService"
 import { IStagedMessageStorage } from "./StagedMessageStorage"
 
@@ -42,13 +43,16 @@ export function MoreMessageStagingService(
                 sessionCreds.accessToken,
                 messagesToSend
             )
-        } catch {
+        } catch(e) {
             loading = false
+
+            console.error("failod", convertMaybeIntoCauseChain(e))
             // shame
             return
         }
+        const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
 
-        stagedMessageStorage.removeNeverSentMessages(allNeverSentMessages.map(msg => msg.id))
+        stagedMessageStorage.removeNeverSentMessages(messageIdsToRemove)
         loading = false
         sendNeverSentMessagesIfNeeded()
     }

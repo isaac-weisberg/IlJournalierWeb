@@ -21,7 +21,7 @@ export function wS<R>(msg: string, work: () => R): R {
     }
 }
 
-function convertMaybeIntoCauseChain(m: any) {
+export function convertMaybeIntoCauseChain(m: any) {
     let causes: any[] = []
     let parent: unknown = m
     if (m instanceof Error) {

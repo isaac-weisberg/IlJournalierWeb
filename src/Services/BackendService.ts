@@ -28,7 +28,8 @@ const serverReturnedUnexpectedStatus = 'server returned unexpected status'
 export interface IBackendService {
     createUser(): Promise<CreateUserResponseBody>
     login(magicKey: string): Promise<LoginResponseBody>
-    genericallyRequest<RecordType extends RuntypeBase>(path: string, body: any|undefined, responseType: RecordType): Promise<BackendResponse<Static<RecordType>>>
+    genericallyRequestWResponseBody<RecordType extends RuntypeBase>(path: string, body: any|undefined, responseType: RecordType): Promise<BackendResponse<Static<RecordType>>>
+    genericallyRequestVoid(path: string, body: any|undefined): Promise<Response>
 }
 
 export interface BackendResponse<Body> {
@@ -47,7 +48,7 @@ export function BackendService(networkingService: INetworkingService): IBackendS
     const baseUrl = new URL("http://localhost:24610")
 
     async function createUser(): Promise<CreateUserResponseBody> {
-        const resp = await genericallyRequest(userCreateRoute, undefined, CreateUserResponseBodyType)
+        const resp = await genericallyRequestWResponseBody(userCreateRoute, undefined, CreateUserResponseBodyType)
 
         if (resp.response.status != 200) {
             throw e('unexpected response from server')
@@ -57,7 +58,7 @@ export function BackendService(networkingService: INetworkingService): IBackendS
     }
 
     async function login(magicKey: string) {
-        const resp = await genericallyRequest(userLoginRoute, {
+        const resp = await genericallyRequestWResponseBody(userLoginRoute, {
             magicKey
         }, LoginResponseBodyType)
 
@@ -74,7 +75,7 @@ export function BackendService(networkingService: INetworkingService): IBackendS
         return await resp.body
     }
 
-    async function genericallyRequest<RecordType extends RuntypeBase>(path: string, body: any|undefined, responseType: RecordType): Promise<BackendResponse<Static<RecordType>>> {
+    async function genericallyRequestWResponseBody<RecordType extends RuntypeBase>(path: string, body: any|undefined, responseType: RecordType): Promise<BackendResponse<Static<RecordType>>> {
         const url = new URL(path, baseUrl)
 
         const response = await wA(networkingFailedError, async () => {
@@ -103,9 +104,31 @@ export function BackendService(networkingService: INetworkingService): IBackendS
         }
     }
 
+    async function genericallyRequestVoid(path: string, body: any|undefined): Promise<Response> {
+        const url = new URL(path, baseUrl)
+
+        const response = await wA(networkingFailedError, async () => {
+            return await networkingService.request(url, Method.POST, body)
+        })
+
+        if (response.status >= 500) {
+            throw serverReturnedError
+        }
+
+        if (response.status == 401) {
+            throw serverReturnedUnauthorized
+        }
+
+        if (response.status != 200) {
+            throw serverReturnedUnexpectedStatus
+        }
+        return response
+    }
+
     return {
         createUser,
         login,
-        genericallyRequest
+        genericallyRequestWResponseBody: genericallyRequestWResponseBody,
+        genericallyRequestVoid
     }
 }

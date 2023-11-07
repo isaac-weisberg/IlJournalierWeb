@@ -3,13 +3,16 @@ import { ICommonDIContext } from "../../Services/DI"
 import { StylishButton } from "../../Views/StylishButton"
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import './DevPanel.css'
+import { IDevPanelPresenter } from "./DevPanelPresenter"
 import { ReadWriteDbWidget } from "./ReadWriteDbWidget"
+import { SendAwayLegacyMessagesWidget } from "./SendAwayLegacyMessagesWidget/SendAwayLegacyMessagesWidget"
 
 export interface IDevPanel {
     root: HTMLDivElement
 }
 
 export function DevPanel(
+    presenter: IDevPanelPresenter,
     diContext: ICommonDIContext
 ): IDevPanel {
     const div = document.createElement('div')
@@ -73,11 +76,15 @@ export function DevPanel(
 
         div.appendChild(currentPersistenceStatusInput.root)
         div.appendChild(requestPersistenceButton.root)
+
+        const sendAwayLegacyMessagesWidget = SendAwayLegacyMessagesWidget(presenter.sendAwayLegacyMessagesPresenter)
+
+        div.appendChild(sendAwayLegacyMessagesWidget.div)
     }
 
     let devButtonTapped = 0
     const devButton = StylishButton({ 
-        title: 'devmode', 
+        title: 'devmode',
         themeService: diContext.themeService, 
         handler: () => {
             devButtonTapped += 1

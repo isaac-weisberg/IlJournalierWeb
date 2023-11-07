@@ -71,7 +71,7 @@ export function FlagsCollectionViewController(presenter: IFlagsCollectionPresent
     memoryUsageComponent.root.style.marginRight = '16px'
     scrollContent.appendChild(memoryUsageComponent.root)
 
-    const devPanel = DevPanel(diContext)
+    const devPanel = DevPanel(presenter.devPanelPresenter, diContext)
     devPanel.root.style.marginTop = '700px'
     scrollContent.appendChild(devPanel.root)
 

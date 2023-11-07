@@ -11,7 +11,11 @@ export async function FlagsCollectionCoordinator(
 ): Promise<never> {
     const flagsCollectionSessionModel = FlagsCollectionSessionModel(di)
     
-    const flagCollectionPresenter = FlagsCollectionPresenter(flagsCollectionSessionModel, authDi.moreMessageStagingService)
+    const flagCollectionPresenter = FlagsCollectionPresenter(
+        flagsCollectionSessionModel, 
+        authDi.moreMessageStagingService,
+        di.themeService
+    )
 
     const flagsCollectionViewController = FlagsCollectionViewController(flagCollectionPresenter, di)
     nc.setRootController(flagsCollectionViewController)

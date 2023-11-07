@@ -1,6 +1,8 @@
 import { IMoreMessageStagingService } from "../../Services/MoreMessages/MoreMessageStagingService"
 import { IStagedMessageStorage } from "../../Services/MoreMessages/StagedMessageStorage"
+import { IThemeService } from "../../Services/ThemeService"
 import { Bus, IBus } from "../../Util/Bus"
+import { DevPanelPresenter, IDevPanelPresenter } from "../DevPanel/DevPanelPresenter"
 import { FlagModel, IFlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 
 export interface IFlagsCollectionPresenter {
@@ -8,12 +10,14 @@ export interface IFlagsCollectionPresenter {
     setEnabled(id: string, enabled: boolean): void
     addFlag(id: string): FlagModel | undefined
     addMoreMessage: (value: string) => void
-    onFlagsUpdated: IBus<void>
+    onFlagsUpdated: IBus<void>,
+    devPanelPresenter: IDevPanelPresenter
 }
 
 export function FlagsCollectionPresenter(
     flagsCollectionSessionModel: IFlagsCollectionSessionModel,
-    moreMessageStagingService: IMoreMessageStagingService
+    moreMessageStagingService: IMoreMessageStagingService,
+    themeService: IThemeService
 ): IFlagsCollectionPresenter {
     let flags = flagsCollectionSessionModel.flags()
 
@@ -54,6 +58,7 @@ export function FlagsCollectionPresenter(
             })
             flagsCollectionSessionModel.addMoreMessage(value)
         },
-        onFlagsUpdated: onFlagsUpdatedBus
+        onFlagsUpdated: onFlagsUpdatedBus,
+        devPanelPresenter: DevPanelPresenter(themeService)
     }
 }

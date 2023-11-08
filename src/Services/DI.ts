@@ -8,10 +8,12 @@ import { IVisibilityChangeService, VisibilityChangeService } from "./VisibilityC
 import { AuthLocalStorage, IAuthLocalStorage } from "./Auth/AuthLocalStorage"
 import { FlagsDatabaseLocalStorage, IFlagsDatabaseLocalStorage } from "./FlagsDatabase/FlagsDatabaseLocalStorage"
 import { IMoreMessagesOldDatabaseLocalStorage, MoreMessagesOldDatabaseLocalStorage } from "./MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage"
-import { IMoreMessageStagingService, MoreMessageStagingService } from "./MoreMessages/MoreMessageStagingService"
-import { StagedMessageStorage } from "./MoreMessages/StagedMessageStorage"
-import { NeverSentMessageStorageService } from "./MoreMessages/NeverSentMessageStorageService"
-import { MoreMessageRequestService } from "./MoreMessages/MoreMessageRequestService"
+import { IMoreMessageStagingService, MoreMessageStagingService } from "./MoreMessagesStaging/MoreMessageStagingService"
+import { StagedMessageStorage } from "./MoreMessagesStaging/StagedMessageStorage"
+import { NeverSentMessageStorageService } from "./MoreMessagesStaging/NeverSentMessageStorageService"
+import { MoreMessageRequestService } from "./MoreMessagesStaging/MoreMessageRequestService"
+import { MoreMessagesLocalBackupService } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
+import { MoreMessagesLocalBackupDbStorage } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupStorage"
 
 export interface ICommonDIContext {
     persistenceApiService: IStoragePersistenceService
@@ -52,7 +54,14 @@ export function AuthDIContext(di: ICommonDIContext, sessionCreds: SessionCreds):
     const neverSentMessageStorageService = NeverSentMessageStorageService()
     const stagedMessageStorage = StagedMessageStorage(neverSentMessageStorageService)
     const moreMessageRequestService = MoreMessageRequestService(di.backendService)
-    const moreMessageStagingService = MoreMessageStagingService(sessionCreds, stagedMessageStorage, moreMessageRequestService)
+    const MoreMessagesLocalBackupStorage = MoreMessagesLocalBackupDbStorage()
+    const moreMessagesLocalBackupService = MoreMessagesLocalBackupService(MoreMessagesLocalBackupStorage)
+    const moreMessageStagingService = MoreMessageStagingService({
+        sessionCreds,
+        stagedMessageStorage, 
+        moreMessageRequestService,
+        moreMessagesLocalBackupService
+    })
 
     return {
         moreMessageStagingService

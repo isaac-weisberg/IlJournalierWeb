@@ -1,9 +1,7 @@
 import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType, FlagsDbSchemaV1Type } from "../../Services/FlagsDatabase/FlagsDbSchemaV1";
-import { MoreMessagesOldDbSchemaV1 } from "../../Services/MoreMessagesOld/MoreMessagesDbSchemaV1";
 import { ICommonDIContext } from "../../Services/DI";
 import { Bus, IBus } from "../../Util/Bus";
 import { IFlagsDatabaseLocalStorage } from "../../Services/FlagsDatabase/FlagsDatabaseLocalStorage";
-import { IMoreMessagesOldDatabaseLocalStorage } from "../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage";
 
 export interface FlagModel {
     id: string
@@ -14,7 +12,6 @@ export interface IFlagsCollectionSessionModel {
     flags(): FlagModel[]
     addFlag(id: string): FlagModel|undefined
     setFlagEnabled(id: string, isEnabled: boolean): void
-    addMoreMessage(message: string): void
     onFlagsUpdatedBus: IBus<void>
 }
 
@@ -49,27 +46,6 @@ function findMaxNumber(iterable: string[]): number | undefined {
         }
     }
     return maxNumber
-}
-
-interface MoreMessagesState {
-    database: MoreMessagesOldDbSchemaV1
-}
-
-function createInitialMoreMessagesState(moreMessagesDbStorage: IMoreMessagesOldDatabaseLocalStorage): MoreMessagesState {
-    const existingMoreMessagesDb = moreMessagesDbStorage.read()
-    if (existingMoreMessagesDb) {
-        return {
-            database: existingMoreMessagesDb
-        }
-    } else {
-        return {
-            database: {
-                messages: {
-
-                }
-            }
-        }
-    }
 }
 
 interface FlagsState {
@@ -133,7 +109,6 @@ export function FlagsCollectionSessionModel(
 ): IFlagsCollectionSessionModel {
     const onFlagsUpdatedBus = Bus<void>()
 
-    let moreMessagesState = createInitialMoreMessagesState(diContext.moreMessagesDbStorage)
     let flagsState = createInitialFlagState(diContext.flagsDatabaseStorage)
 
     function reloadFlagsState() {
@@ -184,12 +159,6 @@ export function FlagsCollectionSessionModel(
     
             flagsState.database.events[flagsState.currentFlagSessionDate].enabledFlags = Array.from(flagsState.enabledFlags)
             diContext.flagsDatabaseStorage.write(flagsState.database)
-        },
-        addMoreMessage(message: string) {
-            const now = new Date().getTime()
-            moreMessagesState.database.messages[now] = message
-    
-            diContext.moreMessagesDbStorage.write(moreMessagesState.database)
         },
         onFlagsUpdatedBus
     }

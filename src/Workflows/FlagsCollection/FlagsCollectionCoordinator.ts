@@ -12,9 +12,11 @@ export async function FlagsCollectionCoordinator(
     const flagsCollectionSessionModel = FlagsCollectionSessionModel(di)
     
     const flagCollectionPresenter = FlagsCollectionPresenter(
-        flagsCollectionSessionModel, 
-        authDi.moreMessageStagingService,
-        di.themeService
+        {
+            flagsCollectionSessionModel, 
+            moreMessageStagingService: authDi.moreMessageStagingService, 
+            themeService: di.themeService
+        }
     )
 
     const flagsCollectionViewController = FlagsCollectionViewController(flagCollectionPresenter, di)

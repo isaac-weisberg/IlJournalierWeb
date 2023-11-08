@@ -1,7 +1,7 @@
 import { INeverSentMessageStorageService } from "./NeverSentMessageStorageService"
 
 export interface IStagedMessageStorage {
-    storeANeverSentMessage(message: NeverSentMessageWithNoId): void
+    storeANeverSentMessage(message: NeverSentMessage): void
     getNeverSentMessages(userId: string): NeverSentMessage[]
     removeNeverSentMessages(ids: string[]): void
 }
@@ -12,51 +12,17 @@ export interface NeverSentMessage {
     unixSeconds: number
     msg: string
 }
-
-export interface NeverSentMessageWithNoId {
-    userId: string
-    unixSeconds: number
-    msg: string
-}
-
 export function StagedMessageStorage(neverSentMessagesStorageService: INeverSentMessageStorageService): IStagedMessageStorage {
-    let neverSentMessages: {
-        entries: NeverSentMessage[]
-    }
+    function storeANeverSentMessage(message: NeverSentMessage) {
+        const neverSentMessages = neverSentMessagesStorageService.read()
 
-    neverSentMessages = neverSentMessagesStorageService.read() || {
-        entries: []
-    }
-
-    let syncScheduled = false
-    function syncToStorage() {
-        if (syncScheduled) {
-            return
-        }
+        neverSentMessages.entries.push(message)
         
-        syncScheduled = true
-        setTimeout(() => {
-            neverSentMessagesStorageService.write(neverSentMessages)
-            syncScheduled = false
-        }, 0)
-    }
-
-    function storeANeverSentMessage(message: NeverSentMessageWithNoId) {
-        const id = self.crypto.randomUUID()
-        const entry = {
-            id: id,
-            userId: message.userId,
-            msg: message.msg,
-            unixSeconds: message.unixSeconds
-        }
-
-        neverSentMessages.entries.push(entry)
-
-        syncToStorage()
+        neverSentMessagesStorageService.write(neverSentMessages)
     }
 
     function getNeverSentMessages(userId: string): NeverSentMessage[] {
-        return compactMap(neverSentMessages.entries, (el) => {
+        return compactMap(neverSentMessagesStorageService.read().entries, (el) => {
             if (el.userId == userId) {
                 return el
             }
@@ -68,11 +34,12 @@ export function StagedMessageStorage(neverSentMessagesStorageService: INeverSent
         storeANeverSentMessage,
         getNeverSentMessages,
         removeNeverSentMessages(ids) {
+            const neverSentMessages = neverSentMessagesStorageService.read()
             neverSentMessages.entries = neverSentMessages.entries.filter((el) => {
                 return !ids.includes(el.id)
             })
 
-            syncToStorage()
+            neverSentMessagesStorageService.write(neverSentMessages)
         },
     }
 }

@@ -1,5 +1,6 @@
 import { SessionCreds } from "../../Models/SessionCreds"
 import { convertMaybeIntoCauseChain } from "../../Util/ErrorExtensions"
+import { IMoreMessagesLocalBackupService } from "../MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
 import { IMoreMessageRequestService } from "./MoreMessageRequestService"
 import { IStagedMessageStorage } from "./StagedMessageStorage"
 
@@ -13,9 +14,12 @@ export interface StagedMessage {
 }
 
 export function MoreMessageStagingService(
-    sessionCreds: SessionCreds,
-    stagedMessageStorage: IStagedMessageStorage,
-    moreMessageRequestService: IMoreMessageRequestService
+    di: {
+        sessionCreds: SessionCreds,
+        stagedMessageStorage: IStagedMessageStorage,
+        moreMessageRequestService: IMoreMessageRequestService,
+        moreMessagesLocalBackupService: IMoreMessagesLocalBackupService
+    }
 ): IMoreMessageStagingService {
     
     let loading = false
@@ -24,7 +28,7 @@ export function MoreMessageStagingService(
             return
         }
 
-        const allNeverSentMessages = stagedMessageStorage.getNeverSentMessages(sessionCreds.userId)
+        const allNeverSentMessages = di.stagedMessageStorage.getNeverSentMessages(di.sessionCreds.userId)
         if (allNeverSentMessages.length == 0) {
             return
         }
@@ -39,8 +43,8 @@ export function MoreMessageStagingService(
         loading = true
         
         try {
-            await moreMessageRequestService.sendMessages(
-                sessionCreds.accessToken,
+            await di.moreMessageRequestService.sendMessages(
+                di.sessionCreds.accessToken,
                 messagesToSend
             )
         } catch(e) {
@@ -52,17 +56,22 @@ export function MoreMessageStagingService(
         }
         const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
 
-        stagedMessageStorage.removeNeverSentMessages(messageIdsToRemove)
+        di.stagedMessageStorage.removeNeverSentMessages(messageIdsToRemove)
         loading = false
         sendNeverSentMessagesIfNeeded()
     }
 
     function stageMessage(message: StagedMessage) {
-        stagedMessageStorage.storeANeverSentMessage({
-            userId: sessionCreds.userId,
+        const messageId = self.crypto.randomUUID()
+        const entry = {
+            id: messageId,
+            userId: di.sessionCreds.userId,
             unixSeconds: message.unixSeconds,
-            msg: message.msg
-        })
+            msg: message.msg  
+        } 
+
+        di.stagedMessageStorage.storeANeverSentMessage(entry)
+        di.moreMessagesLocalBackupService.saveMessage(entry)
 
         sendNeverSentMessagesIfNeeded()
     }

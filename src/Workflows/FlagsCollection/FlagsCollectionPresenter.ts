@@ -1,5 +1,6 @@
-import { IMoreMessageStagingService } from "../../Services/MoreMessages/MoreMessageStagingService"
-import { IStagedMessageStorage } from "../../Services/MoreMessages/StagedMessageStorage"
+import { IMoreMessagesLocalBackupService } from "../../Services/MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
+import { IMoreMessageStagingService } from "../../Services/MoreMessagesStaging/MoreMessageStagingService"
+import { IStagedMessageStorage } from "../../Services/MoreMessagesStaging/StagedMessageStorage"
 import { IThemeService } from "../../Services/ThemeService"
 import { Bus, IBus } from "../../Util/Bus"
 import { DevPanelPresenter, IDevPanelPresenter } from "../DevPanel/DevPanelPresenter"
@@ -15,10 +16,15 @@ export interface IFlagsCollectionPresenter {
 }
 
 export function FlagsCollectionPresenter(
-    flagsCollectionSessionModel: IFlagsCollectionSessionModel,
-    moreMessageStagingService: IMoreMessageStagingService,
-    themeService: IThemeService
+    di: {
+        flagsCollectionSessionModel: IFlagsCollectionSessionModel,
+        moreMessageStagingService: IMoreMessageStagingService,
+        themeService: IThemeService
+    }
 ): IFlagsCollectionPresenter {
+    const flagsCollectionSessionModel = di.flagsCollectionSessionModel
+
+
     let flags = flagsCollectionSessionModel.flags()
 
     function getFlags(): FlagModel[] {
@@ -52,13 +58,13 @@ export function FlagsCollectionPresenter(
         },
         addMoreMessage(value) {
             const unixSeconds = Math.round(new Date().getTime() / 1000)
-            moreMessageStagingService.stageMessage({
+            const message = {
                 unixSeconds: unixSeconds,
                 msg: value
-            })
-            flagsCollectionSessionModel.addMoreMessage(value)
+            }
+            di.moreMessageStagingService.stageMessage(message)
         },
         onFlagsUpdated: onFlagsUpdatedBus,
-        devPanelPresenter: DevPanelPresenter(themeService)
+        devPanelPresenter: DevPanelPresenter(di.themeService)
     }
 }

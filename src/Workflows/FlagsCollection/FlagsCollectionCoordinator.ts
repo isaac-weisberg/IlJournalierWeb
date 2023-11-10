@@ -5,6 +5,7 @@ import { INavigationController } from "../NavigationController/NavigationControl
 import { FlagsCollectionPresenter } from "./FlagsCollectionPresenter"
 import { FlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 import { FlagsCollectionViewController } from "./FlagsCollectionViewController"
+import { MemoryUsageLabelPresenter } from "./MemoryUsageLabel/MemoryUsageLabelPresenter"
 
 export async function FlagsCollectionCoordinator(
     di: ICommonDIContext,
@@ -31,7 +32,19 @@ export async function FlagsCollectionCoordinator(
         }
     )
 
-    const flagsCollectionViewController = FlagsCollectionViewController(flagCollectionPresenter, di)
+    const memoryLabelPresenter = MemoryUsageLabelPresenter({
+        flagsDatabaseStorage: di.flagsDatabaseStorage,
+        authLocalStorage: di.authLocalStorage,
+        moreMessagesLocalBackupStorage: di.moreMessagesLocalBackupStorage,
+        moreMessagesOldLocalStorage: di.moreMessagesOldLocalStorage,
+        neverSentMessagesLocalStorage: di.neverSentMessageStorageService
+    })
+
+    const flagsCollectionViewController = FlagsCollectionViewController(
+        flagCollectionPresenter, 
+        memoryLabelPresenter, 
+        di
+    )
     nc.setRootController(flagsCollectionViewController)
 
     return new Promise(() => {})

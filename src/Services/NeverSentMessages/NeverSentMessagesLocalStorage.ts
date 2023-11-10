@@ -1,16 +1,24 @@
-import { Record, String, Number, Array, Static } from "runtypes"
+import { Record, String, Number, Array, Static, Dictionary } from "runtypes"
 import { ITypedLocalStorageService, TypedLocalStorageService } from "../TypedLocalStorageService"
 
 const neverSentMessagesDbName = 'neverSentMessagesDbName'
 
-const NeverSentMessagesDatabaseType = Record({
-    entries: Array(Record({
-        id: String,
-        userId: String,
-        unixSeconds: Number,
-        msg: String
-    }))
-})
+const NeverSentMessagesDatabaseType = Record(
+    {
+        users: Dictionary(
+            Record(
+                {
+                    messages: Array(Record({
+                        id: String,
+                        unixSeconds: Number,
+                        msg: String
+                    }))
+                }
+            ),
+            String
+        ),
+    }
+)
 
 export interface INeverSentMessagesLocalStorage extends ITypedLocalStorageService<typeof NeverSentMessagesDatabaseType> { }
 

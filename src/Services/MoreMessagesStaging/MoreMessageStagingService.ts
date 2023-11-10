@@ -58,7 +58,7 @@ export function MoreMessageStagingService(
         }
         const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
 
-        di.neverSentMessagesStorage.removeNeverSentMessages(messageIdsToRemove)
+        di.neverSentMessagesStorage.removeNeverSentMessages(di.sessionCreds.userId, messageIdsToRemove)
         loading = false
         sendNeverSentMessagesIfNeeded()
     }
@@ -67,13 +67,12 @@ export function MoreMessageStagingService(
         const messageId = self.crypto.randomUUID()
         const entry = {
             id: messageId,
-            userId: di.sessionCreds.userId,
             unixSeconds: message.unixSeconds,
             msg: message.msg
         } 
 
-        di.neverSentMessagesStorage.storeANeverSentMessage(entry)
-        di.moreMessagesLocalBackupService.saveMessage(entry)
+        di.neverSentMessagesStorage.storeANeverSentMessage(di.sessionCreds.userId, entry)
+        di.moreMessagesLocalBackupService.saveMessage(di.sessionCreds.userId, entry)
 
         await sendNeverSentMessagesIfNeeded()
     }
@@ -95,14 +94,13 @@ export function MoreMessageStagingService(
                 const id = self.crypto.randomUUID()
                 const entry = {
                     id: id,
-                    userId: di.sessionCreds.userId,
                     unixSeconds: message.unixSeconds,
                     msg: message.msg
                 }
     
                 return entry
             })
-            di.moreMessagesLocalBackupService.saveMessages(backupMessages)
+            di.moreMessagesLocalBackupService.saveMessages(di.sessionCreds.userId, backupMessages)
         }
     }
 }

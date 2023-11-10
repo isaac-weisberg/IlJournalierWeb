@@ -3,16 +3,21 @@ import { FlagsCollectionView } from "./CollectionView/FlagsCollectionView"
 import './FlagsCollectionViewController.css'
 import { StylishTextInput } from "../../Views/StylishTextInput"
 import { FlagsCollectionTitleBanner } from "./TitleBanner/FlagsCollectionTitleBanner"
-import { MemoryUsageLabel } from "./MemoryUsageLabel"
+import { MemoryUsageLabel } from "./MemoryUsageLabel/MemoryUsageLabelView"
 import { DevPanel } from "../DevPanel/DevPanel"
 import { ICommonDIContext } from "../../Services/DI"
 import { IFlagsCollectionPresenter } from "./FlagsCollectionPresenter"
+import { IMemoryUsageLabelPresenter } from "./MemoryUsageLabel/MemoryUsageLabelPresenter"
 
 export interface IFlagsCollectionViewController {
     readonly root: HTMLDivElement
 }
 
-export function FlagsCollectionViewController(presenter: IFlagsCollectionPresenter, diContext: ICommonDIContext) {
+export function FlagsCollectionViewController(
+    presenter: IFlagsCollectionPresenter, 
+    memoryUsageLabelPresenter: IMemoryUsageLabelPresenter,
+    diContext: ICommonDIContext
+) {
     const root = document.createElement('div')
     root.className = "flagsCollectionRoot"
 
@@ -66,7 +71,7 @@ export function FlagsCollectionViewController(presenter: IFlagsCollectionPresent
     moreMessageButton.root.style.marginRight = '16px'
     scrollContent.appendChild(moreMessageButton.root)
 
-    const memoryUsageComponent = MemoryUsageLabel(diContext)
+    const memoryUsageComponent = MemoryUsageLabel(memoryUsageLabelPresenter)
     memoryUsageComponent.root.style.marginLeft = '16px'
     memoryUsageComponent.root.style.marginRight = '16px'
     scrollContent.appendChild(memoryUsageComponent.root)

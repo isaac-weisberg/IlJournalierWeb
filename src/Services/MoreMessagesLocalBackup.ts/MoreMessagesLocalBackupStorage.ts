@@ -1,18 +1,28 @@
 import { ITypedLocalStorageService, TypedLocalStorageService } from "../TypedLocalStorageService";
-import { Record, String, Number, Array } from 'runtypes'
+import { Record, String, Number, Array, Dictionary } from 'runtypes'
 
 const MoreMessagesLocalBackupDbType = Record({
-    messages: Array(Record({
-        id: String,
-        userId: String,
-        unixSeconds: Number,
-        msg: String,
-    }))
+    users: Dictionary(
+        Record(
+            {
+                messages: Array(
+                    Record(
+                        {
+                            id: String,
+                            unixSeconds: Number,
+                            msg: String,
+                        }
+                    )
+                )
+            }
+        ),
+        String
+    )
 })
 
-export interface IMoreMessagesLocalBackupDbStorage extends ITypedLocalStorageService<typeof MoreMessagesLocalBackupDbType> {}
+export interface IMoreMessagesLocalBackupStorage extends ITypedLocalStorageService<typeof MoreMessagesLocalBackupDbType> {}
 
-export function MoreMessagesLocalBackupDbStorage(): IMoreMessagesLocalBackupDbStorage {
+export function MoreMessagesLocalBackupStorage(): IMoreMessagesLocalBackupStorage {
     return TypedLocalStorageService(
         "moreMessagesLocalBackupDb",
         MoreMessagesLocalBackupDbType

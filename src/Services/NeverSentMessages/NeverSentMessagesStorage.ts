@@ -1,50 +1,51 @@
 import { INeverSentMessagesLocalStorage } from "./NeverSentMessagesLocalStorage"
 
 export interface INeverSentMessagesStorage {
-    storeANeverSentMessage(message: NeverSentMessage): void
-    storeMultipleNeverSentMessages(messages: NeverSentMessage[]): void
+    storeANeverSentMessage(userId: string, message: NeverSentMessage): void
     getNeverSentMessages(userId: string): NeverSentMessage[]
-    removeNeverSentMessages(ids: string[]): void
+    removeNeverSentMessages(userId: string, ids: string[]): void
 }
 
 export interface NeverSentMessage {
     id: string
-    userId: string
     unixSeconds: number
     msg: string
 }
 
 export function NeverSentMessagesStorage(neverSentMessagesStorageService: INeverSentMessagesLocalStorage): INeverSentMessagesStorage {
     const neverSentMessages = neverSentMessagesStorageService.read() || {
-        entries: []
+        users: {}
     }
 
     return {
-        storeANeverSentMessage(message: NeverSentMessage) {
-            neverSentMessages.entries.push(message)
-            
-            neverSentMessagesStorageService.write(neverSentMessages)
-        },
-        getNeverSentMessages(userId: string): NeverSentMessage[] {
-            return compactMap(neverSentMessages.entries, (el) => {
-                if (el.userId == userId) {
-                    return el
+        storeANeverSentMessage(userId, message) {
+            if (neverSentMessages.users[userId]) {
+                neverSentMessages.users[userId].messages.push(message)
+            } else {
+                neverSentMessages.users[userId] = {
+                    messages: [message]
                 }
-                return undefined
-            })
-        },
-        removeNeverSentMessages(ids) {
-            neverSentMessages.entries = neverSentMessages.entries.filter((el) => {
-                return !ids.includes(el.id)
-            })
+            }
 
             neverSentMessagesStorageService.write(neverSentMessages)
         },
-        storeMultipleNeverSentMessages(messages) {    
-            neverSentMessages.entries = neverSentMessages.entries.concat(messages)
+        getNeverSentMessages(userId: string): NeverSentMessage[] {
+            const user = neverSentMessages.users[userId]
+            if (!user) {
+                return []
+            }
+
+            return user.messages
+        },
+        removeNeverSentMessages(userId, ids) {
+            if (neverSentMessages.users[userId]) {
+                neverSentMessages.users[userId].messages = neverSentMessages.users[userId].messages.filter((message) => {
+                    return !ids.includes(message.id)
+                })
+            }
             
             neverSentMessagesStorageService.write(neverSentMessages)
-        },
+        }
     }
 }
 

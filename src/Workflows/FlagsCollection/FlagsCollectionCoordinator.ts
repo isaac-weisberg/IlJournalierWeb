@@ -37,7 +37,8 @@ export async function FlagsCollectionCoordinator(
         authLocalStorage: di.authLocalStorage,
         moreMessagesLocalBackupStorage: di.moreMessagesLocalBackupStorage,
         moreMessagesOldLocalStorage: di.moreMessagesOldLocalStorage,
-        neverSentMessagesLocalStorage: di.neverSentMessageStorageService
+        neverSentMessagesLocalStorage: di.neverSentMessageStorageService,
+        lastIdLocalStorage: di.lastIdLocalStorage 
     })
 
     const flagsCollectionViewController = FlagsCollectionViewController(

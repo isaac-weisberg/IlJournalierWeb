@@ -14,6 +14,8 @@ import { INeverSentMessagesLocalStorage, NeverSentMessagesLocalStorage } from ".
 import { MoreMessageRequestService } from "./MoreMessagesStaging/MoreMessageRequestService"
 import { IMoreMessagesLocalBackupService, MoreMessagesLocalBackupService } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
 import { IMoreMessagesLocalBackupStorage, MoreMessagesLocalBackupStorage } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupStorage"
+import { ILastIdLocalStorage, LastIdLocalStorage } from "./MoreMessageLocalIdService/LocalLastIdDatabase"
+import { MoreMessageLocalIdService } from "./MoreMessageLocalIdService/MoreMessageLocalIdService"
 
 export interface ICommonDIContext {
     persistenceApiService: IStoragePersistenceService
@@ -27,6 +29,7 @@ export interface ICommonDIContext {
     moreMessagesLocalBackupStorage: IMoreMessagesLocalBackupStorage,
     moreMessagesLocalBackupService: IMoreMessagesLocalBackupService,
     neverSentMessageStorageService: INeverSentMessagesLocalStorage
+    lastIdLocalStorage: ILastIdLocalStorage
 }
 
 export function CommonDIContext(): ICommonDIContext {
@@ -39,6 +42,7 @@ export function CommonDIContext(): ICommonDIContext {
     const moreMessagesLocalBackupStorage = MoreMessagesLocalBackupStorage()
     const moreMessagesLocalBackupService = MoreMessagesLocalBackupService(moreMessagesLocalBackupStorage)
     const neverSentMessageStorageService = NeverSentMessagesLocalStorage()
+    const lastIdLocalStorage = LastIdLocalStorage()
 
     return {
         neverSentMessageStorageService: neverSentMessageStorageService,
@@ -51,7 +55,8 @@ export function CommonDIContext(): ICommonDIContext {
         authService,
         backendService,
         moreMessagesLocalBackupStorage,
-        moreMessagesLocalBackupService
+        moreMessagesLocalBackupService,
+        lastIdLocalStorage
     }
 }
 
@@ -62,11 +67,13 @@ export interface IAuthDIContext {
 export function AuthDIContext(di: ICommonDIContext, sessionCreds: SessionCreds): IAuthDIContext {
     const stagedMessageStorage = NeverSentMessagesStorage(di.neverSentMessageStorageService)
     const moreMessageRequestService = MoreMessageRequestService(di.backendService)
+    const moreMessagesLocalIdService = MoreMessageLocalIdService(di.lastIdLocalStorage)
     const moreMessageStagingService = MoreMessageStagingService({
         sessionCreds,
         neverSentMessagesStorage: stagedMessageStorage, 
         moreMessageRequestService,
-        moreMessagesLocalBackupService: di.moreMessagesLocalBackupService
+        moreMessagesLocalBackupService: di.moreMessagesLocalBackupService,
+        moreMessageLocalIdService: moreMessagesLocalIdService
     })
 
     return {

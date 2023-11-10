@@ -1,5 +1,6 @@
 import { IAuthLocalStorage } from "../../../Services/Auth/AuthLocalStorage";
 import { IFlagsDatabaseLocalStorage } from "../../../Services/FlagsDatabase/FlagsDatabaseLocalStorage";
+import { ILastIdLocalStorage } from "../../../Services/MoreMessageLocalIdService/LocalLastIdDatabase";
 import { IMoreMessagesLocalBackupStorage } from "../../../Services/MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupStorage";
 import { IMoreMessagesOldLocalStorage } from "../../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage";
 import { INeverSentMessagesLocalStorage } from "../../../Services/NeverSentMessages/NeverSentMessagesLocalStorage";
@@ -16,7 +17,8 @@ export function MemoryUsageLabelPresenter(
         moreMessagesOldLocalStorage: IMoreMessagesOldLocalStorage,
         authLocalStorage: IAuthLocalStorage,
         neverSentMessagesLocalStorage: INeverSentMessagesLocalStorage,
-        moreMessagesLocalBackupStorage: IMoreMessagesLocalBackupStorage
+        moreMessagesLocalBackupStorage: IMoreMessagesLocalBackupStorage,
+        lastIdLocalStorage: ILastIdLocalStorage
     }
 ): IMemoryUsageLabelPresenter {
     const bus = Bus<number|undefined>()
@@ -47,7 +49,8 @@ export function MemoryUsageLabelPresenter(
         di.moreMessagesOldLocalStorage,
         di.authLocalStorage,
         di.neverSentMessagesLocalStorage,
-        di.moreMessagesLocalBackupStorage
+        di.moreMessagesLocalBackupStorage,
+        di.lastIdLocalStorage
     ].forEach((localStorage, index) => {
         knownLengths[index] = localStorage.getCurrentStorageLength()
 

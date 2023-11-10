@@ -1,5 +1,15 @@
 import { ITypedLocalStorageService, TypedLocalStorageService } from "../TypedLocalStorageService";
-import { MoreMessagesOldDbSchemaV1Type } from "./MoreMessagesDbSchemaV1";
+import { Dictionary, Record, String, Number, Static } from 'runtypes'
+
+export const MoreMessagesOldDbSchemaV1Type = Record({
+    messages: Dictionary(
+        String,
+        Number
+    )
+})
+
+export type MoreMessagesOldDbSchemaV1 = Static<typeof MoreMessagesOldDbSchemaV1Type>
+
 
 export type IMoreMessagesOldLocalStorage = ITypedLocalStorageService<typeof MoreMessagesOldDbSchemaV1Type>
 

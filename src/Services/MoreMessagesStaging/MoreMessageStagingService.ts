@@ -3,6 +3,7 @@ import { convertMaybeIntoCauseChain, wA } from "../../Util/ErrorExtensions"
 import { IMoreMessagesLocalBackupService } from "../MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
 import { IMoreMessageRequestService } from "./MoreMessageRequestService"
 import { INeverSentMessagesStorage } from "../NeverSentMessages/NeverSentMessagesStorage"
+import { IMoreMessageLocalIdService } from "../MoreMessageLocalIdService/MoreMessageLocalIdService"
 
 export interface IMoreMessageStagingService {
     stageMessage(message: StagedMessage): Promise<void>
@@ -20,7 +21,8 @@ export function MoreMessageStagingService(
         sessionCreds: SessionCreds,
         neverSentMessagesStorage: INeverSentMessagesStorage,
         moreMessageRequestService: IMoreMessageRequestService,
-        moreMessagesLocalBackupService: IMoreMessagesLocalBackupService
+        moreMessagesLocalBackupService: IMoreMessagesLocalBackupService,
+        moreMessageLocalIdService: IMoreMessageLocalIdService
     }
 ): IMoreMessageStagingService {
     
@@ -64,7 +66,7 @@ export function MoreMessageStagingService(
     }
 
     async function stageMessage(message: StagedMessage) {
-        const messageId = self.crypto.randomUUID()
+        const messageId = di.moreMessageLocalIdService.generateNewId()
         const entry = {
             id: messageId,
             unixSeconds: message.unixSeconds,
@@ -91,7 +93,7 @@ export function MoreMessageStagingService(
         aggressiveSendLegacyMessages,
         localSaveLegacyMessages(messages: StagedMessage[]) {
             const backupMessages = messages.map(message => {
-                const id = self.crypto.randomUUID()
+                const id = di.moreMessageLocalIdService.generateNewId()
                 const entry = {
                     id: id,
                     unixSeconds: message.unixSeconds,

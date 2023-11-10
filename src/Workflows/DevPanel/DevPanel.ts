@@ -27,8 +27,8 @@ export function DevPanel(
         div.appendChild(flagsRWWidget.root)
 
         const moreMsgsRWWidget = ReadWriteDbWidget('MoreMsgsDB', {
-            readString: diContext.moreMessagesDbStorage.readRaw,
-            writeString: diContext.moreMessagesDbStorage.writeRaw
+            readString: diContext.moreMessagesOldLocalStorage.readRaw,
+            writeString: diContext.moreMessagesOldLocalStorage.writeRaw
         }, diContext.themeService)
         div.appendChild(moreMsgsRWWidget.root)
 

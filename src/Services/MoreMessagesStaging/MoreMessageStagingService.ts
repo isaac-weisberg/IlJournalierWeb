@@ -2,10 +2,11 @@ import { SessionCreds } from "../../Models/SessionCreds"
 import { convertMaybeIntoCauseChain } from "../../Util/ErrorExtensions"
 import { IMoreMessagesLocalBackupService } from "../MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
 import { IMoreMessageRequestService } from "./MoreMessageRequestService"
-import { IStagedMessageStorage } from "./StagedMessageStorage"
+import { INeverSentMessagesStorage } from "../NeverSentMessages/NeverSentMessagesStorage"
 
 export interface IMoreMessageStagingService {
-    stageMessage(message: StagedMessage): void
+    stageMessage(message: StagedMessage): Promise<void>
+    stageMultipleLegacyMessages(messages: StagedMessage[]): Promise<void>
 }
 
 export interface StagedMessage {
@@ -16,7 +17,7 @@ export interface StagedMessage {
 export function MoreMessageStagingService(
     di: {
         sessionCreds: SessionCreds,
-        stagedMessageStorage: IStagedMessageStorage,
+        neverSentMessagesStorage: INeverSentMessagesStorage,
         moreMessageRequestService: IMoreMessageRequestService,
         moreMessagesLocalBackupService: IMoreMessagesLocalBackupService
     }
@@ -28,7 +29,7 @@ export function MoreMessageStagingService(
             return
         }
 
-        const allNeverSentMessages = di.stagedMessageStorage.getNeverSentMessages(di.sessionCreds.userId)
+        const allNeverSentMessages = di.neverSentMessagesStorage.getNeverSentMessages(di.sessionCreds.userId)
         if (allNeverSentMessages.length == 0) {
             return
         }
@@ -56,12 +57,12 @@ export function MoreMessageStagingService(
         }
         const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
 
-        di.stagedMessageStorage.removeNeverSentMessages(messageIdsToRemove)
+        di.neverSentMessagesStorage.removeNeverSentMessages(messageIdsToRemove)
         loading = false
         sendNeverSentMessagesIfNeeded()
     }
 
-    function stageMessage(message: StagedMessage) {
+    async function stageMessage(message: StagedMessage) {
         const messageId = self.crypto.randomUUID()
         const entry = {
             id: messageId,
@@ -70,13 +71,35 @@ export function MoreMessageStagingService(
             msg: message.msg  
         } 
 
-        di.stagedMessageStorage.storeANeverSentMessage(entry)
+        di.neverSentMessagesStorage.storeANeverSentMessage(entry)
         di.moreMessagesLocalBackupService.saveMessage(entry)
 
-        sendNeverSentMessagesIfNeeded()
+        await sendNeverSentMessagesIfNeeded()
+    }
+
+    async function stageMultipleLegacyMessages(messages: StagedMessage[]) {
+        const entries = messages.map((message) => {
+            const messageId = self.crypto.randomUUID()
+            const entry = {
+                id: messageId,
+                userId: di.sessionCreds.userId,
+                unixSeconds: message.unixSeconds,
+                msg: message.msg  
+            } 
+            return entry
+        })
+
+        di.neverSentMessagesStorage.storeMultipleNeverSentMessages(entries)
+
+        // not gonna local backup legacy messages, sry
+        // di.moreMessagesLocalBackupService.saveMessage(entry)
+
+
+        await sendNeverSentMessagesIfNeeded()
     }
 
     return {
-        stageMessage
+        stageMessage,
+        stageMultipleLegacyMessages: stageMultipleLegacyMessages
     }
 }

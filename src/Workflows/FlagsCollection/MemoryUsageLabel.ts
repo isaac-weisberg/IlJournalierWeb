@@ -20,7 +20,7 @@ export function MemoryUsageLabel(
     }
 
     let flagsKnownLength = diContext.flagsDatabaseStorage.getCurrentStorageLength()
-    let moreMessagesKnownLength = diContext.moreMessagesDbStorage.getCurrentStorageLength()
+    let moreMessagesKnownLength = diContext.moreMessagesOldLocalStorage.getCurrentStorageLength()
     let authStorageKnownLength = diContext.authLocalStorage.getCurrentStorageLength()
 
     diContext.flagsDatabaseStorage.setCurrentStorageChangedHandler((length) => {
@@ -28,7 +28,7 @@ export function MemoryUsageLabel(
         calcAndUpdateText()
     })
 
-    diContext.moreMessagesDbStorage.setCurrentStorageChangedHandler((length) => {
+    diContext.moreMessagesOldLocalStorage.setCurrentStorageChangedHandler((length) => {
         moreMessagesKnownLength = length
         calcAndUpdateText()
     })

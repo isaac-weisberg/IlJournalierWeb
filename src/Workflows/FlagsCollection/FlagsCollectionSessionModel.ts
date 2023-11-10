@@ -1,4 +1,4 @@
-import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType, FlagsDbSchemaV1Type } from "../../Services/FlagsDatabase/FlagsDbSchemaV1";
+import { FlagsDbSchemaV1, FlagsDbSchemaV1Event, FlagsDbSchemaV1EventType } from "../../Services/FlagsDatabase/FlagsDbSchemaV1";
 import { ICommonDIContext } from "../../Services/DI";
 import { Bus, IBus } from "../../Util/Bus";
 import { IFlagsDatabaseLocalStorage } from "../../Services/FlagsDatabase/FlagsDatabaseLocalStorage";

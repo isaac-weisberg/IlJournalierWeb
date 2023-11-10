@@ -1,7 +1,9 @@
-import { INeverSentMessageStorageService } from "./NeverSentMessageStorageService"
+import { Never } from "runtypes"
+import { INeverSentMessagesLocalStorage } from "./NeverSentMessagesLocalStorage"
 
-export interface IStagedMessageStorage {
+export interface INeverSentMessagesStorage {
     storeANeverSentMessage(message: NeverSentMessage): void
+    storeMultipleNeverSentMessages(messages: NeverSentMessage[]): void
     getNeverSentMessages(userId: string): NeverSentMessage[]
     removeNeverSentMessages(ids: string[]): void
 }
@@ -12,7 +14,8 @@ export interface NeverSentMessage {
     unixSeconds: number
     msg: string
 }
-export function StagedMessageStorage(neverSentMessagesStorageService: INeverSentMessageStorageService): IStagedMessageStorage {
+
+export function NeverSentMessagesStorage(neverSentMessagesStorageService: INeverSentMessagesLocalStorage): INeverSentMessagesStorage {
     function storeANeverSentMessage(message: NeverSentMessage) {
         const neverSentMessages = neverSentMessagesStorageService.read()
 
@@ -39,6 +42,13 @@ export function StagedMessageStorage(neverSentMessagesStorageService: INeverSent
                 return !ids.includes(el.id)
             })
 
+            neverSentMessagesStorageService.write(neverSentMessages)
+        },
+        storeMultipleNeverSentMessages(messages) {    
+            const neverSentMessages = neverSentMessagesStorageService.read()
+
+            neverSentMessages.entries = neverSentMessages.entries.concat(messages)
+            
             neverSentMessagesStorageService.write(neverSentMessages)
         },
     }

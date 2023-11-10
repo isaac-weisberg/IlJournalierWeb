@@ -1,17 +1,17 @@
-import { Array as RuntypeArray, Dictionary, Record, String, Number, Static } from 'runtypes'
+import { Array, Dictionary, Record, String, Number, Static, Optional } from 'runtypes'
 
 export const FlagsDbSchemaV1EventType = Record({
-    enabledFlags: RuntypeArray(String),
+    enabledFlags: Array(String),
     
     // DON'T USE IT ANYMORE, AS OF VERSION `0.8`,
     // THE "MORE" MESSAGES ARE STORED IN SOME OTHER PLACE
-    // moreMessages: Optional(RuntypeArray(String)) 
+    moreMessages: Optional(Array(String)) 
 })
 
 export type FlagsDbSchemaV1Event = Static<typeof FlagsDbSchemaV1EventType>
 
 export const FlagsDbSchemaV1Type = Record({
-    knownFlagIds: RuntypeArray(String),
+    knownFlagIds: Array(String),
     events: Dictionary(
         FlagsDbSchemaV1EventType, 
         Number

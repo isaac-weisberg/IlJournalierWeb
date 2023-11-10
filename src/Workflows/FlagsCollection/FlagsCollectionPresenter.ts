@@ -1,6 +1,4 @@
-import { IMoreMessagesLocalBackupService } from "../../Services/MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
 import { IMoreMessageStagingService } from "../../Services/MoreMessagesStaging/MoreMessageStagingService"
-import { IStagedMessageStorage } from "../../Services/MoreMessagesStaging/StagedMessageStorage"
 import { IThemeService } from "../../Services/ThemeService"
 import { Bus, IBus } from "../../Util/Bus"
 import { DevPanelPresenter, IDevPanelPresenter } from "../DevPanel/DevPanelPresenter"
@@ -15,12 +13,15 @@ export interface IFlagsCollectionPresenter {
     devPanelPresenter: IDevPanelPresenter
 }
 
+type FlagsCollectionPresenterDI = {
+    flagsCollectionSessionModel: IFlagsCollectionSessionModel,
+    moreMessageStagingService: IMoreMessageStagingService,
+    themeService: IThemeService
+}
+
 export function FlagsCollectionPresenter(
-    di: {
-        flagsCollectionSessionModel: IFlagsCollectionSessionModel,
-        moreMessageStagingService: IMoreMessageStagingService,
-        themeService: IThemeService
-    }
+    devPanelPresenter: IDevPanelPresenter,
+    di: FlagsCollectionPresenterDI
 ): IFlagsCollectionPresenter {
     const flagsCollectionSessionModel = di.flagsCollectionSessionModel
 
@@ -65,6 +66,6 @@ export function FlagsCollectionPresenter(
             di.moreMessageStagingService.stageMessage(message)
         },
         onFlagsUpdated: onFlagsUpdatedBus,
-        devPanelPresenter: DevPanelPresenter(di.themeService)
+        devPanelPresenter: devPanelPresenter
     }
 }

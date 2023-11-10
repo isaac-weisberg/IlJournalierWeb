@@ -7,10 +7,10 @@ import { IThemeService, ThemeService } from "./ThemeService"
 import { IVisibilityChangeService, VisibilityChangeService } from "./VisibilityChangeService"
 import { AuthLocalStorage, IAuthLocalStorage } from "./Auth/AuthLocalStorage"
 import { FlagsDatabaseLocalStorage, IFlagsDatabaseLocalStorage } from "./FlagsDatabase/FlagsDatabaseLocalStorage"
-import { IMoreMessagesOldDatabaseLocalStorage, MoreMessagesOldDatabaseLocalStorage } from "./MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage"
+import { IMoreMessagesOldLocalStorage, MoreMessagesOldLocalStorage } from "./MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage"
 import { IMoreMessageStagingService, MoreMessageStagingService } from "./MoreMessagesStaging/MoreMessageStagingService"
-import { StagedMessageStorage } from "./MoreMessagesStaging/StagedMessageStorage"
-import { NeverSentMessageStorageService } from "./MoreMessagesStaging/NeverSentMessageStorageService"
+import { NeverSentMessagesStorage } from "./NeverSentMessages/NeverSentMessagesStorage"
+import { NeverSentMessagesLocalStorage } from "./NeverSentMessages/NeverSentMessagesLocalStorage"
 import { MoreMessageRequestService } from "./MoreMessagesStaging/MoreMessageRequestService"
 import { MoreMessagesLocalBackupService } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
 import { MoreMessagesLocalBackupDbStorage } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupStorage"
@@ -19,7 +19,7 @@ export interface ICommonDIContext {
     persistenceApiService: IStoragePersistenceService
     themeService: IThemeService
     flagsDatabaseStorage: IFlagsDatabaseLocalStorage
-    moreMessagesDbStorage: IMoreMessagesOldDatabaseLocalStorage
+    moreMessagesOldLocalStorage: IMoreMessagesOldLocalStorage
     visibilityChangeService: IVisibilityChangeService
     authLocalStorage: IAuthLocalStorage
     authService: IAuthService
@@ -32,11 +32,11 @@ export function CommonDIContext(): ICommonDIContext {
     const backendService = BackendService(networkingService)
     const authService: IAuthService = AuthService(backendService)
     const flagsDatabaseStorage = FlagsDatabaseLocalStorage()
-    const moreMessagesOldLocalStorage = MoreMessagesOldDatabaseLocalStorage()
+    const moreMessagesOldLocalStorage = MoreMessagesOldLocalStorage()
 
     return {
         flagsDatabaseStorage: flagsDatabaseStorage,
-        moreMessagesDbStorage: moreMessagesOldLocalStorage,
+        moreMessagesOldLocalStorage: moreMessagesOldLocalStorage,
         persistenceApiService: StoragePersistenceService(),
         themeService: ThemeService(),
         visibilityChangeService: VisibilityChangeService(),
@@ -51,14 +51,14 @@ export interface IAuthDIContext {
 }
 
 export function AuthDIContext(di: ICommonDIContext, sessionCreds: SessionCreds): IAuthDIContext {
-    const neverSentMessageStorageService = NeverSentMessageStorageService()
-    const stagedMessageStorage = StagedMessageStorage(neverSentMessageStorageService)
+    const neverSentMessageStorageService = NeverSentMessagesLocalStorage()
+    const stagedMessageStorage = NeverSentMessagesStorage(neverSentMessageStorageService)
     const moreMessageRequestService = MoreMessageRequestService(di.backendService)
     const MoreMessagesLocalBackupStorage = MoreMessagesLocalBackupDbStorage()
     const moreMessagesLocalBackupService = MoreMessagesLocalBackupService(MoreMessagesLocalBackupStorage)
     const moreMessageStagingService = MoreMessageStagingService({
         sessionCreds,
-        stagedMessageStorage, 
+        neverSentMessagesStorage: stagedMessageStorage, 
         moreMessageRequestService,
         moreMessagesLocalBackupService
     })

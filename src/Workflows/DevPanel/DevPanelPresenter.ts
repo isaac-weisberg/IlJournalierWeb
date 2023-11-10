@@ -1,5 +1,5 @@
 import { IThemeService } from "../../Services/ThemeService"
-import { ISendAwayLegacyMessagesPresenter, SendAwayLegacyMessagesPresenter } from "./SendAwayLegacyMessagesWidget/SendAwayLegacyMessagesPresenter"
+import { ISendAwayLegacyMessagesPresenter } from "./SendAwayLegacyMessagesWidget/SendAwayLegacyMessagesPresenter"
 import { SendAwayLegacyMessagesWidget } from "./SendAwayLegacyMessagesWidget/SendAwayLegacyMessagesWidget"
 
 export interface IDevPanelPresenter {
@@ -7,9 +7,9 @@ export interface IDevPanelPresenter {
 }
 
 export function DevPanelPresenter(
-    themeService: IThemeService
+    sendAwayLegacyMessagesPresenter: ISendAwayLegacyMessagesPresenter
 ): IDevPanelPresenter {
     return {
-        sendAwayLegacyMessagesPresenter: SendAwayLegacyMessagesPresenter(themeService)
+        sendAwayLegacyMessagesPresenter
     }
 }

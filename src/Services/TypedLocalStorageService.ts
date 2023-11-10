@@ -12,7 +12,7 @@ export interface ITypedLocalStorageService<RecordType extends RuntypeBase> {
 }
 
 export function TypedLocalStorageService<RecordType extends RuntypeBase>(storageKey: string, recordType: RecordType): ITypedLocalStorageService<RecordType> {
-    let lastKnownStorageLength: number|undefined
+    let lastKnownStorageLength: number|undefined = localStorage.getItem(storageKey)?.length
     let onCurrentStorageStringLengthChanged: ((length: number|undefined) => void)|undefined
 
     function updateLastKnownStrorageLength(untypedExistingDbStringLength: number|undefined) {

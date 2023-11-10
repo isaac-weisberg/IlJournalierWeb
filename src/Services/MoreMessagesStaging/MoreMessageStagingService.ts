@@ -7,6 +7,7 @@ import { INeverSentMessagesStorage } from "../NeverSentMessages/NeverSentMessage
 export interface IMoreMessageStagingService {
     stageMessage(message: StagedMessage): Promise<void>
     aggressiveSendLegacyMessages(messages: StagedMessage[]): Promise<void>
+    localSaveLegacyMessages(messages: StagedMessage[]): void
 }
 
 export interface StagedMessage {
@@ -68,7 +69,7 @@ export function MoreMessageStagingService(
             id: messageId,
             userId: di.sessionCreds.userId,
             unixSeconds: message.unixSeconds,
-            msg: message.msg  
+            msg: message.msg
         } 
 
         di.neverSentMessagesStorage.storeANeverSentMessage(entry)
@@ -88,6 +89,20 @@ export function MoreMessageStagingService(
 
     return {
         stageMessage,
-        aggressiveSendLegacyMessages
+        aggressiveSendLegacyMessages,
+        localSaveLegacyMessages(messages: StagedMessage[]) {
+            const backupMessages = messages.map(message => {
+                const id = self.crypto.randomUUID()
+                const entry = {
+                    id: id,
+                    userId: di.sessionCreds.userId,
+                    unixSeconds: message.unixSeconds,
+                    msg: message.msg
+                }
+    
+                return entry
+            })
+            di.moreMessagesLocalBackupService.saveMessages(backupMessages)
+        }
     }
 }

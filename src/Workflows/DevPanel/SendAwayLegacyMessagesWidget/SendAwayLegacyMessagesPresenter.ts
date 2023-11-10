@@ -17,73 +17,76 @@ export function SendAwayLegacyMessagesPresenter(
         flagCollectionSessionModel: IFlagsCollectionSessionModel
     }
 ): ISendAwayLegacyMessagesPresenter {
+    async function kobe() {
+        const oldEntries = di.moreMessagesOldLocalStorage.read()
+
+        if (!oldEntries) {
+            alert('nothing to send')
+            return
+        }
+
+        let messagesToSend: {
+            msg: string,
+            unixSeconds: number
+        }[]
+        
+        // Super-legacy messages database
+        messagesToSend = di.flagCollectionSessionModel.getLegacyMessages()
+
+        // Separate moreMessages old database
+        let iterationCount = -1
+        for (const key in oldEntries.messages) {
+            iterationCount++
+
+            const unixMilliseconds = Number(key)
+
+            if (isNaN(unixMilliseconds)) {
+                alert(`MoreMessagesOldDB: unreachabe ${key} idx: ${iterationCount}`)
+                return
+            }
+            
+            const message = oldEntries.messages[key]
+            const unixSeconds = Math.round(unixMilliseconds / 1000)
+
+            messagesToSend.push({
+                unixSeconds: unixSeconds, 
+                msg: message
+            })
+        }
+
+        if (messagesToSend.length == 0) {
+            alert('nothing to send really')
+            return
+        }
+
+        try {
+            await wA('agressiveSendLegacyMessages failed', async () => {
+                return await di.moreMessagesStagingService.aggressiveSendLegacyMessages(messagesToSend)
+            })
+        } catch(e) {
+            console.error(convertMaybeIntoString(e))
+            alert(convertMaybeIntoString(e))
+            return
+        }
+
+
+        // success, let's bomb that bitch
+        di.moreMessagesOldLocalStorage.remove()
+        di.flagCollectionSessionModel.nukeLegacyMessages()
+        di.moreMessagesStagingService.localSaveLegacyMessages(messagesToSend)
+    }
+
     let isLoading = false
 
     return {
         themeService: di.themeService,
         async sendAwayLegacyMessages() {
-
             if (isLoading) {
                 return
             }
             isLoading = true
-            const oldEntries = di.moreMessagesOldLocalStorage.read()
-
-            if (!oldEntries) {
-                alert('nothing to send')
-                isLoading = false
-                return
-            }
-
-            let messagesToSend: {
-                msg: string,
-                unixSeconds: number
-            }[]
-            
-            // Super-legacy messages database
-            messagesToSend = di.flagCollectionSessionModel.getLegacyMessages()
-
-            // Separate more messages old database
-            let iterationCount = -1
-            for (const key in oldEntries.messages) {
-                iterationCount++
-
-                const unixMilliseconds = Number(key)
-
-                if (isNaN(unixMilliseconds)) {
-                    alert(`MoreMessagesOldDB: unreachabe ${key} idx: ${iterationCount}`)
-                    isLoading = false
-                    return
-                }
-                
-                const message = oldEntries.messages[key]
-                const unixSeconds = Math.round(unixMilliseconds / 1000)
-
-                // console.log(`Millis ${unixMilliseconds}, sex: ${unixSeconds}`)
-
-                messagesToSend.push({
-                    unixSeconds: unixSeconds, 
-                    msg: message
-                })
-            }
-
-            if (messagesToSend.length == 0) {
-                alert('nothing to send really')
-                isLoading = false
-                return
-            }
-
-            try {
-                await wA('agressiveSendLegacyMessages failed', async () => {
-                    return await di.moreMessagesStagingService.aggressiveSendLegacyMessages(messagesToSend)
-                })
-            } catch(e) {
-                console.error(convertMaybeIntoString(e))
-                alert(convertMaybeIntoString(e))
-                return
-            }
-
-            
-        }
+            await kobe()
+            isLoading = false
+        },
     }
 }

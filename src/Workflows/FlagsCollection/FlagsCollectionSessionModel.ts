@@ -14,6 +14,7 @@ export interface IFlagsCollectionSessionModel {
     setFlagEnabled(id: string, isEnabled: boolean): void
     onFlagsUpdatedBus: IBus<void>
     getLegacyMessages(): LegacyMessage[]
+    nukeLegacyMessages(): void
 }
 
 interface LegacyMessage {
@@ -194,6 +195,15 @@ export function FlagsCollectionSessionModel(
             }
 
             return messages
-        }
+        },
+        nukeLegacyMessages() {
+            for (const value of Object.values(flagsState.database.events)) {
+                if (value.moreMessages) {
+                    value.moreMessages = undefined
+                }
+            }
+
+            diContext.flagsDatabaseStorage.write(flagsState.database)
+        },
     }
 }

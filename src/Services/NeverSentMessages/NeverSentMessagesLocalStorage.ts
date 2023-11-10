@@ -1,6 +1,5 @@
 import { Record, String, Number, Array, Static } from "runtypes"
-import { TypedLocalStorageService } from "../TypedLocalStorageService"
-import { IRamCachedTypedLocalStorage, RamCachedTypedLocalStorage } from "../RamCachedTypedLocalStorage/RamCachedTypedLocalStorage"
+import { ITypedLocalStorageService, TypedLocalStorageService } from "../TypedLocalStorageService"
 
 const neverSentMessagesDbName = 'neverSentMessagesDbName'
 
@@ -13,13 +12,8 @@ const NeverSentMessagesDatabaseType = Record({
     }))
 })
 
-export interface INeverSentMessagesLocalStorage extends IRamCachedTypedLocalStorage<typeof NeverSentMessagesDatabaseType, Static<typeof NeverSentMessagesDatabaseType>> { }
+export interface INeverSentMessagesLocalStorage extends ITypedLocalStorageService<typeof NeverSentMessagesDatabaseType> { }
 
 export function NeverSentMessagesLocalStorage(): INeverSentMessagesLocalStorage {
-    return RamCachedTypedLocalStorage(
-        TypedLocalStorageService(neverSentMessagesDbName, NeverSentMessagesDatabaseType),
-        {
-            entries: []
-        }
-    )
+    return TypedLocalStorageService(neverSentMessagesDbName, NeverSentMessagesDatabaseType)
 }

@@ -1,4 +1,3 @@
-import { Never } from "runtypes"
 import { INeverSentMessagesLocalStorage } from "./NeverSentMessagesLocalStorage"
 
 export interface INeverSentMessagesStorage {
@@ -16,28 +15,25 @@ export interface NeverSentMessage {
 }
 
 export function NeverSentMessagesStorage(neverSentMessagesStorageService: INeverSentMessagesLocalStorage): INeverSentMessagesStorage {
-    function storeANeverSentMessage(message: NeverSentMessage) {
-        const neverSentMessages = neverSentMessagesStorageService.read()
-
-        neverSentMessages.entries.push(message)
-        
-        neverSentMessagesStorageService.write(neverSentMessages)
-    }
-
-    function getNeverSentMessages(userId: string): NeverSentMessage[] {
-        return compactMap(neverSentMessagesStorageService.read().entries, (el) => {
-            if (el.userId == userId) {
-                return el
-            }
-            return undefined
-        })
+    const neverSentMessages = neverSentMessagesStorageService.read() || {
+        entries: []
     }
 
     return {
-        storeANeverSentMessage,
-        getNeverSentMessages,
+        storeANeverSentMessage(message: NeverSentMessage) {
+            neverSentMessages.entries.push(message)
+            
+            neverSentMessagesStorageService.write(neverSentMessages)
+        },
+        getNeverSentMessages(userId: string): NeverSentMessage[] {
+            return compactMap(neverSentMessages.entries, (el) => {
+                if (el.userId == userId) {
+                    return el
+                }
+                return undefined
+            })
+        },
         removeNeverSentMessages(ids) {
-            const neverSentMessages = neverSentMessagesStorageService.read()
             neverSentMessages.entries = neverSentMessages.entries.filter((el) => {
                 return !ids.includes(el.id)
             })
@@ -45,8 +41,6 @@ export function NeverSentMessagesStorage(neverSentMessagesStorageService: INever
             neverSentMessagesStorageService.write(neverSentMessages)
         },
         storeMultipleNeverSentMessages(messages) {    
-            const neverSentMessages = neverSentMessagesStorageService.read()
-
             neverSentMessages.entries = neverSentMessages.entries.concat(messages)
             
             neverSentMessagesStorageService.write(neverSentMessages)

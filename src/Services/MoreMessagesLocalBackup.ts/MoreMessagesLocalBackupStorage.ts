@@ -1,6 +1,5 @@
-import { IRamCachedTypedLocalStorage, RamCachedTypedLocalStorage } from "../RamCachedTypedLocalStorage/RamCachedTypedLocalStorage";
-import { TypedLocalStorageService } from "../TypedLocalStorageService";
-import { Record, String, Number, Array, Static } from 'runtypes'
+import { ITypedLocalStorageService, TypedLocalStorageService } from "../TypedLocalStorageService";
+import { Record, String, Number, Array } from 'runtypes'
 
 const MoreMessagesLocalBackupDbType = Record({
     messages: Array(Record({
@@ -11,16 +10,11 @@ const MoreMessagesLocalBackupDbType = Record({
     }))
 })
 
-export interface IMoreMessagesLocalBackupDbStorage extends IRamCachedTypedLocalStorage<typeof MoreMessagesLocalBackupDbType, Static<typeof MoreMessagesLocalBackupDbType>> {}
+export interface IMoreMessagesLocalBackupDbStorage extends ITypedLocalStorageService<typeof MoreMessagesLocalBackupDbType> {}
 
 export function MoreMessagesLocalBackupDbStorage(): IMoreMessagesLocalBackupDbStorage {
-    return RamCachedTypedLocalStorage(
-        TypedLocalStorageService(
-            "moreMessagesLocalBackupDb",
-            MoreMessagesLocalBackupDbType
-        ),
-        {
-            messages: []
-        }
+    return TypedLocalStorageService(
+        "moreMessagesLocalBackupDb",
+        MoreMessagesLocalBackupDbType
     )
 }

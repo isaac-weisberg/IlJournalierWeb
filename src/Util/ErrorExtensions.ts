@@ -21,7 +21,7 @@ export function wS<R>(msg: string, work: () => R): R {
     }
 }
 
-export function convertMaybeIntoCauseChain(m: any) {
+export function convertMaybeIntoCauseChain(m: any): any[] {
     let causes: any[] = []
     let parent: unknown = m
     if (m instanceof Error) {
@@ -39,6 +39,10 @@ export function convertMaybeIntoCauseChain(m: any) {
     }
 
     return causes
+}
+
+export function convertMaybeIntoString(m: any): string {
+    return convertMaybeIntoCauseChain(m).join('\n')
 }
 
 export function debugLogE(message?: any, ...optionalParams: any[]) {

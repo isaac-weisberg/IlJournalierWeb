@@ -1,12 +1,12 @@
 import { SessionCreds } from "../../Models/SessionCreds"
-import { convertMaybeIntoCauseChain } from "../../Util/ErrorExtensions"
+import { convertMaybeIntoCauseChain, wA } from "../../Util/ErrorExtensions"
 import { IMoreMessagesLocalBackupService } from "../MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
 import { IMoreMessageRequestService } from "./MoreMessageRequestService"
 import { INeverSentMessagesStorage } from "../NeverSentMessages/NeverSentMessagesStorage"
 
 export interface IMoreMessageStagingService {
     stageMessage(message: StagedMessage): Promise<void>
-    stageMultipleLegacyMessages(messages: StagedMessage[]): Promise<void>
+    aggressiveSendLegacyMessages(messages: StagedMessage[]): Promise<void>
 }
 
 export interface StagedMessage {
@@ -77,29 +77,17 @@ export function MoreMessageStagingService(
         await sendNeverSentMessagesIfNeeded()
     }
 
-    async function stageMultipleLegacyMessages(messages: StagedMessage[]) {
-        const entries = messages.map((message) => {
-            const messageId = self.crypto.randomUUID()
-            const entry = {
-                id: messageId,
-                userId: di.sessionCreds.userId,
-                unixSeconds: message.unixSeconds,
-                msg: message.msg  
-            } 
-            return entry
+    async function aggressiveSendLegacyMessages(messages: StagedMessage[]) {
+        return await wA('send messages failed', async () => {
+            return await di.moreMessageRequestService.sendMessages(
+                di.sessionCreds.accessToken,
+                messages
+            )
         })
-
-        di.neverSentMessagesStorage.storeMultipleNeverSentMessages(entries)
-
-        // not gonna local backup legacy messages, sry
-        // di.moreMessagesLocalBackupService.saveMessage(entry)
-
-
-        await sendNeverSentMessagesIfNeeded()
     }
 
     return {
         stageMessage,
-        stageMultipleLegacyMessages: stageMultipleLegacyMessages
+        aggressiveSendLegacyMessages
     }
 }

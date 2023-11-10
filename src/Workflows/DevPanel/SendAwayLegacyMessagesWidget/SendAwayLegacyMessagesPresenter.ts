@@ -1,6 +1,7 @@
 import { IMoreMessagesOldLocalStorage } from "../../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage"
 import { IMoreMessageStagingService } from "../../../Services/MoreMessagesStaging/MoreMessageStagingService"
 import { IThemeService } from "../../../Services/ThemeService"
+import { convertMaybeIntoCauseChain, convertMaybeIntoString, wA } from "../../../Util/ErrorExtensions"
 import { IFlagsCollectionSessionModel } from "../../FlagsCollection/FlagsCollectionSessionModel"
 
 export interface ISendAwayLegacyMessagesPresenter {
@@ -72,7 +73,17 @@ export function SendAwayLegacyMessagesPresenter(
                 return
             }
 
-            await di.moreMessagesStagingService.stageMultipleLegacyMessages(messagesToSend)
+            try {
+                await wA('agressiveSendLegacyMessages failed', async () => {
+                    return await di.moreMessagesStagingService.aggressiveSendLegacyMessages(messagesToSend)
+                })
+            } catch(e) {
+                console.error(convertMaybeIntoString(e))
+                alert(convertMaybeIntoString(e))
+                return
+            }
+
+            
         }
     }
 }

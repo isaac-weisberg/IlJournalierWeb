@@ -1,6 +1,7 @@
 import { IMoreMessagesOldLocalStorage } from "../../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage"
 import { IMoreMessageStagingService } from "../../../Services/MoreMessagesStaging/MoreMessageStagingService"
 import { IThemeService } from "../../../Services/ThemeService"
+import { IFlagsCollectionSessionModel } from "../../FlagsCollection/FlagsCollectionSessionModel"
 
 export interface ISendAwayLegacyMessagesPresenter {
     sendAwayLegacyMessages(): Promise<void>
@@ -11,7 +12,8 @@ export function SendAwayLegacyMessagesPresenter(
     di: {
         moreMessagesOldLocalStorage: IMoreMessagesOldLocalStorage,
         moreMessagesStagingService: IMoreMessageStagingService,
-        themeService: IThemeService
+        themeService: IThemeService,
+        flagCollectionSessionModel: IFlagsCollectionSessionModel
     }
 ): ISendAwayLegacyMessagesPresenter {
     let isLoading = false
@@ -35,17 +37,20 @@ export function SendAwayLegacyMessagesPresenter(
             let messagesToSend: {
                 msg: string,
                 unixSeconds: number
-            }[] = []
+            }[]
             
+            // Super-legacy messages database
+            messagesToSend = di.flagCollectionSessionModel.getLegacyMessages()
+
+            // Separate more messages old database
             let iterationCount = -1
             for (const key in oldEntries.messages) {
                 iterationCount++
 
                 const unixMilliseconds = Number(key)
 
-
                 if (isNaN(unixMilliseconds)) {
-                    alert(`unreachabe ${key} idx: ${iterationCount}`)
+                    alert(`MoreMessagesOldDB: unreachabe ${key} idx: ${iterationCount}`)
                     isLoading = false
                     return
                 }

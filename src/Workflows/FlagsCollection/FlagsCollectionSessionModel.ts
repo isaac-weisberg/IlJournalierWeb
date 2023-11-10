@@ -13,6 +13,11 @@ export interface IFlagsCollectionSessionModel {
     addFlag(id: string): FlagModel|undefined
     setFlagEnabled(id: string, isEnabled: boolean): void
     onFlagsUpdatedBus: IBus<void>
+    getLegacyMessages(): LegacyMessage[]
+}
+
+interface LegacyMessage {
+    unixSeconds: number, msg: string 
 }
 
 const basicFlagNames = [
@@ -160,6 +165,35 @@ export function FlagsCollectionSessionModel(
             flagsState.database.events[flagsState.currentFlagSessionDate].enabledFlags = Array.from(flagsState.enabledFlags)
             diContext.flagsDatabaseStorage.write(flagsState.database)
         },
-        onFlagsUpdatedBus
+        onFlagsUpdatedBus,
+        getLegacyMessages() {
+            let messages: LegacyMessage[] = []
+
+            let iteration = -1
+            for (const key of Object.keys(flagsState.database.events)) {
+                iteration++
+
+                const keyNumber = Number(key)
+
+                if (isNaN(keyNumber)) {
+                    alert(`getLegacyMessages fatal at iteration '${iteration}'`)
+                    return []
+                }
+
+                const flagEntry = flagsState.database.events[keyNumber]
+
+                if (flagEntry.moreMessages) {
+                    const unixSeconds = Math.round(keyNumber / 1000)
+                    for (const message of flagEntry.moreMessages) {
+                        messages.push({
+                            unixSeconds,
+                            msg: message
+                        })
+                    }
+                }
+            }
+
+            return messages
+        }
     }
 }

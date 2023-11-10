@@ -23,8 +23,14 @@ serve:
 servehttp:
 	APP_VERSION=$(APP_VERSION) npx webpack serve --config builddev.config.nohttpsdevserver.js
 
-archive: buildProd
+archive: buildProd serviceworker-prod
 	zip -vr archive/iljournalierweb-$(APP_VERSION).zip build/ -x "*.DS_Store"
+
+serviceworker:
+	APP_VERSION=$(APP_VERSION) MODE=development npx webpack --config serviceworker.config.js
+
+serviceworker-prod:
+	APP_VERSION=$(APP_VERSION) MODE=production npx webpack --config serviceworker.config.js
 
 clean:
 	rm -rf ./build/*

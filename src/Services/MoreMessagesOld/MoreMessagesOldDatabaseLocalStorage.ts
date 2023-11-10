@@ -1,4 +1,3 @@
-import { moreMessagesDbSchemaV1StorageKey } from "../../Util/Const";
 import { ITypedLocalStorageService, TypedLocalStorageService } from "../TypedLocalStorageService";
 import { MoreMessagesOldDbSchemaV1Type } from "./MoreMessagesDbSchemaV1";
 
@@ -6,7 +5,7 @@ export type IMoreMessagesOldLocalStorage = ITypedLocalStorageService<typeof More
 
 export function MoreMessagesOldLocalStorage(): IMoreMessagesOldLocalStorage {
     return TypedLocalStorageService(
-        moreMessagesDbSchemaV1StorageKey,
+        'moreMsgsDbV1',
         MoreMessagesOldDbSchemaV1Type
     )
 }

@@ -1,7 +1,7 @@
 import { IMoreMessagesOldLocalStorage } from "../../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage"
 import { IMoreMessageStagingService } from "../../../Services/MoreMessagesStaging/MoreMessageStagingService"
 import { IThemeService } from "../../../Services/ThemeService"
-import { convertMaybeIntoCauseChain, convertMaybeIntoString, wA } from "../../../Util/ErrorExtensions"
+import { convertMaybeIntoString, wA } from "../../../Util/ErrorExtensions"
 import { IFlagsCollectionSessionModel } from "../../FlagsCollection/FlagsCollectionSessionModel"
 
 export interface ISendAwayLegacyMessagesPresenter {

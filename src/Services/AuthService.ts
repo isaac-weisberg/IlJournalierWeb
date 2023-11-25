@@ -4,7 +4,7 @@ import { IBackendService } from "./BackendService"
 
 export interface IAuthService {
     login(loginInfo: string): Promise<SessionCreds>
-    createUser(): Promise<{ creds: SessionCreds, loginInfo: string }>
+    createUser(): Promise<{ creds: SessionCreds, loginInfo: string}>
 }
 
 const malformedLoginInfoError = e('malformed login info')
@@ -25,7 +25,8 @@ export function AuthService(
             const creds: SessionCreds = {
                 accessToken: u.accessToken,
                 saultGoodman: itsAllGoodMan,
-                userId: u.publicId
+                userId: u.publicId,
+                iv: u.iv
             }
 
             return {
@@ -54,7 +55,8 @@ export function AuthService(
             return {
                 accessToken: resp.accessToken,
                 saultGoodman: part2,
-                userId: resp.publicId
+                userId: resp.publicId,
+                iv: resp.iv
             }
         }
     }

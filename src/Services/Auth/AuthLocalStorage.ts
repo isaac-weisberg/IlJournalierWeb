@@ -6,7 +6,8 @@ const authTotalDataStorageKey = 'auth_totalData'
 const authDatabaseType = Record({
     userId: String,
     accessToken: String,
-    saultGoodman: String
+    saultGoodman: String,
+    iv: String
 })
 
 export type IAuthLocalStorage = ITypedLocalStorageService<typeof authDatabaseType>

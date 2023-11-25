@@ -7,14 +7,16 @@ import { RuntypeBase } from "runtypes/lib/runtype"
 const CreateUserResponseBodyType = Record({
     accessToken: String,
     loginKey: String,
-    publicId: String
+    publicId: String,
+    iv: String
 })
 
 type CreateUserResponseBody = Static<typeof CreateUserResponseBodyType>
 
 const LoginResponseBodyType = Record({
     accessToken: String,
-    publicId: String
+    publicId: String,
+    iv: String
 })
 
 type LoginResponseBody = Static<typeof LoginResponseBodyType>
@@ -128,7 +130,7 @@ export function BackendService(networkingService: INetworkingService): IBackendS
     return {
         createUser,
         login,
-        genericallyRequestWResponseBody: genericallyRequestWResponseBody,
+        genericallyRequestWResponseBody,
         genericallyRequestVoid
     }
 }

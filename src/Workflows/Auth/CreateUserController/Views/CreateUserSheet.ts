@@ -43,6 +43,8 @@ export function CreateUserSheet(di: ICommonDIContext, handlers: CreateUserSheetH
             const value = loginInfoField.value()
             if (value.length > 0) {
                 handlers.login(value)
+            } else {
+                di.consoleBus.post('Login field is empty :)')
             }
         },
         themeService: di.themeService

@@ -1,9 +1,10 @@
 import { SessionCreds } from "../../Models/SessionCreds"
-import { convertMaybeIntoCauseChain, wA } from "../../Util/ErrorExtensions"
+import { convertMaybeIntoCauseChain, convertMaybeIntoString, wA } from "../../Util/ErrorExtensions"
 import { IMoreMessagesLocalBackupService } from "../MoreMessagesLocalBackup/MoreMessagesLocalBackupService"
 import { IMoreMessageRequestService } from "./MoreMessageRequestService"
 import { INeverSentMessagesStorage } from "../NeverSentMessages/NeverSentMessagesStorage"
 import { IMoreMessageLocalIdService } from "../MoreMessageLocalIdService/MoreMessageLocalIdService"
+import { IConsoleBus } from "../ConsoleBus/ConsoleBus"
 
 export interface IMoreMessageStagingService {
     stageMessage(message: StagedMessage): Promise<void>
@@ -22,10 +23,12 @@ export function MoreMessageStagingService(
         neverSentMessagesStorage: INeverSentMessagesStorage,
         moreMessageRequestService: IMoreMessageRequestService,
         moreMessagesLocalBackupService: IMoreMessagesLocalBackupService,
-        moreMessageLocalIdService: IMoreMessageLocalIdService
+        moreMessageLocalIdService: IMoreMessageLocalIdService,
+        consoleBus: IConsoleBus
     }
 ): IMoreMessageStagingService {
     let loading = false
+
     async function sendNeverSentMessagesIfNeeded() {
         if (loading) {
             return
@@ -52,6 +55,8 @@ export function MoreMessageStagingService(
             ))
         } catch(e) {
             loading = false
+
+            di.consoleBus.post(convertMaybeIntoString(e))
 
             console.error("failod", convertMaybeIntoCauseChain(e))
             // shame

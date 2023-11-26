@@ -4,6 +4,7 @@ export interface IThemeService {
     getCurrentStyling(): Styling
     updateTheme(): void
     addChangeListener(listener: ThemeChangeListener): void
+    rmChangeListener(listener: ThemeChangeListener): void
 }
 
 const localStorageThemeStorageKey = 'themeIndex'
@@ -124,6 +125,9 @@ export function ThemeService(): IThemeService {
     return {
         getCurrentStyling,
         updateTheme,
-        addChangeListener
+        addChangeListener,
+        rmChangeListener(removedListener) {
+            listeners = listeners.filter((listener) => listener !== removedListener)
+        },
     }
 }

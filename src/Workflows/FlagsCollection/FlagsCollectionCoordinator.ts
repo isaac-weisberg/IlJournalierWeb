@@ -18,7 +18,8 @@ export async function FlagsCollectionCoordinator(
         themeService: di.themeService,
         moreMessagesOldLocalStorage: di.moreMessagesOldLocalStorage,
         moreMessagesStagingService: authDi.moreMessageStagingService,
-        flagCollectionSessionModel: flagsCollectionSessionModel
+        flagCollectionSessionModel: flagsCollectionSessionModel,
+        consoleBus: di.consoleBus
     })
 
     const devPanelPresenter = DevPanelPresenter(sendAwayLegacyMessagesPresenter)

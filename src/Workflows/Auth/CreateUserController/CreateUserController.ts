@@ -68,13 +68,7 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: ICommo
             })
 
             scrollContent.replaceChild(viewLoginKeySheet.root, createUserSheet.root)
-        },
-        onCreateUserFailed(e) {
-
-        },
-        onLoginFailed(e) {
-            
-        },
+        }
     }
 
     return {

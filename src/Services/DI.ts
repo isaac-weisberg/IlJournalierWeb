@@ -16,6 +16,7 @@ import { IMoreMessagesLocalBackupService, MoreMessagesLocalBackupService } from 
 import { IMoreMessagesLocalBackupStorage, MoreMessagesLocalBackupStorage } from "./MoreMessagesLocalBackup/MoreMessagesLocalBackupStorage"
 import { ILastIdLocalStorage, LastIdLocalStorage } from "./MoreMessageLocalIdService/LocalLastIdDatabase"
 import { MoreMessageLocalIdService } from "./MoreMessageLocalIdService/MoreMessageLocalIdService"
+import { ConsoleBus, IConsoleBus } from "./ConsoleBus/ConsoleBus"
 
 export interface ICommonDIContext {
     persistenceApiService: IStoragePersistenceService
@@ -29,7 +30,8 @@ export interface ICommonDIContext {
     moreMessagesLocalBackupStorage: IMoreMessagesLocalBackupStorage,
     moreMessagesLocalBackupService: IMoreMessagesLocalBackupService,
     neverSentMessageStorageService: INeverSentMessagesLocalStorage
-    lastIdLocalStorage: ILastIdLocalStorage
+    lastIdLocalStorage: ILastIdLocalStorage,
+    consoleBus: IConsoleBus
 }
 
 export function CommonDIContext(): ICommonDIContext {
@@ -43,6 +45,7 @@ export function CommonDIContext(): ICommonDIContext {
     const moreMessagesLocalBackupService = MoreMessagesLocalBackupService(moreMessagesLocalBackupStorage)
     const neverSentMessageStorageService = NeverSentMessagesLocalStorage()
     const lastIdLocalStorage = LastIdLocalStorage()
+    const consoleBus = ConsoleBus()
 
     return {
         neverSentMessageStorageService: neverSentMessageStorageService,
@@ -56,7 +59,8 @@ export function CommonDIContext(): ICommonDIContext {
         backendService,
         moreMessagesLocalBackupStorage,
         moreMessagesLocalBackupService,
-        lastIdLocalStorage
+        lastIdLocalStorage,
+        consoleBus
     }
 }
 
@@ -73,7 +77,8 @@ export function AuthDIContext(di: ICommonDIContext, sessionCreds: SessionCreds):
         neverSentMessagesStorage: stagedMessageStorage, 
         moreMessageRequestService,
         moreMessagesLocalBackupService: di.moreMessagesLocalBackupService,
-        moreMessageLocalIdService: moreMessagesLocalIdService
+        moreMessageLocalIdService: moreMessagesLocalIdService,
+        consoleBus: di.consoleBus
     })
 
     return {

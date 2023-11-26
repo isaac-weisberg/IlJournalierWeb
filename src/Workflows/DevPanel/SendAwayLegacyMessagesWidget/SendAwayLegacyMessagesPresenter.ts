@@ -1,7 +1,8 @@
+import { IConsoleBus } from "../../../Services/ConsoleBus/ConsoleBus"
 import { IMoreMessagesOldLocalStorage } from "../../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage"
 import { IMoreMessageStagingService } from "../../../Services/MoreMessagesStaging/MoreMessageStagingService"
 import { IThemeService } from "../../../Services/ThemeService"
-import { convertMaybeIntoString, wA } from "../../../Util/ErrorExtensions"
+import { convertMaybeIntoCauseChain, convertMaybeIntoString, wA } from "../../../Util/ErrorExtensions"
 import { IFlagsCollectionSessionModel } from "../../FlagsCollection/FlagsCollectionSessionModel"
 
 export interface ISendAwayLegacyMessagesPresenter {
@@ -14,7 +15,8 @@ export function SendAwayLegacyMessagesPresenter(
         moreMessagesOldLocalStorage: IMoreMessagesOldLocalStorage,
         moreMessagesStagingService: IMoreMessageStagingService,
         themeService: IThemeService,
-        flagCollectionSessionModel: IFlagsCollectionSessionModel
+        flagCollectionSessionModel: IFlagsCollectionSessionModel,
+        consoleBus: IConsoleBus
     }
 ): ISendAwayLegacyMessagesPresenter {
     async function kobe() {
@@ -66,6 +68,8 @@ export function SendAwayLegacyMessagesPresenter(
         } catch(e) {
             console.error(convertMaybeIntoString(e))
             alert(convertMaybeIntoString(e))
+
+            di.consoleBus.post(convertMaybeIntoString(e))
             return
         }
 

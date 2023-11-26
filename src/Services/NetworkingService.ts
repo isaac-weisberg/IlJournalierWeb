@@ -1,3 +1,5 @@
+import { wA } from "../Util/ErrorExtensions"
+
 export enum Method {
     GET = "GET",
     POST = "POST",
@@ -14,10 +16,10 @@ export function NetworkingService(): INetworkingService {
             bodyString = JSON.stringify(body)
         }
 
-        return await fetch(url, {
+        return await wA('fetch failed', async () => await fetch(url, {
             method: method,
             body: bodyString
-        })
+        }))
     }
 
     return {

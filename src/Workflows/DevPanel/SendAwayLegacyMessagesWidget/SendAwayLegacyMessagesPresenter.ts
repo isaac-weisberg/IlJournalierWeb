@@ -67,7 +67,6 @@ export function SendAwayLegacyMessagesPresenter(
             })
         } catch(e) {
             console.error(convertMaybeIntoString(e))
-            alert(convertMaybeIntoString(e))
 
             di.consoleBus.post(convertMaybeIntoString(e))
             return

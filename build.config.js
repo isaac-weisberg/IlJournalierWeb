@@ -37,7 +37,8 @@ module.exports = {
         { from: "./src/index.html" },
       ],
     }),
-    new webpack.EnvironmentPlugin(['APP_VERSION'])
+    new webpack.EnvironmentPlugin(['ILJOURNALIER_SERVER_HOST']),
+    new webpack.EnvironmentPlugin(['APP_VERSION']),
   ],
   devServer: {
     server: {

@@ -47,7 +47,14 @@ const userCreateRoute = preJournaliered("user/create")
 const userLoginRoute = preJournaliered("user/login")
 
 export function BackendService(networkingService: INetworkingService): IBackendService {
-    const baseUrl = new URL("http://localhost:24610")
+    const urlString = process.env.ILJOURNALIER_SERVER_HOST
+
+    if (!urlString) {
+        alert('NO SERVER URL :(')
+        throw e('no server url')
+    }
+
+    const baseUrl = new URL(urlString)
 
     async function createUser(): Promise<CreateUserResponseBody> {
         const resp = await genericallyRequestWResponseBody(userCreateRoute, undefined, CreateUserResponseBodyType)
@@ -61,7 +68,7 @@ export function BackendService(networkingService: INetworkingService): IBackendS
 
     async function login(magicKey: string) {
         const resp = await genericallyRequestWResponseBody(userLoginRoute, {
-            magicKey
+            loginKey: magicKey
         }, LoginResponseBodyType)
 
         const status = resp.response.status

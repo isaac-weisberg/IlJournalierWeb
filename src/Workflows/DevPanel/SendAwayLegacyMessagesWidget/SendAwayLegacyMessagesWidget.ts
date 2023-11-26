@@ -37,6 +37,8 @@ export function SendAwayLegacyMessagesWidget(
                 
                 passTextField.setValue('sending')
                 sending = false
+            } else {
+                alert("What's the pass, baby?")
             }
         },
         themeService: presenter.themeService

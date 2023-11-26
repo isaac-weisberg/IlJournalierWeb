@@ -1,6 +1,6 @@
 import { SessionCreds } from "../../Models/SessionCreds"
 import { convertMaybeIntoCauseChain, wA } from "../../Util/ErrorExtensions"
-import { IMoreMessagesLocalBackupService } from "../MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
+import { IMoreMessagesLocalBackupService } from "../MoreMessagesLocalBackup/MoreMessagesLocalBackupService"
 import { IMoreMessageRequestService } from "./MoreMessageRequestService"
 import { INeverSentMessagesStorage } from "../NeverSentMessages/NeverSentMessagesStorage"
 import { IMoreMessageLocalIdService } from "../MoreMessageLocalIdService/MoreMessageLocalIdService"
@@ -25,7 +25,6 @@ export function MoreMessageStagingService(
         moreMessageLocalIdService: IMoreMessageLocalIdService
     }
 ): IMoreMessageStagingService {
-    
     let loading = false
     async function sendNeverSentMessagesIfNeeded() {
         if (loading) {
@@ -45,12 +44,12 @@ export function MoreMessageStagingService(
         })
 
         loading = true
-        
+
         try {
-            await di.moreMessageRequestService.sendMessages(
+            await wA('sendMessages failed', async () => await di.moreMessageRequestService.sendMessages(
                 di.sessionCreds.accessToken,
                 messagesToSend
-            )
+            ))
         } catch(e) {
             loading = false
 
@@ -105,4 +104,8 @@ export function MoreMessageStagingService(
             di.moreMessagesLocalBackupService.saveMessages(di.sessionCreds.userId, backupMessages)
         }
     }
+}
+
+async function parallelMap<E, T>(arr: E[], transform: (e: E) => Promise<T>): Promise<T[]> {
+    return Promise.all(arr.map(e => transform(e)))
 }

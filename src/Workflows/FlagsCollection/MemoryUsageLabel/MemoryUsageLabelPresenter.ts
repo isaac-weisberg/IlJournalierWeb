@@ -1,7 +1,7 @@
 import { IAuthLocalStorage } from "../../../Services/Auth/AuthLocalStorage";
 import { IFlagsDatabaseLocalStorage } from "../../../Services/FlagsDatabase/FlagsDatabaseLocalStorage";
 import { ILastIdLocalStorage } from "../../../Services/MoreMessageLocalIdService/LocalLastIdDatabase";
-import { IMoreMessagesLocalBackupStorage } from "../../../Services/MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupStorage";
+import { IMoreMessagesLocalBackupStorage } from "../../../Services/MoreMessagesLocalBackup/MoreMessagesLocalBackupStorage";
 import { IMoreMessagesOldLocalStorage } from "../../../Services/MoreMessagesOld/MoreMessagesOldDatabaseLocalStorage";
 import { INeverSentMessagesLocalStorage } from "../../../Services/NeverSentMessages/NeverSentMessagesLocalStorage";
 import { Bus, IBus } from "../../../Util/Bus";

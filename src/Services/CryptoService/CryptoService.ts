@@ -17,6 +17,17 @@ export function CryptoService(
     const enc = new TextEncoder()
     const dec = new TextDecoder()
 
+    async function generateKey() {
+        const key = await wA('generate key failed', async () => {
+            return await crypto.subtle.generateKey({
+                name: 'AES-GCM',
+                length: 256
+            }, true, [ 'decrypt', 'encrypt' ])
+        })
+
+        return key
+    }
+
     const getCtx = (async function() {
         const pass = enc.encode(password)
         const passBuffer = pass.buffer

@@ -12,8 +12,8 @@ import { IMoreMessageStagingService, MoreMessageStagingService } from "./MoreMes
 import { NeverSentMessagesStorage } from "./NeverSentMessages/NeverSentMessagesStorage"
 import { INeverSentMessagesLocalStorage, NeverSentMessagesLocalStorage } from "./NeverSentMessages/NeverSentMessagesLocalStorage"
 import { MoreMessageRequestService } from "./MoreMessagesStaging/MoreMessageRequestService"
-import { IMoreMessagesLocalBackupService, MoreMessagesLocalBackupService } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupService"
-import { IMoreMessagesLocalBackupStorage, MoreMessagesLocalBackupStorage } from "./MoreMessagesLocalBackup.ts/MoreMessagesLocalBackupStorage"
+import { IMoreMessagesLocalBackupService, MoreMessagesLocalBackupService } from "./MoreMessagesLocalBackup/MoreMessagesLocalBackupService"
+import { IMoreMessagesLocalBackupStorage, MoreMessagesLocalBackupStorage } from "./MoreMessagesLocalBackup/MoreMessagesLocalBackupStorage"
 import { ILastIdLocalStorage, LastIdLocalStorage } from "./MoreMessageLocalIdService/LocalLastIdDatabase"
 import { MoreMessageLocalIdService } from "./MoreMessageLocalIdService/MoreMessageLocalIdService"
 

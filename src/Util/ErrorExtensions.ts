@@ -1,8 +1,12 @@
 
 export function e(msg: string, cause: unknown = undefined): Error {
-    return new Error(msg, {
+    const newError = new Error(msg, {
         cause: cause
     })
+    if (cause instanceof Error) {
+        newError.stack = cause.stack
+    }
+    return newError
 }
 
 export async function wA<R>(msg: string, work: () => Promise<R>): Promise<R> {

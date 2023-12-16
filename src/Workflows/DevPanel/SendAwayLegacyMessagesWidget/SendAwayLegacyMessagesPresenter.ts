@@ -61,17 +61,18 @@ export function SendAwayLegacyMessagesPresenter(
             return
         }
 
-        try {
-            await wA('agressiveSendLegacyMessages failed', async () => {
-                return await di.moreMessagesStagingService.aggressiveSendLegacyMessages(messagesToSend)
-            })
-        } catch(e) {
-            console.error(convertMaybeIntoString(e))
+        if (process.env.USE_ILJOURNALIER_SERVER) {
+            try {
+                await wA('agressiveSendLegacyMessages failed', async () => {
+                    return await di.moreMessagesStagingService.aggressiveSendLegacyMessages(messagesToSend)
+                })
+            } catch(e) {
+                console.error(convertMaybeIntoString(e))
 
-            di.consoleBus.post(convertMaybeIntoString(e))
-            return
+                di.consoleBus.post(convertMaybeIntoString(e))
+                return
+            }
         }
-
 
         // success, let's bomb that bitch
         di.moreMessagesOldLocalStorage.remove()

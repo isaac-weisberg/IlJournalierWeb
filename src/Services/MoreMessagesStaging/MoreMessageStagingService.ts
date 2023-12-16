@@ -30,43 +30,45 @@ export function MoreMessageStagingService(
     let loading = false
 
     async function sendNeverSentMessagesIfNeeded() {
-        if (loading) {
-            return
-        }
-
-        const allNeverSentMessages = di.neverSentMessagesStorage.getNeverSentMessages(di.sessionCreds.userId)
-        if (allNeverSentMessages.length == 0) {
-            return
-        }
-
-        const messagesToSend = allNeverSentMessages.map(message => {
-            return {
-                msg: message.msg,
-                unixSeconds: message.unixSeconds
+        if (process.env.USE_ILJOURNALIER_SERVER) {
+            if (loading) {
+                return
             }
-        })
 
-        loading = true
+            const allNeverSentMessages = di.neverSentMessagesStorage.getNeverSentMessages(di.sessionCreds.userId)
+            if (allNeverSentMessages.length == 0) {
+                return
+            }
 
-        try {
-            await wA('sendMessages failed', async () => await di.moreMessageRequestService.sendMessages(
-                di.sessionCreds.accessToken,
-                messagesToSend
-            ))
-        } catch(e) {
+            const messagesToSend = allNeverSentMessages.map(message => {
+                return {
+                    msg: message.msg,
+                    unixSeconds: message.unixSeconds
+                }
+            })
+
+            loading = true
+
+            try {
+                await wA('sendMessages failed', async () => await di.moreMessageRequestService.sendMessages(
+                    di.sessionCreds.accessToken,
+                    messagesToSend
+                ))
+            } catch(e) {
+                loading = false
+
+                di.consoleBus.post(convertMaybeIntoString(e))
+
+                console.error("failod", convertMaybeIntoCauseChain(e))
+                // shame
+                return
+            }
+            const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
+
+            di.neverSentMessagesStorage.removeNeverSentMessages(di.sessionCreds.userId, messageIdsToRemove)
             loading = false
-
-            di.consoleBus.post(convertMaybeIntoString(e))
-
-            console.error("failod", convertMaybeIntoCauseChain(e))
-            // shame
-            return
+            sendNeverSentMessagesIfNeeded()
         }
-        const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
-
-        di.neverSentMessagesStorage.removeNeverSentMessages(di.sessionCreds.userId, messageIdsToRemove)
-        loading = false
-        sendNeverSentMessagesIfNeeded()
     }
 
     async function stageMessage(message: StagedMessage) {
@@ -77,10 +79,14 @@ export function MoreMessageStagingService(
             msg: message.msg
         } 
 
-        di.neverSentMessagesStorage.storeANeverSentMessage(di.sessionCreds.userId, entry)
+        if (process.env.USE_ILJOURNALIER_SERVER) {
+            di.neverSentMessagesStorage.storeANeverSentMessage(di.sessionCreds.userId, entry)
+        }
         di.moreMessagesLocalBackupService.saveMessage(di.sessionCreds.userId, entry)
 
-        await sendNeverSentMessagesIfNeeded()
+        if (process.env.USE_ILJOURNALIER_SERVER) {
+            await sendNeverSentMessagesIfNeeded()
+        }
     }
 
     async function aggressiveSendLegacyMessages(messages: StagedMessage[]) {
@@ -109,8 +115,4 @@ export function MoreMessageStagingService(
             di.moreMessagesLocalBackupService.saveMessages(di.sessionCreds.userId, backupMessages)
         }
     }
-}
-
-async function parallelMap<E, T>(arr: E[], transform: (e: E) => Promise<T>): Promise<T[]> {
-    return Promise.all(arr.map(e => transform(e)))
 }

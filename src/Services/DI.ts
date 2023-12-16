@@ -68,12 +68,12 @@ export interface IAuthDIContext {
     moreMessageStagingService: IMoreMessageStagingService
 }
 
-export function AuthDIContext(di: ICommonDIContext, sessionCreds: SessionCreds): IAuthDIContext {
+export function AuthDIContext(di: ICommonDIContext /*, sessionCreds: SessionCreds*/): IAuthDIContext {
     const stagedMessageStorage = NeverSentMessagesStorage(di.neverSentMessageStorageService)
     const moreMessageRequestService = MoreMessageRequestService(di.backendService)
     const moreMessagesLocalIdService = MoreMessageLocalIdService(di.lastIdLocalStorage)
     const moreMessageStagingService = MoreMessageStagingService({
-        sessionCreds,
+        /* sessionCreds, */
         neverSentMessagesStorage: stagedMessageStorage, 
         moreMessageRequestService,
         moreMessagesLocalBackupService: di.moreMessagesLocalBackupService,

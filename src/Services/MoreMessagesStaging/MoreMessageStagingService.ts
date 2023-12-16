@@ -19,7 +19,7 @@ export interface StagedMessage {
 
 export function MoreMessageStagingService(
     di: {
-        sessionCreds: SessionCreds,
+        /* sessionCreds: SessionCreds,*/
         neverSentMessagesStorage: INeverSentMessagesStorage,
         moreMessageRequestService: IMoreMessageRequestService,
         moreMessagesLocalBackupService: IMoreMessagesLocalBackupService,
@@ -29,45 +29,47 @@ export function MoreMessageStagingService(
 ): IMoreMessageStagingService {
     let loading = false
 
+    const userId = 'localUser'
+
     async function sendNeverSentMessagesIfNeeded() {
         if (process.env.USE_ILJOURNALIER_SERVER) {
-            if (loading) {
-                return
-            }
+            // if (loading) {
+            //     return
+            // }
 
-            const allNeverSentMessages = di.neverSentMessagesStorage.getNeverSentMessages(di.sessionCreds.userId)
-            if (allNeverSentMessages.length == 0) {
-                return
-            }
+            // const allNeverSentMessages = di.neverSentMessagesStorage.getNeverSentMessages(userId)
+            // if (allNeverSentMessages.length == 0) {
+            //     return
+            // }
 
-            const messagesToSend = allNeverSentMessages.map(message => {
-                return {
-                    msg: message.msg,
-                    unixSeconds: message.unixSeconds
-                }
-            })
+            // const messagesToSend = allNeverSentMessages.map(message => {
+            //     return {
+            //         msg: message.msg,
+            //         unixSeconds: message.unixSeconds
+            //     }
+            // })
 
-            loading = true
+            // loading = true
 
-            try {
-                await wA('sendMessages failed', async () => await di.moreMessageRequestService.sendMessages(
-                    di.sessionCreds.accessToken,
-                    messagesToSend
-                ))
-            } catch(e) {
-                loading = false
+            // try {
+            //     await wA('sendMessages failed', async () => await di.moreMessageRequestService.sendMessages(
+            //         di.sessionCreds.accessToken,
+            //         messagesToSend
+            //     ))
+            // } catch(e) {
+            //     loading = false
 
-                di.consoleBus.post(convertMaybeIntoString(e))
+            //     di.consoleBus.post(convertMaybeIntoString(e))
 
-                console.error("failod", convertMaybeIntoCauseChain(e))
-                // shame
-                return
-            }
-            const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
+            //     console.error("failod", convertMaybeIntoCauseChain(e))
+            //     // shame
+            //     return
+            // }
+            // const messageIdsToRemove = allNeverSentMessages.map(msg => msg.id)
 
-            di.neverSentMessagesStorage.removeNeverSentMessages(di.sessionCreds.userId, messageIdsToRemove)
-            loading = false
-            sendNeverSentMessagesIfNeeded()
+            // di.neverSentMessagesStorage.removeNeverSentMessages(di.sessionCreds.userId, messageIdsToRemove)
+            // loading = false
+            // sendNeverSentMessagesIfNeeded()
         }
     }
 
@@ -80,9 +82,9 @@ export function MoreMessageStagingService(
         } 
 
         if (process.env.USE_ILJOURNALIER_SERVER) {
-            di.neverSentMessagesStorage.storeANeverSentMessage(di.sessionCreds.userId, entry)
+            di.neverSentMessagesStorage.storeANeverSentMessage(userId, entry)
         }
-        di.moreMessagesLocalBackupService.saveMessage(di.sessionCreds.userId, entry)
+        di.moreMessagesLocalBackupService.saveMessage(userId, entry)
 
         if (process.env.USE_ILJOURNALIER_SERVER) {
             await sendNeverSentMessagesIfNeeded()
@@ -90,12 +92,12 @@ export function MoreMessageStagingService(
     }
 
     async function aggressiveSendLegacyMessages(messages: StagedMessage[]) {
-        return await wA('send messages failed', async () => {
-            return await di.moreMessageRequestService.sendMessages(
-                di.sessionCreds.accessToken,
-                messages
-            )
-        })
+        // return await wA('send messages failed', async () => {
+        //     return await di.moreMessageRequestService.sendMessages(
+        //         di.sessionCreds.accessToken,
+        //         messages
+        //     )
+        // })
     }
 
     return {
@@ -112,7 +114,7 @@ export function MoreMessageStagingService(
     
                 return entry
             })
-            di.moreMessagesLocalBackupService.saveMessages(di.sessionCreds.userId, backupMessages)
+            di.moreMessagesLocalBackupService.saveMessages(userId, backupMessages)
         }
     }
 }

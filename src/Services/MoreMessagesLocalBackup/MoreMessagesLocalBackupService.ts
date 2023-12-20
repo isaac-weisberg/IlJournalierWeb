@@ -10,6 +10,7 @@ interface BackupMessage {
 export interface IMoreMessagesLocalBackupService {
     saveMessage(userId: string, msg: BackupMessage): void
     saveMessages(userId: string, msgs: BackupMessage[]): void
+    getMessages(userId: string): BackupMessage[]
 }
 
 export function MoreMessagesLocalBackupService(
@@ -18,6 +19,9 @@ export function MoreMessagesLocalBackupService(
     let currentDatabase = localBackupStorage.read() || { users: {} }
 
     return {
+        getMessages(userId) {
+            return currentDatabase.users[userId]?.messages || []
+        },
         saveMessage(userId, msg) {
             const user = currentDatabase.users[userId]
             if (currentDatabase.users[userId]) {

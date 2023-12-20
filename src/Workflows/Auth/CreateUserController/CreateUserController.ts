@@ -5,8 +5,9 @@ import { CreateUserTitleBannerView } from "../CreateUserTitleBannerView/CreateUs
 import { CreateUserSheet } from "./Views/CreateUserSheet"
 import { ViewLoginKey } from "./Views/ViewLoginKeySheet"
 import { Spinner } from "../../../Views/Spinner/Spinner"
+import { IController } from "../../NavigationController/NavigationController"
 
-export interface ICreateUserController {
+export interface ICreateUserController extends IController {
     root: HTMLDivElement
 }
 
@@ -72,6 +73,9 @@ export function CreateUserController(presenter: ICreateUserPresenter, di: ICommo
     }
 
     return {
-        root: div
+        root: div,
+        updateLayout() {
+            
+        },
     }
 }

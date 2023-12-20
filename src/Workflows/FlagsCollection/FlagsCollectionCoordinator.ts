@@ -29,7 +29,8 @@ export async function FlagsCollectionCoordinator(
         {
             flagsCollectionSessionModel,
             moreMessageStagingService: authDi.moreMessageStagingService,
-            themeService: di.themeService
+            themeService: di.themeService,
+            moreMessagesLocalBackupService: di.moreMessagesLocalBackupService
         }
     )
 

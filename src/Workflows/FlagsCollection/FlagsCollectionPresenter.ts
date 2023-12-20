@@ -1,7 +1,10 @@
+import { IMoreMessagesLocalBackupService } from "../../Services/MoreMessagesLocalBackup/MoreMessagesLocalBackupService"
 import { IMoreMessageStagingService } from "../../Services/MoreMessagesStaging/MoreMessageStagingService"
 import { IThemeService } from "../../Services/ThemeService"
 import { Bus, IBus } from "../../Util/Bus"
+import { localUser } from "../../Util/Const"
 import { DevPanelPresenter, IDevPanelPresenter } from "../DevPanel/DevPanelPresenter"
+import { IMessageListViewDataSource } from "../MessagesViewer/View/MessageListView"
 import { FlagModel, IFlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 
 export interface IFlagsCollectionPresenter {
@@ -11,12 +14,14 @@ export interface IFlagsCollectionPresenter {
     addMoreMessage: (value: string) => void
     onFlagsUpdated: IBus<void>,
     devPanelPresenter: IDevPanelPresenter
+    messagesListDataSource: IMessageListViewDataSource
 }
 
-type FlagsCollectionPresenterDI = {
+interface FlagsCollectionPresenterDI {
     flagsCollectionSessionModel: IFlagsCollectionSessionModel,
     moreMessageStagingService: IMoreMessageStagingService,
-    themeService: IThemeService
+    themeService: IThemeService,
+    moreMessagesLocalBackupService: IMoreMessagesLocalBackupService
 }
 
 export function FlagsCollectionPresenter(
@@ -24,7 +29,6 @@ export function FlagsCollectionPresenter(
     di: FlagsCollectionPresenterDI
 ): IFlagsCollectionPresenter {
     const flagsCollectionSessionModel = di.flagsCollectionSessionModel
-
 
     let flags = flagsCollectionSessionModel.flags()
 
@@ -47,6 +51,29 @@ export function FlagsCollectionPresenter(
         onFlagsUpdatedBus.post()
     })
 
+    const messagesForReader = di.moreMessagesLocalBackupService.getMessages(localUser)
+
+    const messagesListDataSource: IMessageListViewDataSource = {
+        numberOfItems() {
+            return messagesForReader.length
+        },
+        itemForIndex(index) {
+            const message = messagesForReader[index]
+            const date = new Date(message.unixSeconds * 1000)
+
+            const hours = date.getHours().toString().padStart(2, '0');
+            const minutes = date.getMinutes().toString().padStart(2, '0');
+
+            const formattedTime = `${hours}:${minutes}`;
+            
+
+            return {
+                timeText: formattedTime,
+                message: message.msg
+            }
+        },
+    }
+
     return {
         flags: getFlags,
         setEnabled,
@@ -66,6 +93,7 @@ export function FlagsCollectionPresenter(
             di.moreMessageStagingService.stageMessage(message)
         },
         onFlagsUpdated: onFlagsUpdatedBus,
-        devPanelPresenter: devPanelPresenter
+        devPanelPresenter: devPanelPresenter,
+        messagesListDataSource
     }
 }

@@ -5,6 +5,7 @@ import { IMoreMessageRequestService } from "./MoreMessageRequestService"
 import { INeverSentMessagesStorage } from "../NeverSentMessages/NeverSentMessagesStorage"
 import { IMoreMessageLocalIdService } from "../MoreMessageLocalIdService/MoreMessageLocalIdService"
 import { IConsoleBus } from "../ConsoleBus/ConsoleBus"
+import { localUser } from "../../Util/Const"
 
 export interface IMoreMessageStagingService {
     stageMessage(message: StagedMessage): Promise<void>
@@ -29,7 +30,7 @@ export function MoreMessageStagingService(
 ): IMoreMessageStagingService {
     let loading = false
 
-    const userId = 'localUser'
+    const userId = localUser
 
     async function sendNeverSentMessagesIfNeeded() {
         if (process.env.USE_ILJOURNALIER_SERVER) {

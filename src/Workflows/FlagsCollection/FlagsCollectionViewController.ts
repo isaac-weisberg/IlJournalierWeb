@@ -8,16 +8,18 @@ import { DevPanel } from "../DevPanel/DevPanel"
 import { ICommonDIContext } from "../../Services/DI"
 import { IFlagsCollectionPresenter } from "./FlagsCollectionPresenter"
 import { IMemoryUsageLabelPresenter } from "./MemoryUsageLabel/MemoryUsageLabelPresenter"
+import { IMessageListViewDataSource, MessageListView } from "../MessagesViewer/View/MessageListView"
 
 export interface IFlagsCollectionViewController {
     readonly root: HTMLDivElement
+    updateLayout(): void
 }
 
 export function FlagsCollectionViewController(
     presenter: IFlagsCollectionPresenter, 
     memoryUsageLabelPresenter: IMemoryUsageLabelPresenter,
     diContext: ICommonDIContext
-) {
+): IFlagsCollectionViewController {
     const root = document.createElement('div')
     root.className = "flagsCollectionRoot"
 
@@ -80,7 +82,22 @@ export function FlagsCollectionViewController(
     devPanel.root.style.marginTop = '700px'
     scrollContent.appendChild(devPanel.root)
 
+    
+
+    const messageListView = MessageListView(presenter.messagesListDataSource, { themeService: diContext.themeService })
+    ;((s) => {
+        s.position = 'absolute'
+        s.top = '50px'
+        s.left = '0px'
+        s.width = '100%'
+        s.height = '80%'
+    })(messageListView.root.style)
+    root.appendChild(messageListView.root)
+
     return {
-        root: root
+        root: root,
+        updateLayout() {
+            messageListView.updateLayout()
+        },
     }
 }

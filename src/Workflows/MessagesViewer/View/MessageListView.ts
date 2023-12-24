@@ -1,5 +1,6 @@
 import { IThemeService } from "../../../Services/ThemeService";
-import { IMessageViewModel, MessageView } from "./MessageView";
+import { IMessageDateView, MessageDateView } from "./MessageDateView";
+import { IMessageView, IMessageViewModel, MessageView } from "./MessageView";
 
 export interface IMessageListViewDataSource {
     numberOfItems(): number
@@ -24,6 +25,7 @@ export function MessageListView(
 
     ;((s) => {
         s.overflow = 'scroll'
+        s.maxWidth = '600px'
     })(root.style)
 
     const scrollContent = document.createElement('div')
@@ -36,19 +38,32 @@ export function MessageListView(
         for (let i = 0; i < numberOfItems; i++) {
             const item = dataSource.itemForIndex(i)
 
-            const messageView = MessageView({ themeService: di.themeService })
-            messageView.apply(item)
+            let cellView: IMessageView|IMessageDateView
+            switch (item.kind) {
+            case 'IMessageViewModelKindMessage':
+                const messageView = MessageView({ themeService: di.themeService })
+                messageView.apply(item)
+                cellView = messageView
+                break
+            case 'IMessageViewModelKindDateLabel':
+                const messageDateView = MessageDateView({ themeService: di.themeService })
+
+                messageDateView.applyViewModel(item)
+
+                cellView = messageDateView
+                break
+            }
 
             ;(s => {
                 s.left = '0px'
                 s.width = '100%'
-            })(messageView.root.style)
+            })(cellView.root.style)
 
-            scrollContent.appendChild(messageView.root)
+            scrollContent.appendChild(cellView.root)
 
-            const messageHeight = messageView.root.offsetHeight
+            const messageHeight = cellView.root.offsetHeight
 
-            messageView.root.style.top = `${usedUpHeight}px`
+            cellView.root.style.top = `${usedUpHeight}px`
 
             usedUpHeight += messageHeight
         }

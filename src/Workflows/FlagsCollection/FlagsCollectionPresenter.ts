@@ -5,6 +5,7 @@ import { Bus, IBus } from "../../Util/Bus"
 import { localUser } from "../../Util/Const"
 import { DevPanelPresenter, IDevPanelPresenter } from "../DevPanel/DevPanelPresenter"
 import { IMessageListViewDataSource } from "../MessagesViewer/View/MessageListView"
+import { IMessageViewModel } from "../MessagesViewer/View/MessageView"
 import { FlagModel, IFlagsCollectionSessionModel } from "./FlagsCollectionSessionModel"
 
 export interface IFlagsCollectionPresenter {
@@ -53,24 +54,56 @@ export function FlagsCollectionPresenter(
 
     const messagesForReader = di.moreMessagesLocalBackupService.getMessages(localUser)
 
+    let prevDayMonthYear: { d: number, m: number, y: number } |undefined
+    const viewModels: IMessageViewModel[] = []
+    for (let i = 0; i < messagesForReader.length; i++) {
+        const message = messagesForReader[i]
+        const date = new Date(message.unixSeconds * 1000)
+
+        const d = date.getDate()
+        const m = date.getMonth()
+        const y = date.getFullYear()
+
+        const shouldInsertDateLabel = !prevDayMonthYear 
+            || d != prevDayMonthYear.d 
+            || m != prevDayMonthYear.m
+            || y != prevDayMonthYear.y
+
+        if (shouldInsertDateLabel) {
+            const dateLabel = `${d} ${mounthToString(date.getMonth())}`
+
+            viewModels.push({
+                kind: 'IMessageViewModelKindDateLabel',
+                dateLabel: dateLabel
+            })
+        }
+        if (prevDayMonthYear) {
+            prevDayMonthYear.d = d
+            prevDayMonthYear.m = m
+            prevDayMonthYear.y = y
+        } else {
+            prevDayMonthYear = { d, m, y }
+        }
+
+
+        const hours = date.getHours().toString().padStart(2, '0')
+        const minutes = date.getMinutes().toString().padStart(2, '0')
+
+        const formattedTime = `${hours}:${minutes}`
+
+        viewModels.push({
+            kind: 'IMessageViewModelKindMessage',
+            message: message.msg,
+            timeText: formattedTime
+        })
+    }
+
     const messagesListDataSource: IMessageListViewDataSource = {
         numberOfItems() {
-            return messagesForReader.length
+            return viewModels.length
         },
         itemForIndex(index) {
-            const message = messagesForReader[index]
-            const date = new Date(message.unixSeconds * 1000)
-
-            const hours = date.getHours().toString().padStart(2, '0');
-            const minutes = date.getMinutes().toString().padStart(2, '0');
-
-            const formattedTime = `${hours}:${minutes}`;
-            
-
-            return {
-                timeText: formattedTime,
-                message: message.msg
-            }
+            return viewModels[index]
         },
     }
 
@@ -96,4 +129,9 @@ export function FlagsCollectionPresenter(
         devPanelPresenter: devPanelPresenter,
         messagesListDataSource
     }
+}
+
+function mounthToString(m: number): string {
+    return ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'][m]
+        || 'Shittember'
 }

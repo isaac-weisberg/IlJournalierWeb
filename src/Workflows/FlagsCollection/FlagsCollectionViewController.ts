@@ -8,7 +8,7 @@ import { DevPanel } from "../DevPanel/DevPanel"
 import { ICommonDIContext } from "../../Services/DI"
 import { IFlagsCollectionPresenter } from "./FlagsCollectionPresenter"
 import { IMemoryUsageLabelPresenter } from "./MemoryUsageLabel/MemoryUsageLabelPresenter"
-import { IMessageListViewDataSource, MessageListView } from "../MessagesViewer/View/MessageListView"
+import { MessageListView } from "../MessagesViewer/View/MessageListView"
 
 export interface IFlagsCollectionViewController {
     readonly root: HTMLDivElement
@@ -88,7 +88,7 @@ export function FlagsCollectionViewController(
     ;((s) => {
         s.position = 'absolute'
         s.top = '50px'
-        s.left = '0px'
+        // s.left = '0px'
         s.width = '100%'
         s.height = '80%'
     })(messageListView.root.style)
